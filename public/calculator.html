@@ -1,0 +1,114 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Order calculator</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/calculator.css" />
+    <script type="module" src="/calculator.js"></script>
+  </head>
+  <body>
+    <main class="lab">
+      <form id="calculator-controls" class="demo-controls">
+        <fieldset class="example-picker">
+          <legend>Example</legend>
+          <div class="example-options">
+            <label
+              ><input
+                type="radio"
+                name="example"
+                value="webpack"
+                checked
+              />Webpack build</label
+            >
+            <label
+              ><input type="radio" name="example" value="function" />Function
+              constructor</label
+            >
+          </div>
+        </fieldset>
+        <div class="settings-grid">
+          <fieldset class="setting">
+            <legend>Content Security Policy</legend>
+            <label
+              ><input
+                type="radio"
+                name="policy"
+                value="permissive"
+                checked
+              /><span>script-src 'self' 'unsafe-eval'</span></label
+            >
+            <label
+              ><input type="radio" name="policy" value="restricted" /><span
+                >script-src 'self'</span
+              ></label
+            >
+          </fieldset>
+          <fieldset class="setting">
+            <legend id="version-label">Webpack source maps</legend>
+            <label
+              ><input
+                type="radio"
+                name="version"
+                value="original"
+                checked
+              /><span id="original-label">eval-source-map</span></label
+            >
+            <label
+              ><input type="radio" name="version" value="fixed" /><span
+                id="fixed-label"
+                >source-map</span
+              ></label
+            >
+          </fieldset>
+        </div>
+      </form>
+      <section class="calculator" aria-labelledby="calculator-title">
+        <h1 id="calculator-title">Order calculator</h1>
+        <button id="open-calculator" type="button">Open calculator</button>
+        <p id="calculator-status" role="status">Ready</p>
+      </section>
+    </main>
+    <dialog id="calculator-dialog" aria-labelledby="dialog-title">
+      <h2 id="dialog-title">Order total</h2>
+      <form id="order-form">
+        <div class="order-fields">
+          <label for="unit-price"
+            >Unit price ($)
+            <input
+              id="unit-price"
+              name="price"
+              type="number"
+              value="25"
+              min="0"
+              max="1000000"
+              step="0.01"
+              required
+            />
+          </label>
+          <label for="quantity"
+            >Quantity
+            <input
+              id="quantity"
+              name="quantity"
+              type="number"
+              value="3"
+              min="1"
+              max="10000"
+              step="1"
+              required
+            />
+          </label>
+        </div>
+        <p id="total" role="status">Total: —</p>
+        <div class="dialog-actions">
+          <button id="close-calculator" type="button" class="secondary">
+            Close
+          </button>
+          <button type="submit">Calculate total</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

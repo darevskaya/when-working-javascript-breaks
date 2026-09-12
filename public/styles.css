@@ -59,7 +59,7 @@ button.secondary:hover {
 
 button:focus-visible,
 input:focus-visible,
-.toggle label:has(input:focus-visible) {
+.example-picker label:has(input:focus-visible) {
   outline: 3px solid #7baf94;
   outline-offset: 3px;
 }
@@ -68,120 +68,6 @@ input:focus-visible,
   max-width: 880px;
   margin: auto;
   padding: clamp(24px, 7vh, 72px) 20px;
-}
-
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.toggle {
-  display: flex;
-  gap: 3px;
-  margin: 0;
-  padding: 4px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #eaece7;
-}
-
-.toggle label {
-  position: relative;
-  padding: 8px 14px;
-  border-radius: 6px;
-  color: var(--muted);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.toggle label:has(input:checked) {
-  color: #232826;
-  background: var(--surface);
-  box-shadow: 0 1px 3px #23282614;
-}
-
-/* Keep native radio keyboard behavior with the whole label as the control. */
-.toggle input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.account {
-  min-height: 400px;
-  padding: 32px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  box-shadow: 0 8px 28px #23282606;
-}
-
-.account-heading,
-.profile,
-.dialog-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.account-heading {
-  color: var(--muted);
-  font-size: 0.8125rem;
-}
-
-.avatar {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-}
-
-.profile {
-  gap: 18px;
-  margin: 32px 0 24px;
-}
-
-.avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 1.75rem;
-}
-
-.profile h1 {
-  margin: 0;
-  font-size: 1.875rem;
-  font-weight: 600;
-  letter-spacing: -0.04em;
-}
-
-.profile p,
-.account-copy,
-#account-status {
-  color: var(--muted);
-  font-size: 0.875rem;
-}
-
-.profile p {
-  margin: 2px 0 0;
-}
-
-.account-copy {
-  margin: 0 0 24px;
-}
-
-#account-status {
-  margin: 16px 0 0;
-  font-size: 0.75rem;
 }
 
 dialog {
@@ -224,6 +110,9 @@ dialog input {
 }
 
 .dialog-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   justify-content: flex-end;
   margin-top: 24px;
 }
@@ -231,14 +120,6 @@ dialog input {
 @media (max-width: 540px) {
   .lab {
     padding: 20px 16px;
-  }
-
-  .account {
-    padding: 24px;
-  }
-
-  .toolbar {
-    justify-content: flex-start;
   }
 
   dialog {

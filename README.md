@@ -1,120 +1,131 @@
-# When Working JavaScript Breaks
+﻿# When Working JavaScript Breaks
 
-Runnable JavaScript demos that fail under specific browser security rules.
-The first demo shows a dialog that fails because Webpack introduces `eval()` into its output.
-CSP (Content Security Policy) defines browser restrictions for a document.
+One calculator dialog demonstrates two ways that JavaScript can fail under Content Security Policy (CSP).
+CSP defines browser restrictions for a document.
+The page loads normally, and the failure occurs when you open the calculator.
 
 ## Run
 
 Use Node.js 22 or later.
 
-```powershell
-cd C:\repos\when-working-javascript-breaks
+```sh
 npm ci
 npm start
 ```
 
-Open [the local lab](http://127.0.0.1:4173).
+Open [the calculator demo](http://127.0.0.1:4173).
 The server accepts connections from this computer only.
+Both bundles are built before the server starts.
+The demo uses local styles and system fonts.
+
 If you change a source file, restart `npm start` and reload the browser.
-If the default port is occupied, set `$env:PORT = '4174'` before starting.
+If port 4173 is occupied, set `$env:PORT = '4174'` before starting in PowerShell.
 
-## Present the first demo
+## Present the demo
 
-1. Start with "Permissive" headers and the `eval-source-map` build.
-2. Open "Change display name".
-3. Enter a name and select "Save".
-4. Select "Restricted" headers.
-5. Open the dialog and inspect the error in the browser console.
-6. Switch the build to `source-map`.
-7. Open the dialog again.
-8. Switch back to `eval-source-map` to repeat the failure.
-9. Select "Permissive" headers to return to the original state.
+1. Select "Webpack build", `script-src 'self' 'unsafe-eval'`, and `eval-source-map`.
+2. Select "Open calculator".
+3. Select "Calculate total" to see `$75.00`.
+4. Close the dialog.
+5. Select `script-src 'self'`.
+6. Open the calculator again and inspect the browser console.
+7. Select `source-map` under "Webpack source maps".
+8. Open the calculator to show that it works under the same policy.
+9. Close the dialog and select "Function constructor".
+10. Select `new Function` under "Calculation function" and open the calculator to demonstrate the second failure.
+11. Select "Regular function" and open the calculator again.
 
-The lab shows one account page without iframes.
-The dialog opens over the full browser window.
+The example selector changes which code setting appears.
+"Content Security Policy" controls whether CSP allows JavaScript created from strings.
+Both browser policies still enforce the other CSP restrictions.
 
-| Route                   | Script policy                     |
-| ----------------------- | --------------------------------- |
-| `/demo/eval/permissive` | `script-src 'self' 'unsafe-eval'` |
-| `/demo/eval/restricted` | `script-src 'self'`               |
+Changing any control navigates to a new document and resets the calculator.
+Close the dialog before changing the controls.
+The dialog uses the full browser window.
+There are no iframes or explanation panels.
 
-Add `?build=eval` or `?build=fixed` to either route.
-Without a build parameter, the page uses the eval build.
-The root URL redirects to `/demo/eval/permissive?build=eval`.
-Each control navigates to a new document and preserves the other selection.
-Direct links, refresh, and browser Back/Forward restore the controls from the URL.
-The route selects the policy on the server. A `policy` query parameter cannot override it.
+## What each version does
 
-The header and build controls work independently.
-Changing either control reloads the account with the selected response headers and build and resets the name.
+| Failure source | Version  | Bundle            | Formula         |
+| -------------- | -------- | ----------------- | --------------- |
+| Webpack eval   | Original | `eval-source-map` | Normal function |
+| Webpack eval   | Fixed    | `source-map`      | Normal function |
+| new Function   | Original | `source-map`      | `new Function`  |
+| new Function   | Fixed    | `source-map`      | Normal function |
 
-The account page loads normally in both environments.
-The page loads the feature bundle, a generated JavaScript file, only after a click.
-The server sends identical account HTML and feature code to both environments.
+The page requests the dialog bundle, a generated JavaScript file, only after you select "Open calculator".
+The same feature source produces both bundles.
+No feature bundle loads on the initial page load.
+
+In the Webpack example, the original bundle wraps code in `eval()`.
+The restricted policy blocks execution before the bundle can initialize.
+This uses `mode: 'production'` with a deliberately unsuitable `devtool: 'eval-source-map'` setting.
+It is not Webpack's production default.
+
+In the `new Function` example, the bundle loads without `eval()`.
+Opening the dialog then creates a function from the formula string `return price * quantity;`.
+The restricted policy blocks that operation before the dialog appears.
+Calculating the total uses the function that was already created when the dialog opened.
+
+Both fixed versions use a normal function and an eval-free bundle.
+The application never chooses to fail based on the policy.
+The browser enforces the actual response headers.
+
+## Routes
+
+The server matches `/demo/:name/:policy` against the `demoPages` registry.
+The single current demo is `calculator`.
+
+| Route                         | Script policy                     |
+| ----------------------------- | --------------------------------- |
+| `/demo/calculator/permissive` | `script-src 'self' 'unsafe-eval'` |
+| `/demo/calculator/restricted` | `script-src 'self'`               |
+
+Use `?example=webpack&version=original` to select the initial example.
+The other values are `example=function` and `version=fixed`.
+Missing or unrecognized selections default to `webpack` and `original`.
+Unknown demo names and policies return 404.
+The root URL redirects to the permissive Webpack example.
+Links to the earlier `/demo/eval/` and `/demo/function/` pages redirect to matching calculator selections.
+
+Both policy routes serve identical HTML and scripts.
 Only the CSP response header differs.
-Both environments enforce CSP. The permissive environment also allows `eval()`, which runs a string as JavaScript.
-
-The permissive document allows `script-src 'self' 'unsafe-eval'`.
-The restricted document allows `script-src 'self'`.
-Both documents also use the same restrictions for styles, objects, base URLs, and frames.
-The browser console shows the full policy when a violation occurs.
-
-The browser enforces the restriction.
-The application does not simulate a failure based on the selected policy.
-The browser console displays the actual CSP failures and runtime errors.
-Error wording can differ between browsers.
-
-## Why the failure happens after a click
-
-The page shell uses an external script without a Webpack build.
-It requests the separate dialog bundle after the user selects the button.
-Webpack builds that feature with `mode: 'production'` and `devtool: 'eval-source-map'`.
-The generated file contains `eval()`, although the feature source does not.
-
-This configuration is valid, but it is not Webpack's production default.
-If the whole page uses an eval-based bundle, the failure can occur on page load instead.
-This demo separates the page shell from the feature to show a delayed failure.
-
-The corrected bundle uses the same source with `devtool: 'source-map'`.
-It opens the dialog under the same strict policy.
-The fix changes the build configuration rather than adding `'unsafe-eval'` to the restricted policy.
-`npm start` builds both variants before the server starts.
-The build control selects a prepared bundle and reloads the account page.
-It does not rebuild code during the talk.
+The other policy restrictions stay the same.
+Refresh and browser Back/Forward restore the controls from the URL.
 
 ## Project files
 
-| File                        | Purpose                                                   |
-| --------------------------- | --------------------------------------------------------- |
-| `server.js`                 | Serves documents and applies actual HTTP response headers |
-| `public/lab.js`             | Navigates between policy routes and builds                |
-| `public/account.js`         | Loads the feature after a click                           |
-| `demos/eval/dialog.js`      | Contains the application feature                          |
-| `webpack.config.js`         | Builds the failing and corrected variants                 |
-| `test/server.test.js`       | Tests policies, identical HTML, and generated code        |
-| `test/browser/demo.spec.js` | Tests the talk sequence in Chromium                       |
+| File                            | Purpose                                                         |
+| ------------------------------- | --------------------------------------------------------------- |
+| `server.js`                     | Serves the page, assets, and CSP headers                        |
+| `public/calculator.html`        | Contains the page controls and dialog markup                    |
+| `public/calculator.js`          | Navigates between selections and loads the dialog after a click |
+| `demos/calculator/dialog.js`    | Opens the dialog and handles calculations                       |
+| `demos/calculator/calculate.js` | Creates a normal function or a function from a string           |
+| `webpack.config.js`             | Builds the two bundle variants                                  |
+| `public/styles.css`             | Defines the shared visual styles                                |
+| `public/calculator.css`         | Defines the calculator layout                                   |
 
 ## Tests
 
-Run `npm test` to build both bundles and test the HTTP behavior and generated output.
-Run the browser tests before the talk:
+Run `npm test` to build the bundles and test the HTTP behavior and generated output.
+To run the browser tests:
 
 ```sh
 npx playwright install chromium
 npm run test:browser
 ```
 
-The first command downloads Chromium. Run it before you go offline.
-The browser tests build both variants and start a separate server on port 4175.
-They cover the actual CSP failure, switching headers and builds, refresh, browser history, dialog controls, name validation, and retry after a failed download.
-Use the presentation steps once in the browser that you use for the talk.
-Names exist only in the current page and reset on reload.
+Install Chromium before going offline.
+The tests start a separate server on port 4175.
+They cover all eight policy, example, and version combinations.
+They verify that no violation occurs on page load and that the original versions fail only when opening the dialog.
+They also cover calculations, validation, closing, retry, refresh, browser history, and mobile layout.
 
-Run `npm run format` to format the source with Prettier.
-Run `npm run format:check` to make sure that formatting is consistent.
+Run `npm run format` to format the source.
+Run `npm run format:check` to check formatting.
 
 ## References
 
-[Webpack devtool documentation](https://webpack.js.org/configuration/devtool/) describes eval-based source maps and production choices.
+[Webpack devtool documentation](https://webpack.js.org/configuration/devtool/) describes source-map configurations.
 [MDN script-src documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/script-src) describes restrictions on string evaluation.

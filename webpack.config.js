@@ -9,7 +9,7 @@ export default ['eval-source-map', 'source-map'].map((devtool) => ({
   mode: 'production',
   context: root,
   devtool,
-  entry: './demos/eval/dialog.js',
+  entry: './demos/calculator/dialog.js',
   output: {
     path: path.join(
       root,
@@ -17,7 +17,7 @@ export default ['eval-source-map', 'source-map'].map((devtool) => ({
       devtool === 'eval-source-map' ? 'eval' : 'fixed',
     ),
     filename: 'dialog.js',
-    library: { name: 'ProfileDialog', type: 'window' },
+    library: { name: 'CalculatorDialog', type: 'window' },
     clean: true,
   },
 }));

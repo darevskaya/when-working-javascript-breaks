@@ -11,10 +11,25 @@ const types = {
   '.map': 'application/json',
 };
 
+const demoPages = new Map([['calculator', 'public/calculator.html']]);
+
+const assets = {
+  '/styles.css': 'public/styles.css',
+  '/calculator.js': 'public/calculator.js',
+  '/calculator.css': 'public/calculator.css',
+  '/bundles/eval/dialog.js': 'dist/eval/dialog.js',
+  '/bundles/eval/dialog.js.map': 'dist/eval/dialog.js.map',
+  '/bundles/fixed/dialog.js': 'dist/fixed/dialog.js',
+  '/bundles/fixed/dialog.js.map': 'dist/fixed/dialog.js.map',
+};
+
 export function createServer() {
   return http.createServer(async (request, response) => {
     const url = new URL(request.url, 'http://localhost');
-    const baseline = url.pathname === '/demo/eval/permissive';
+    const [, demo, policy] =
+      url.pathname.match(/^\/demo\/([^/]+)\/(permissive|restricted)$/) ?? [];
+    const demoFile = demoPages.get(demo);
+    const baseline = demoFile && policy === 'permissive';
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('X-Content-Type-Options', 'nosniff');
     response.setHeader(
@@ -22,22 +37,27 @@ export function createServer() {
       `default-src 'self'; script-src 'self'${baseline ? " 'unsafe-eval'" : ''}; style-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'self'`,
     );
     if (url.pathname === '/') {
-      response.writeHead(302, { Location: '/demo/eval/permissive?build=eval' });
+      response.writeHead(302, {
+        Location:
+          '/demo/calculator/permissive?example=webpack&version=original',
+      });
       response.end();
       return;
     }
-    const routes = {
-      '/demo/eval/permissive': 'public/account.html',
-      '/demo/eval/restricted': 'public/account.html',
-      '/styles.css': 'public/styles.css',
-      '/lab.js': 'public/lab.js',
-      '/account.js': 'public/account.js',
-      '/bundles/eval/dialog.js': 'dist/eval/dialog.js',
-      '/bundles/eval/dialog.js.map': 'dist/eval/dialog.js.map',
-      '/bundles/fixed/dialog.js': 'dist/fixed/dialog.js',
-      '/bundles/fixed/dialog.js.map': 'dist/fixed/dialog.js.map',
-    };
-    const file = routes[url.pathname];
+    // Keep links to the previous standalone demos working.
+    if (demo === 'eval' || demo === 'function') {
+      const example = demo === 'eval' ? 'webpack' : 'function';
+      const fixed =
+        demo === 'eval'
+          ? url.searchParams.get('build') === 'fixed'
+          : url.searchParams.get('implementation') === 'plain';
+      response.writeHead(302, {
+        Location: `/demo/calculator/${policy}?example=${example}&version=${fixed ? 'fixed' : 'original'}`,
+      });
+      response.end();
+      return;
+    }
+    const file = demoFile ?? assets[url.pathname];
     if (!file) {
       response.writeHead(404);
       response.end('Not found');

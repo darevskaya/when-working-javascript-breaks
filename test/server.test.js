@@ -1,60 +1,67 @@
-import { test } from 'node:test';
+﻿import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import { createServer } from '../server.js';
 
-test('same account document and bundle, different enforced response policies', async (t) => {
+test('one calculator document, route-based policies, and isolated build variants', async (t) => {
   const server = createServer();
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise((resolve) => server.close(resolve)));
   const origin = `http://127.0.0.1:${server.address().port}`;
-  const baseline = await fetch(`${origin}/demo/eval/permissive`);
-  const strict = await fetch(`${origin}/demo/eval/restricted`);
-  assert.match(
-    baseline.headers.get('content-security-policy'),
-    /'unsafe-eval'/,
+  const permissive = await fetch(
+    `${origin}/demo/calculator/permissive?example=webpack&version=original`,
   );
-  assert.doesNotMatch(
-    strict.headers.get('content-security-policy'),
-    /'unsafe-eval'/,
+  const restricted = await fetch(
+    `${origin}/demo/calculator/restricted?example=function&version=fixed&policy=permissive`,
   );
-  assert.equal(baseline.status, 200);
-  assert.equal(strict.status, 200);
-  const html = await baseline.text();
-  assert.equal(html, await strict.text());
-  assert.doesNotMatch(html, /<iframe/i);
+  assert.equal(permissive.status, 200);
+  assert.equal(restricted.status, 200);
+  const policy = permissive.headers.get('content-security-policy');
+  assert.match(policy, /'unsafe-eval'/);
   assert.equal(
-    baseline.headers
-      .get('content-security-policy')
-      .replace(" 'unsafe-eval'", ''),
-    strict.headers.get('content-security-policy'),
+    policy.replace(" 'unsafe-eval'", ''),
+    restricted.headers.get('content-security-policy'),
   );
-  const home = await fetch(origin, { redirect: 'manual' });
-  assert.equal(home.status, 302);
-  assert.equal(
-    home.headers.get('location'),
-    '/demo/eval/permissive?build=eval',
-  );
-  assert.equal((await fetch(`${origin}/demo/eval/unknown`)).status, 404);
-  const broken = await fetch(`${origin}/bundles/eval/dialog.js`);
-  assert.equal(broken.status, 200);
-  assert.match(await broken.text(), /eval\(/);
-  const fixed = await fetch(`${origin}/bundles/fixed/dialog.js`);
-  assert.equal(fixed.status, 200);
-  assert.doesNotMatch(await fixed.text(), /eval\(/);
-  assert.equal((await fetch(`${origin}/server.js`)).status, 404);
-  assert.equal(
-    (
-      await fetch(`${origin}/demo/eval/restricted?policy=baseline&build=fixed`)
-    ).headers.get('content-security-policy'),
-    strict.headers.get('content-security-policy'),
-  );
-});
+  const html = await permissive.text();
+  assert.equal(html, await restricted.text());
+  assert.doesNotMatch(html, /<iframe|src="\/bundles\//i);
 
-test('feature source has no string-to-code API', async () => {
-  const source = await readFile(
-    new URL('../demos/eval/dialog.js', import.meta.url),
-    'utf8',
-  );
-  assert.doesNotMatch(source, /\beval\s*\(|new\s+Function\s*\(/);
+  for (const build of ['eval', 'fixed']) {
+    const response = await fetch(`${origin}/bundles/${build}/dialog.js`);
+    assert.equal(response.status, 200);
+    const source = await response.text();
+    if (build === 'eval') assert.match(source, /\beval\(/);
+    else assert.doesNotMatch(source, /\beval\(/);
+    assert.match(source, /new Function\(/);
+  }
+  for (const asset of ['/calculator.js', '/calculator.css', '/styles.css']) {
+    assert.equal((await fetch(`${origin}${asset}`)).status, 200);
+  }
+  for (const route of [
+    '/demo/calculator/unknown',
+    '/demo/unknown/permissive',
+    '/demo/__proto__/permissive',
+    '/server.js',
+  ]) {
+    assert.equal((await fetch(`${origin}${route}`)).status, 404);
+  }
+  const redirects = [
+    ['/', '/demo/calculator/permissive?example=webpack&version=original'],
+    [
+      '/demo/eval/restricted?build=fixed',
+      '/demo/calculator/restricted?example=webpack&version=fixed',
+    ],
+    [
+      '/demo/function/permissive?implementation=dynamic',
+      '/demo/calculator/permissive?example=function&version=original',
+    ],
+    [
+      '/demo/function/restricted?implementation=plain',
+      '/demo/calculator/restricted?example=function&version=fixed',
+    ],
+  ];
+  for (const [from, to] of redirects) {
+    const response = await fetch(`${origin}${from}`, { redirect: 'manual' });
+    assert.equal(response.status, 302);
+    assert.equal(response.headers.get('location'), to);
+  }
 });
