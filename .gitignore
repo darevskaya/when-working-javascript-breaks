@@ -1,5 +1,69 @@
+# Dependencies
 node_modules/
+.pnp/
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/versions
+
+# Build output
 dist/
+build/
 artifacts/
+*.tsbuildinfo
+
+# Playwright
 test-results/
 playwright-report/
+blob-report/
+playwright/.cache/
+
+# Test and tool caches
+coverage/
+.nyc_output/
+.cache/
+.parcel-cache/
+.eslintcache
+.prettiercache
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment files, never commit secrets
+.env
+.env.*
+!.env.example
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Operating system
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.pid
+*.pid.lock
