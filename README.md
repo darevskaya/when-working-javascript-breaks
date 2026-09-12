@@ -21,15 +21,15 @@ If the default port is occupied, set `$env:PORT = '4174'` before starting.
 
 ## Present the first demo
 
-1. Start with �Permissive� headers and the �eval-source-map� build.
-2. Open �Change display name�.
-3. Enter a name and select �Save�.
-4. Select �Restricted� headers.
+1. Start with "Permissive" headers and the `eval-source-map` build.
+2. Open "Change display name".
+3. Enter a name and select "Save".
+4. Select "Restricted" headers.
 5. Open the dialog and inspect the error in the browser console.
-6. Switch the build to �source-map�.
+6. Switch the build to `source-map`.
 7. Open the dialog again.
-8. Switch back to �eval-source-map� to repeat the failure.
-9. Select �Reset experiment� to return to the original state.
+8. Switch back to `eval-source-map` to repeat the failure.
+9. Select "Reset experiment" to return to the original state.
 
 The lab shows one account page.
 The header and build controls work independently.
