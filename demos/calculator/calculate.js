@@ -1,9 +1,18 @@
-export function createCalculator(useFunction) {
-  if (useFunction) {
-    return new Function('price', 'quantity', 'return price * quantity;');
-  }
+const formulas = {
+  subtotal: 'price * quantity',
+  discount: 'price * quantity * 0.9',
+  tax: 'price * quantity * 1.2',
+};
 
-  return function calculate(price, quantity) {
-    return price * quantity;
-  };
+// Keep these regular functions for the later CSP-safe example.
+// const calculations = {
+//   subtotal: (price, quantity) => price * quantity,
+//   discount: (price, quantity) => price * quantity * 0.9,
+//   tax: (price, quantity) => price * quantity * 1.2,
+// };
+
+export function createCalculator(operation) {
+  // Uncomment the object above and this return to use regular functions.
+  // return calculations[operation];
+  return new Function('price', 'quantity', `return ${formulas[operation]};`);
 }

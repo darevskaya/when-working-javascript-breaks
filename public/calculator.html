@@ -11,56 +11,24 @@
   <body>
     <main class="lab">
       <form id="calculator-controls" class="demo-controls">
-        <fieldset class="example-picker">
-          <legend>Example</legend>
-          <div class="example-options">
-            <label
-              ><input
-                type="radio"
-                name="example"
-                value="webpack"
-                checked
-              />Webpack build</label
-            >
-            <label
-              ><input type="radio" name="example" value="function" />Function
-              constructor</label
-            >
-          </div>
-        </fieldset>
         <div class="settings-grid">
           <fieldset class="setting">
             <legend>Content Security Policy</legend>
-            <label
-              ><input
-                type="radio"
-                name="policy"
-                value="permissive"
-                checked
-              /><span>script-src 'self' 'unsafe-eval'</span></label
-            >
-            <label
-              ><input type="radio" name="policy" value="restricted" /><span
-                >script-src 'self'</span
-              ></label
-            >
-          </fieldset>
-          <fieldset class="setting">
-            <legend id="version-label">Webpack source maps</legend>
-            <label
-              ><input
-                type="radio"
-                name="version"
-                value="original"
-                checked
-              /><span id="original-label">eval-source-map</span></label
-            >
-            <label
-              ><input type="radio" name="version" value="fixed" /><span
-                id="fixed-label"
-                >source-map</span
-              ></label
-            >
+            <div class="toggle">
+              <label
+                ><input
+                  type="radio"
+                  name="policy"
+                  value="permissive"
+                  checked
+                /><span>script-src 'self' 'unsafe-eval'</span></label
+              >
+              <label
+                ><input type="radio" name="policy" value="restricted" /><span
+                  >script-src 'self'</span
+                ></label
+              >
+            </div>
           </fieldset>
         </div>
       </form>
@@ -101,6 +69,12 @@
             />
           </label>
         </div>
+        <label for="operation">Calculation</label>
+        <select id="operation" name="operation">
+          <option value="subtotal">Subtotal</option>
+          <option value="discount">10% discount</option>
+          <option value="tax">20% tax</option>
+        </select>
         <p id="total" role="status">Total: —</p>
         <div class="dialog-actions">
           <button id="close-calculator" type="button" class="secondary">

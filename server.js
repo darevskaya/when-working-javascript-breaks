@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const root = path.dirname(fileURLToPath(import.meta.url));
+const root = import.meta.dirname;
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -17,10 +17,8 @@ const assets = {
   '/styles.css': 'public/styles.css',
   '/calculator.js': 'public/calculator.js',
   '/calculator.css': 'public/calculator.css',
-  '/bundles/eval/dialog.js': 'dist/eval/dialog.js',
-  '/bundles/eval/dialog.js.map': 'dist/eval/dialog.js.map',
-  '/bundles/fixed/dialog.js': 'dist/fixed/dialog.js',
-  '/bundles/fixed/dialog.js.map': 'dist/fixed/dialog.js.map',
+  '/bundles/dialog.js': 'dist/dialog.js',
+  '/bundles/dialog.js.map': 'dist/dialog.js.map',
 };
 
 export function createServer() {
@@ -38,21 +36,15 @@ export function createServer() {
     );
     if (url.pathname === '/') {
       response.writeHead(302, {
-        Location:
-          '/demo/calculator/permissive?example=webpack&version=original',
+        Location: '/demo/calculator/permissive',
       });
       response.end();
       return;
     }
     // Keep links to the previous standalone demos working.
     if (demo === 'eval' || demo === 'function') {
-      const example = demo === 'eval' ? 'webpack' : 'function';
-      const fixed =
-        demo === 'eval'
-          ? url.searchParams.get('build') === 'fixed'
-          : url.searchParams.get('implementation') === 'plain';
       response.writeHead(302, {
-        Location: `/demo/calculator/${policy}?example=${example}&version=${fixed ? 'fixed' : 'original'}`,
+        Location: `/demo/calculator/${policy}`,
       });
       response.end();
       return;

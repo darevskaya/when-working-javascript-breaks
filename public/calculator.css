@@ -1,4 +1,3 @@
-/* Example selection is separate from the two settings used during the demo. */
 .demo-controls {
   margin-bottom: 28px;
 }
@@ -18,30 +17,43 @@
   font-weight: 600;
 }
 
-.example-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 28px;
-  border-bottom: 1px solid var(--border);
+.settings-grid {
+  display: grid;
+  max-width: 480px;
 }
 
-.example-picker label {
+.toggle {
+  display: flex;
+  gap: 3px;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #eaece7;
+}
+
+.toggle label {
+  flex: 1;
+  display: grid;
+  align-items: center;
+  text-align: center;
   position: relative;
-  padding: 0 0 14px;
-  border-bottom: 3px solid transparent;
+  padding: 8px 14px;
+  border-radius: 6px;
   color: var(--muted);
-  font-size: 1.125rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
 }
 
-.example-picker label:has(input:checked) {
-  border-bottom-color: var(--accent);
-  color: var(--accent);
+.toggle label:has(input:checked) {
+  color: #232826;
+  background: var(--surface);
+  box-shadow: 0 1px 3px #23282614;
 }
 
-/* Native radios retain keyboard navigation; the underline marks the selection. */
-.example-picker input {
+/* Keep native radio keyboard behavior with the whole label as the control. */
+.toggle input {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -51,31 +63,9 @@
   cursor: pointer;
 }
 
-.settings-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  padding-top: 24px;
-}
-
-.setting label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 42px;
-  cursor: pointer;
-}
-
-.setting input {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  flex-shrink: 0;
-  accent-color: var(--accent);
-}
-
-.setting label:has(input:checked) span {
-  font-weight: 600;
+.toggle label:has(input:focus-visible) {
+  outline: 3px solid #7baf94;
+  outline-offset: 3px;
 }
 
 .calculator {
@@ -102,20 +92,9 @@
   margin-bottom: 24px;
 }
 
-.order-fields label {
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
-
 .order-fields input {
   display: block;
-  width: 100%;
   margin-top: 8px;
-  padding: 11px 12px;
-  border: 1px solid #adb8af;
-  border-radius: 7px;
-  color: inherit;
-  background: var(--surface);
 }
 
 #total {
@@ -140,14 +119,6 @@
   .settings-grid {
     grid-template-columns: 1fr;
     gap: 20px;
-  }
-
-  .example-options {
-    gap: 16px;
-  }
-
-  .example-picker label {
-    font-size: 1rem;
   }
 
   .calculator {

@@ -23,7 +23,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -59,7 +60,7 @@ button.secondary:hover {
 
 button:focus-visible,
 input:focus-visible,
-.example-picker label:has(input:focus-visible) {
+select:focus-visible {
   outline: 3px solid #7baf94;
   outline-offset: 3px;
 }
@@ -100,7 +101,8 @@ dialog label {
   font-weight: 600;
 }
 
-dialog input {
+dialog input,
+dialog select {
   width: 100%;
   padding: 11px 12px;
   border: 1px solid #adb8af;

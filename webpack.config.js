@@ -1,23 +1,16 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const root = path.dirname(fileURLToPath(import.meta.url));
-
-// Exactly the same feature source, compiled with two different devtool settings.
-export default ['eval-source-map', 'source-map'].map((devtool) => ({
-  name: devtool,
+export default {
   mode: 'production',
-  context: root,
-  devtool,
+  context: import.meta.dirname,
+  devtool: 'source-map',
+  // Uncomment and rebuild to see CSP block the dialog with script-src 'self'.
+  // devtool: 'eval-source-map',
   entry: './demos/calculator/dialog.js',
   output: {
-    path: path.join(
-      root,
-      'dist',
-      devtool === 'eval-source-map' ? 'eval' : 'fixed',
-    ),
+    path: path.join(import.meta.dirname, 'dist'),
     filename: 'dialog.js',
     library: { name: 'CalculatorDialog', type: 'window' },
     clean: true,
   },
-}));
+};

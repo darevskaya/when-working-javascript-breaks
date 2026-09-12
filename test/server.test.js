@@ -2,16 +2,14 @@
 import assert from 'node:assert/strict';
 import { createServer } from '../server.js';
 
-test('one calculator document, route-based policies, and isolated build variants', async (t) => {
+test('one calculator document, route-based policies, and one dialog bundle', async (t) => {
   const server = createServer();
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise((resolve) => server.close(resolve)));
   const origin = `http://127.0.0.1:${server.address().port}`;
-  const permissive = await fetch(
-    `${origin}/demo/calculator/permissive?example=webpack&version=original`,
-  );
+  const permissive = await fetch(`${origin}/demo/calculator/permissive`);
   const restricted = await fetch(
-    `${origin}/demo/calculator/restricted?example=function&version=fixed&policy=permissive`,
+    `${origin}/demo/calculator/restricted?policy=permissive`,
   );
   assert.equal(permissive.status, 200);
   assert.equal(restricted.status, 200);
@@ -25,14 +23,11 @@ test('one calculator document, route-based policies, and isolated build variants
   assert.equal(html, await restricted.text());
   assert.doesNotMatch(html, /<iframe|src="\/bundles\//i);
 
-  for (const build of ['eval', 'fixed']) {
-    const response = await fetch(`${origin}/bundles/${build}/dialog.js`);
-    assert.equal(response.status, 200);
-    const source = await response.text();
-    if (build === 'eval') assert.match(source, /\beval\(/);
-    else assert.doesNotMatch(source, /\beval\(/);
-    assert.match(source, /new Function\(/);
-  }
+  const response = await fetch(`${origin}/bundles/dialog.js`);
+  assert.equal(response.status, 200);
+  const source = await response.text();
+  assert.doesNotMatch(source, /\beval\(/);
+  assert.match(source, /new Function\(/);
   for (const asset of ['/calculator.js', '/calculator.css', '/styles.css']) {
     assert.equal((await fetch(`${origin}${asset}`)).status, 200);
   }
@@ -41,22 +36,21 @@ test('one calculator document, route-based policies, and isolated build variants
     '/demo/unknown/permissive',
     '/demo/__proto__/permissive',
     '/server.js',
+    '/bundles/eval/dialog.js',
+    '/bundles/fixed/dialog.js',
   ]) {
     assert.equal((await fetch(`${origin}${route}`)).status, 404);
   }
   const redirects = [
-    ['/', '/demo/calculator/permissive?example=webpack&version=original'],
-    [
-      '/demo/eval/restricted?build=fixed',
-      '/demo/calculator/restricted?example=webpack&version=fixed',
-    ],
+    ['/', '/demo/calculator/permissive'],
+    ['/demo/eval/restricted?build=fixed', '/demo/calculator/restricted'],
     [
       '/demo/function/permissive?implementation=dynamic',
-      '/demo/calculator/permissive?example=function&version=original',
+      '/demo/calculator/permissive',
     ],
     [
       '/demo/function/restricted?implementation=plain',
-      '/demo/calculator/restricted?example=function&version=fixed',
+      '/demo/calculator/restricted',
     ],
   ];
   for (const [from, to] of redirects) {
