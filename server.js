@@ -14,17 +14,21 @@ const types = {
 export function createServer() {
   return http.createServer(async (request, response) => {
     const url = new URL(request.url, 'http://localhost');
-    const isDemo = url.pathname === '/demo/eval';
-    const baseline = isDemo && url.searchParams.get('policy') === 'baseline';
+    const baseline = url.pathname === '/demo/eval/permissive';
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('X-Content-Type-Options', 'nosniff');
     response.setHeader(
       'Content-Security-Policy',
       `default-src 'self'; script-src 'self'${baseline ? " 'unsafe-eval'" : ''}; style-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'self'`,
     );
+    if (url.pathname === '/') {
+      response.writeHead(302, { Location: '/demo/eval/permissive?build=eval' });
+      response.end();
+      return;
+    }
     const routes = {
-      '/': 'public/index.html',
-      '/demo/eval': 'public/account.html',
+      '/demo/eval/permissive': 'public/account.html',
+      '/demo/eval/restricted': 'public/account.html',
       '/styles.css': 'public/styles.css',
       '/lab.js': 'public/lab.js',
       '/account.js': 'public/account.js',

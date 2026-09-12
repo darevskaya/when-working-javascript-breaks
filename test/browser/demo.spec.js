@@ -14,21 +14,24 @@ test('the demo loads without font requests or font policy violations', async ({
     }
   });
 
-  await page.goto('/');
-  for (const policy of ['Permissive', 'Restricted']) {
-    for (const build of ['eval-source-map', 'source-map']) {
-      await page.getByRole('radio', { name: policy, exact: true }).check();
-      await page.getByRole('radio', { name: build, exact: true }).check();
-      const account = page.frameLocator('#account-frame');
-      const policyValue = policy === 'Permissive' ? 'baseline' : 'restricted';
-      const buildValue = build === 'eval-source-map' ? 'eval' : 'fixed';
-      await expect
-        .poll(() => account.locator('body').evaluate(() => location.search))
-        .toBe(`?policy=${policyValue}&build=${buildValue}`);
-      await expect(account.locator('#account-status')).toHaveText(
-        'Account ready',
-      );
-      const fontFaces = await account.locator('body').evaluate(async () => {
+  for (const policy of ['permissive', 'restricted']) {
+    for (const build of ['eval', 'fixed']) {
+      await page.goto(`/demo/eval/${policy}?build=${build}`);
+      await expect(page.locator('iframe')).toHaveCount(0);
+      await expect(page.locator('#account-status')).toHaveText('Account ready');
+      await expect(
+        page.getByRole('radio', {
+          name: policy === 'permissive' ? 'Permissive' : 'Restricted',
+          exact: true,
+        }),
+      ).toBeChecked();
+      await expect(
+        page.getByRole('radio', {
+          name: build === 'eval' ? 'eval-source-map' : 'source-map',
+          exact: true,
+        }),
+      ).toBeChecked();
+      const fontFaces = await page.evaluate(async () => {
         await document.fonts.ready;
         return document.fonts.size;
       });
@@ -50,25 +53,26 @@ test('one account switches headers and builds independently', async ({
   page.on('pageerror', (error) => errors.push(error));
 
   await page.goto('/');
-  await expect(page.locator('iframe')).toHaveCount(1);
-  const account = page.frameLocator('#account-frame');
+  await expect(page.locator('iframe')).toHaveCount(0);
+  const account = page;
   const open = account.getByRole('button', { name: 'Change display name' });
   await expect(account.locator('#account-status')).toHaveText('Account ready');
   expect(bundles).toHaveLength(0);
 
   // Each change must fetch a new document with the requested policy and build.
   async function select(name, policy, build) {
+    if (await page.getByRole('dialog').isVisible()) {
+      await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    }
     errors.length = 0;
     const responsePromise = page.waitForResponse((response) =>
-      response.url().endsWith(`/demo/eval?policy=${policy}&build=${build}`),
+      response.url().endsWith(`/demo/eval/${policy}?build=${build}`),
     );
     await page.getByRole('radio', { name, exact: true }).check();
     const response = await responsePromise;
     const header = response.headers()['content-security-policy'];
-    expect(header.includes("'unsafe-eval'")).toBe(policy === 'baseline');
-    await expect
-      .poll(() => account.locator('body').evaluate(() => location.search))
-      .toBe(`?policy=${policy}&build=${build}`);
+    expect(header.includes("'unsafe-eval'")).toBe(policy === 'permissive');
+    await expect(page).toHaveURL(`/demo/eval/${policy}?build=${build}`);
     await expect(account.locator('#account-status')).toHaveText(
       'Account ready',
     );
@@ -106,7 +110,7 @@ test('one account switches headers and builds independently', async ({
   await open.click();
   await expect(account.getByRole('dialog')).toBeVisible();
 
-  await select('Permissive', 'baseline', 'fixed');
+  await select('Permissive', 'permissive', 'fixed');
   await expect(
     page.getByRole('radio', { name: 'source-map', exact: true }),
   ).toBeChecked();
@@ -129,7 +133,7 @@ test('one account switches headers and builds independently', async ({
     )
     .toBe(true);
 
-  await select('Permissive', 'baseline', 'eval');
+  await select('Permissive', 'permissive', 'eval');
   await open.click();
   await expect(account.getByRole('dialog')).toBeVisible();
   await account.getByRole('button', { name: 'Cancel' }).click();
@@ -148,7 +152,7 @@ test('one account switches headers and builds independently', async ({
 test('cancel, Escape, validation, and reopening preserve the saved name', async ({
   page,
 }) => {
-  await page.goto('/demo/eval?policy=restricted&build=fixed');
+  await page.goto('/demo/eval/restricted?build=fixed');
   const open = page.getByRole('button', { name: 'Change display name' });
   const input = page.getByLabel('Display name', { exact: true });
 
@@ -182,7 +186,7 @@ test('cancel, Escape, validation, and reopening preserve the saved name', async 
 });
 
 test('a failed feature download can be retried', async ({ page }) => {
-  await page.goto('/demo/eval?policy=restricted&build=fixed');
+  await page.goto('/demo/eval/restricted?build=fixed');
   await page.route('**/bundles/fixed/dialog.js', (route) => route.abort(), {
     times: 1,
   });
@@ -192,5 +196,56 @@ test('a failed feature download can be retried', async ({ page }) => {
     'Dialog unavailable',
   );
   await open.click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+});
+
+test('refresh and browser history keep the URL and controls in sync', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await expect(page).toHaveURL('/demo/eval/permissive?build=eval');
+  await page.getByRole('radio', { name: 'Restricted', exact: true }).check();
+  await expect(page).toHaveURL('/demo/eval/restricted?build=eval');
+  await page.getByRole('radio', { name: 'source-map', exact: true }).check();
+  await expect(page).toHaveURL('/demo/eval/restricted?build=fixed');
+
+  const response = await page.reload();
+  expect(response.headers()['content-security-policy']).not.toContain(
+    "'unsafe-eval'",
+  );
+  await expect(
+    page.getByRole('radio', { name: 'Restricted', exact: true }),
+  ).toBeChecked();
+  await expect(
+    page.getByRole('radio', { name: 'source-map', exact: true }),
+  ).toBeChecked();
+
+  await page.goBack();
+  await expect(page).toHaveURL('/demo/eval/restricted?build=eval');
+  await expect(
+    page.getByRole('radio', { name: 'eval-source-map', exact: true }),
+  ).toBeChecked();
+  await page.goBack();
+  await expect(page).toHaveURL('/demo/eval/permissive?build=eval');
+  await expect(
+    page.getByRole('radio', { name: 'Permissive', exact: true }),
+  ).toBeChecked();
+
+  await page.goForward();
+  await expect(page).toHaveURL('/demo/eval/restricted?build=eval');
+  await expect(
+    page.getByRole('radio', { name: 'Restricted', exact: true }),
+  ).toBeChecked();
+  await page.getByRole('button', { name: 'Change display name' }).click();
+  await expect(page.locator('#account-status')).toContainText(
+    'Dialog unavailable',
+  );
+
+  await page.goForward();
+  await expect(page).toHaveURL('/demo/eval/restricted?build=fixed');
+  await expect(
+    page.getByRole('radio', { name: 'source-map', exact: true }),
+  ).toBeChecked();
+  await page.getByRole('button', { name: 'Change display name' }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
 });

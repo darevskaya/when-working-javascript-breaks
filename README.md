@@ -29,9 +29,23 @@ If the default port is occupied, set `$env:PORT = '4174'` before starting.
 6. Switch the build to `source-map`.
 7. Open the dialog again.
 8. Switch back to `eval-source-map` to repeat the failure.
-9. Select "Reset experiment" to return to the original state.
+9. Select "Permissive" headers to return to the original state.
 
-The lab shows one account page.
+The lab shows one account page without iframes.
+The dialog opens over the full browser window.
+
+| Route                   | Script policy                     |
+| ----------------------- | --------------------------------- |
+| `/demo/eval/permissive` | `script-src 'self' 'unsafe-eval'` |
+| `/demo/eval/restricted` | `script-src 'self'`               |
+
+Add `?build=eval` or `?build=fixed` to either route.
+Without a build parameter, the page uses the eval build.
+The root URL redirects to `/demo/eval/permissive?build=eval`.
+Each control navigates to a new document and preserves the other selection.
+Direct links, refresh, and browser Back/Forward restore the controls from the URL.
+The route selects the policy on the server. A `policy` query parameter cannot override it.
+
 The header and build controls work independently.
 Changing either control reloads the account with the selected response headers and build and resets the name.
 
@@ -48,7 +62,7 @@ The browser console shows the full policy when a violation occurs.
 
 The browser enforces the restriction.
 The application does not simulate a failure based on the selected policy.
-The browser console displays real `securitypolicyviolation` events and runtime errors.
+The browser console displays the actual CSP failures and runtime errors.
 Error wording can differ between browsers.
 
 ## Why the failure happens after a click
@@ -74,7 +88,7 @@ It does not rebuild code during the talk.
 | File                        | Purpose                                                   |
 | --------------------------- | --------------------------------------------------------- |
 | `server.js`                 | Serves documents and applies actual HTTP response headers |
-| `public/lab.js`             | Switches the account headers and build                    |
+| `public/lab.js`             | Navigates between policy routes and builds                |
 | `public/account.js`         | Loads the feature after a click                           |
 | `demos/eval/dialog.js`      | Contains the application feature                          |
 | `webpack.config.js`         | Builds the failing and corrected variants                 |
@@ -93,7 +107,7 @@ npm run test:browser
 
 The first command downloads Chromium. Run it before you go offline.
 The browser tests build both variants and start a separate server on port 4175.
-They cover the actual CSP failure, switching headers and builds, dialog controls, name validation, and retry after a failed download.
+They cover the actual CSP failure, switching headers and builds, refresh, browser history, dialog controls, name validation, and retry after a failed download.
 Use the presentation steps once in the browser that you use for the talk.
 Names exist only in the current page and reset on reload.
 

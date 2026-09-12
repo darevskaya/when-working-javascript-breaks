@@ -1,16 +1,23 @@
 const controls = document.querySelector('#controls');
-let frame = document.querySelector('#account-frame');
 
-function reload() {
+function syncControls() {
+  controls.elements.policy.value = location.pathname.endsWith('/restricted')
+    ? 'restricted'
+    : 'permissive';
+  controls.elements.build.value =
+    new URLSearchParams(location.search).get('build') === 'fixed'
+      ? 'fixed'
+      : 'eval';
+}
+
+// Restore selections from the URL, including browser Back and Forward.
+syncControls();
+window.addEventListener('pageshow', syncControls);
+
+controls.addEventListener('change', () => {
   const policy = controls.elements.policy.value;
   const build = controls.elements.build.value;
 
-  // Reload the document so the browser applies the selected HTTP headers.
-  const nextFrame = frame.cloneNode(false);
-  nextFrame.src = `/demo/eval?policy=${policy}&build=${build}`;
-  frame.replaceWith(nextFrame);
-  frame = nextFrame;
-}
-
-controls.addEventListener('change', reload);
-reload();
+  // A full navigation lets the browser apply the new response's CSP.
+  location.assign(`/demo/eval/${policy}?build=${build}`);
+});
