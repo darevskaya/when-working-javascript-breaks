@@ -1,0 +1,25 @@
+{
+  "name": "when-working-javascript-breaks",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser demos of working JavaScript failing under security constraints",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "start": "npm run build && node server.js",
+    "serve": "node server.js",
+    "test": "npm run build && node --test test/*.test.js",
+    "test:browser": "playwright test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "prettier": "^3.9.6",
+    "webpack": "^5.0.0",
+    "webpack-cli": "^6.0.0"
+  }
+}

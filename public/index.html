@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>When Working JavaScript Breaks</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/lab.js"></script>
+  </head>
+  <body>
+    <main class="lab">
+      <form id="controls" class="toolbar">
+        <fieldset class="toggle" aria-label="Response headers">
+          <label
+            ><input
+              type="radio"
+              name="policy"
+              value="baseline"
+              checked
+            />Permissive</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="policy"
+              value="restricted"
+            />Restricted</label
+          >
+        </fieldset>
+        <fieldset class="toggle" aria-label="Build">
+          <label
+            ><input
+              type="radio"
+              name="build"
+              value="eval"
+              checked
+            />eval-source-map</label
+          >
+          <label
+            ><input type="radio" name="build" value="fixed" />source-map</label
+          >
+        </fieldset>
+      </form>
+      <section class="environment" aria-label="Account demo">
+        <iframe id="account-frame" title="Account demo"></iframe>
+      </section>
+    </main>
+  </body>
+</html>
