@@ -11,6 +11,7 @@
   --border: #e1e5df;
   --accent: #245d47;
   --accent-soft: #edf4ee;
+  --focus: #7baf94;
   --radius: 12px;
 }
 
@@ -61,7 +62,7 @@ button.secondary:hover {
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 3px solid #7baf94;
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
 

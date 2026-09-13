@@ -11,8 +11,6 @@ const types = {
   '.map': 'application/json',
 };
 
-const demoPages = new Map([['calculator', 'public/calculator.html']]);
-
 const assets = {
   '/styles.css': 'public/styles.css',
   '/calculator.js': 'public/calculator.js',
@@ -24,15 +22,13 @@ const assets = {
 export function createServer() {
   return http.createServer(async (request, response) => {
     const url = new URL(request.url, 'http://localhost');
-    const [, demo, policy] =
-      url.pathname.match(/^\/demo\/([^/]+)\/(permissive|restricted)$/) ?? [];
-    const demoFile = demoPages.get(demo);
-    const baseline = demoFile && policy === 'permissive';
+    const [, policy] =
+      url.pathname.match(/^\/demo\/calculator\/(permissive|restricted)$/) ?? [];
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('X-Content-Type-Options', 'nosniff');
     response.setHeader(
       'Content-Security-Policy',
-      `default-src 'self'; script-src 'self'${baseline ? " 'unsafe-eval'" : ''}; style-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'self'`,
+      `default-src 'self'; script-src 'self'${policy === 'permissive' ? " 'unsafe-eval'" : ''}; style-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'self'`,
     );
     if (url.pathname === '/') {
       response.writeHead(302, {
@@ -41,15 +37,7 @@ export function createServer() {
       response.end();
       return;
     }
-    // Keep links to the previous standalone demos working.
-    if (demo === 'eval' || demo === 'function') {
-      response.writeHead(302, {
-        Location: `/demo/calculator/${policy}`,
-      });
-      response.end();
-      return;
-    }
-    const file = demoFile ?? assets[url.pathname];
+    const file = policy ? 'public/calculator.html' : assets[url.pathname];
     if (!file) {
       response.writeHead(404);
       response.end('Not found');

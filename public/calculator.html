@@ -11,26 +11,24 @@
   <body>
     <main class="lab">
       <form id="calculator-controls" class="demo-controls">
-        <div class="settings-grid">
-          <fieldset class="setting">
-            <legend>Content Security Policy</legend>
-            <div class="toggle">
-              <label
-                ><input
-                  type="radio"
-                  name="policy"
-                  value="permissive"
-                  checked
-                /><span>script-src 'self' 'unsafe-eval'</span></label
-              >
-              <label
-                ><input type="radio" name="policy" value="restricted" /><span
-                  >script-src 'self'</span
-                ></label
-              >
-            </div>
-          </fieldset>
-        </div>
+        <fieldset>
+          <legend>Content Security Policy</legend>
+          <div class="toggle">
+            <label
+              ><input
+                type="radio"
+                name="policy"
+                value="permissive"
+                checked
+              /><span>script-src 'self' 'unsafe-eval'</span></label
+            >
+            <label
+              ><input type="radio" name="policy" value="restricted" /><span
+                >script-src 'self'</span
+              ></label
+            >
+          </div>
+        </fieldset>
       </form>
       <section class="calculator" aria-labelledby="calculator-title">
         <h1 id="calculator-title">Order calculator</h1>

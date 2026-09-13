@@ -35,8 +35,9 @@ for (const policy of ['permissive', 'restricted']) {
     ).toBeChecked();
     await page.getByRole('button', { name: 'Open calculator' }).click();
     if (policy === 'restricted') {
+      await expect(page.locator('#calculator-status')).toHaveClass('blocked');
       await expect(page.locator('#calculator-status')).toContainText(
-        'Calculator unavailable',
+        'unsafe-eval',
       );
       await expect(page.getByRole('dialog')).not.toBeVisible();
       await expect
@@ -83,9 +84,7 @@ test('policy selection survives refresh and history', async ({ page }) => {
     page.getByRole('radio', { name: "script-src 'self'", exact: true }),
   ).toBeChecked();
   await page.getByRole('button', { name: 'Open calculator' }).click();
-  await expect(page.locator('#calculator-status')).toContainText(
-    'Calculator unavailable',
-  );
+  await expect(page.locator('#calculator-status')).toContainText('unsafe-eval');
   await page.goBack();
   await expect(
     page.getByRole('radio', {
@@ -104,15 +103,13 @@ test('policy selection survives refresh and history', async ({ page }) => {
 
 test('calculation, input validation, Close, Escape, and responsive layout', async ({
   page,
-}, testInfo) => {
+}) => {
   await page.goto('/demo/calculator/permissive');
-  await page.screenshot({ path: testInfo.outputPath('calculator-page.png') });
   await page.getByRole('button', { name: 'Open calculator' }).click();
   await page.getByLabel('Unit price ($)', { exact: true }).fill('12.50');
   await page.getByLabel('Quantity', { exact: true }).fill('4');
   await page.getByRole('button', { name: 'Calculate total' }).click();
   await expect(page.locator('#total')).toHaveText('Total: $50.00');
-  await page.screenshot({ path: testInfo.outputPath('calculator-dialog.png') });
 
   await page.getByLabel('Quantity', { exact: true }).fill('1.5');
   await page.getByRole('button', { name: 'Calculate total' }).click();
@@ -143,9 +140,7 @@ test('calculation, input validation, Close, Escape, and responsive layout', asyn
   ).toBe(true);
   await page.getByRole('button', { name: 'Calculate total' }).click();
   await expect(page.locator('#total')).toHaveText('Total: $37.50');
-  await page.screenshot({ path: testInfo.outputPath('calculator-mobile.png') });
   await page.getByRole('button', { name: 'Close', exact: true }).click();
-  await page.screenshot({ path: testInfo.outputPath('controls-mobile.png') });
 });
 
 test('a failed bundle download can be retried', async ({ page }) => {
@@ -155,7 +150,7 @@ test('a failed bundle download can be retried', async ({ page }) => {
   });
   await page.getByRole('button', { name: 'Open calculator' }).click();
   await expect(page.locator('#calculator-status')).toContainText(
-    'Calculator unavailable',
+    'failed to load',
   );
   await page.getByRole('button', { name: 'Open calculator' }).click();
   await expect(page.getByRole('dialog')).toBeVisible();

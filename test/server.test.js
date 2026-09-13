@@ -34,28 +34,11 @@ test('one calculator document, route-based policies, and one dialog bundle', asy
   for (const route of [
     '/demo/calculator/unknown',
     '/demo/unknown/permissive',
-    '/demo/__proto__/permissive',
     '/server.js',
-    '/bundles/eval/dialog.js',
-    '/bundles/fixed/dialog.js',
   ]) {
     assert.equal((await fetch(`${origin}${route}`)).status, 404);
   }
-  const redirects = [
-    ['/', '/demo/calculator/permissive'],
-    ['/demo/eval/restricted?build=fixed', '/demo/calculator/restricted'],
-    [
-      '/demo/function/permissive?implementation=dynamic',
-      '/demo/calculator/permissive',
-    ],
-    [
-      '/demo/function/restricted?implementation=plain',
-      '/demo/calculator/restricted',
-    ],
-  ];
-  for (const [from, to] of redirects) {
-    const response = await fetch(`${origin}${from}`, { redirect: 'manual' });
-    assert.equal(response.status, 302);
-    assert.equal(response.headers.get('location'), to);
-  }
+  const root = await fetch(`${origin}/`, { redirect: 'manual' });
+  assert.equal(root.status, 302);
+  assert.equal(root.headers.get('location'), '/demo/calculator/permissive');
 });

@@ -4,6 +4,7 @@
 
 .demo-controls fieldset {
   min-width: 0;
+  max-width: 480px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -15,11 +16,6 @@
   color: var(--muted);
   font-size: 0.875rem;
   font-weight: 600;
-}
-
-.settings-grid {
-  display: grid;
-  max-width: 480px;
 }
 
 .toggle {
@@ -64,7 +60,7 @@
 }
 
 .toggle label:has(input:focus-visible) {
-  outline: 3px solid #7baf94;
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
 
@@ -115,12 +111,14 @@
   font-size: 0.875rem;
 }
 
-@media (max-width: 540px) {
-  .settings-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
+/* The blocked state is the point of the demo, so make it readable from the back row. */
+#calculator-status.blocked {
+  color: #b3261e;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
 
+@media (max-width: 540px) {
   .calculator {
     padding: 24px;
   }

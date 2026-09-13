@@ -16,37 +16,32 @@ controls.addEventListener('change', () => {
   location.assign(`/demo/calculator/${policy.value}`);
 });
 
-let loading;
 function loadDialog() {
-  if (window.CalculatorDialog?.openCalculatorDialog) return Promise.resolve();
-  if (loading) return loading;
-
-  loading = new Promise((resolve, reject) => {
+  if (window.CalculatorDialog) return Promise.resolve();
+  return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = '/bundles/dialog.js';
-    script.onload = () => {
+    script.onload = () =>
       // A successful download does not mean CSP allowed the code to execute.
-      if (window.CalculatorDialog?.openCalculatorDialog) resolve();
-      else reject(new Error('The dialog downloaded but could not initialize.'));
-    };
+      window.CalculatorDialog
+        ? resolve()
+        : reject(new Error('The dialog bundle downloaded but did not run.'));
     script.onerror = () =>
-      reject(new Error('The dialog bundle could not be loaded.'));
+      reject(new Error('The dialog bundle failed to load.'));
     document.head.append(script);
-  }).catch((error) => {
-    loading = undefined;
-    throw error;
   });
-  return loading;
 }
 
 button.addEventListener('click', async () => {
   button.disabled = true;
+  status.className = '';
   try {
     await loadDialog();
     window.CalculatorDialog.openCalculatorDialog();
     status.textContent = 'Calculator opened';
   } catch (error) {
-    status.textContent = 'Calculator unavailable. See the browser console.';
+    status.className = 'blocked';
+    status.textContent = error.message;
     console.error(error);
   } finally {
     button.disabled = false;
@@ -57,6 +52,7 @@ document
   .querySelector('#close-calculator')
   .addEventListener('click', () => dialog.close());
 dialog.addEventListener('close', () => {
+  status.className = '';
   status.textContent = 'Ready';
   button.focus();
 });
