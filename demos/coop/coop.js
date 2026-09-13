@@ -14,6 +14,8 @@ function syncControls() {
 }
 syncControls();
 window.addEventListener('pageshow', syncControls);
+// The other demos reload here. This switch only affects the next popup, so
+// change the URL without a reload and keep the status line on screen.
 controls.addEventListener('change', () => {
   history.pushState(null, '', `/demo/coop/${controls.elements.policy.value}`);
 });

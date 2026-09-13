@@ -37,9 +37,10 @@ For development, run `npm run dev`. It restarts the server and rebuilds the
 calculator bundle on save. Refresh the browser to see the change. Restart
 `npm run dev` after you edit `webpack.config.js`. Press Ctrl+C to stop it.
 
-`server.js` holds one route table per server. Each row names the file to send
-and the single policy header to send with it. The server adds `Content-Type`
-and nothing else, so the table is what the browser receives.
+`server.js` holds one route table per server. A plain row names the file to
+send and nothing more. A row with braces adds the single policy header for that
+route, a redirect, or a generated body. The server adds `Content-Type` and
+nothing else, so the table is what the browser receives.
 
 To see a header, open the browser developer tools and select Network. Reload
 the page, select its document request, and read the response headers. The
