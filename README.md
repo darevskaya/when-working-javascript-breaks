@@ -11,6 +11,20 @@ npm ci
 npm start
 ```
 
+For development, run `npm run dev`. It restarts the server and rebuilds the
+calculator bundle on save. Refresh the browser to see the change. Restart
+`npm run dev` after you edit `webpack.config.js`. Press Ctrl+C to stop it.
+
+`server.js` holds one route table per server. Each row names the file to send
+and the single policy header to send with it. The server adds `Content-Type`
+and nothing else, so the table is what the browser receives.
+
+To see a header, open the browser developer tools and select Network. Reload
+the page, select its document request, and read the response headers. The
+calculator sends `Content-Security-Policy: script-src`. The fractal sends
+`Content-Security-Policy: worker-src`. For the popup demo, select the popup's
+`/login/restricted` request, which sends `Cross-Origin-Opener-Policy`.
+
 ## Calculator
 
 http://127.0.0.1:4173/demo/calculator

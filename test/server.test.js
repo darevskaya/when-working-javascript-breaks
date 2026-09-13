@@ -14,7 +14,7 @@ test('static assets, demo entry routes, and one dialog bundle', async (t) => {
   assert.equal(permissive.status, 200);
   assert.equal(restricted.status, 200);
   const policy = permissive.headers.get('content-security-policy');
-  assert.match(policy, /'unsafe-eval'/);
+  assert.equal(policy, "script-src 'self' 'unsafe-eval'");
   assert.equal(
     policy.replace(" 'unsafe-eval'", ''),
     restricted.headers.get('content-security-policy'),
@@ -121,11 +121,94 @@ test('fractal routes differ only in permission for Blob workers', async (t) => {
   assert.equal(permissive.status, 200);
   assert.equal(restricted.status, 200);
   const policy = permissive.headers.get('content-security-policy');
-  assert.match(policy, /worker-src 'self' blob:/);
+  assert.equal(policy, "worker-src 'self' blob:");
   assert.doesNotMatch(policy, /unsafe-eval/);
   assert.equal(
     policy.replace(' blob:', ''),
     restricted.headers.get('content-security-policy'),
   );
   assert.equal(await permissive.text(), await restricted.text());
+});
+
+test('responses contain only the demonstrated policies and ordinary HTTP headers', async (t) => {
+  // Headers every HTTP response may carry. A route sends one policy header on
+  // top of these, or none at all. Anything else fails the test.
+  const ordinary = new Set([
+    'content-type',
+    'content-length',
+    'date',
+    'connection',
+    'keep-alive',
+    'location',
+    'transfer-encoding',
+  ]);
+  const csp = 'content-security-policy';
+  const cases = [
+    {
+      server: createServer(),
+      routes: [
+        {
+          path: '/demo/calculator/permissive',
+          header: csp,
+          value: "script-src 'self' 'unsafe-eval'",
+        },
+        {
+          path: '/demo/calculator/restricted',
+          header: csp,
+          value: "script-src 'self'",
+        },
+        {
+          path: '/demo/fractal/permissive',
+          header: csp,
+          value: "worker-src 'self' blob:",
+        },
+        {
+          path: '/demo/fractal/restricted',
+          header: csp,
+          value: "worker-src 'self'",
+        },
+        { path: '/demo/coop/permissive' },
+        { path: '/demo/coop/restricted' },
+        { path: '/calculator.js' },
+        { path: '/bundles/dialog.js' },
+        { path: '/coop-config.js' },
+        { path: '/' },
+        { path: '/missing' },
+        { path: '/provider.js' },
+        { path: '/calculator.html' },
+      ],
+    },
+    {
+      server: createProviderServer(),
+      routes: [
+        { path: '/login/permissive' },
+        {
+          path: '/login/restricted',
+          header: 'cross-origin-opener-policy',
+          value: 'same-origin',
+        },
+        { path: '/provider.js' },
+        { path: '/provider-config.js' },
+        { path: '/missing' },
+        { path: '/calculator.js' },
+        { path: '/provider.html' },
+      ],
+    },
+  ];
+  for (const { server, routes } of cases) {
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    t.after(() => new Promise((resolve) => server.close(resolve)));
+    const origin = `http://127.0.0.1:${server.address().port}`;
+    for (const { path, header, value } of routes) {
+      const response = await fetch(`${origin}${path}`, { redirect: 'manual' });
+      await response.arrayBuffer();
+      if (header) assert.equal(response.headers.get(header), value, path);
+      for (const name of response.headers.keys()) {
+        assert.ok(
+          ordinary.has(name) || name === header,
+          `${path}: unexpected ${name}`,
+        );
+      }
+    }
+  }
 });

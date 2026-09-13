@@ -11,6 +11,9 @@
     "build": "webpack --config webpack.config.js",
     "start": "npm run build && node server.js",
     "serve": "node server.js",
+    "dev": "npm run build && concurrently --kill-others --names server,bundle \"npm:watch:server\" \"npm:watch:bundle\"",
+    "watch:server": "node --watch --watch-preserve-output server.js",
+    "watch:bundle": "webpack --config webpack.config.js --watch",
     "test": "npm run build && node --test test/*.test.js",
     "test:browser": "playwright test",
     "format": "prettier --write .",
@@ -18,6 +21,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
+    "concurrently": "^10.0.5",
     "prettier": "^3.9.6",
     "webpack": "^5.0.0",
     "webpack-cli": "^6.0.0"
