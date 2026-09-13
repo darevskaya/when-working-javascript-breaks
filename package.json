@@ -17,6 +17,7 @@
     "watch:bundle": "webpack --config webpack.config.js --watch",
     "test": "npm run build && node --test test/*.test.js",
     "test:browser": "playwright test",
+    "demo:csp": "playwright test --config demos/profile/playwright.config.js",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

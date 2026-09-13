@@ -79,12 +79,16 @@ export function createServer({ providerPort = 4174 } = {}) {
         // The popup demo sets its header on the provider below, not here.
         '/demo/coop/permissive': { file: 'public/coop.html' },
         '/demo/coop/restricted': { file: 'public/coop.html' },
+        // This row sends no policy. The Playwright test in demos/profile adds
+        // one to this document's response, because that is what it teaches.
+        '/demo/profile': { file: 'public/profile.html' },
 
         '/styles.css': { file: 'public/styles.css' },
         '/calculator.js': { file: 'public/calculator.js' },
         '/fractal.js': { file: 'public/fractal.js' },
         '/fractal-worker.js': { file: 'public/fractal-worker.js' },
         '/coop.js': { file: 'public/coop.js' },
+        '/profile.js': { file: 'public/profile.js' },
         '/bundles/dialog.js': { file: 'dist/dialog.js' },
         '/bundles/dialog.js.map': { file: 'dist/dialog.js.map' },
         '/coop-config.js': {

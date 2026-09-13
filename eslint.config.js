@@ -17,8 +17,8 @@ export default [
     rules: {
       'no-eval': ['error', { allowIndirect: false }],
       'no-implied-eval': 'error',
-      'no-new-func': 'error'
-      
+      'no-new-func': 'error',
+
       'no-restricted-syntax': [
         'error',
         // new Worker(workerURL)
