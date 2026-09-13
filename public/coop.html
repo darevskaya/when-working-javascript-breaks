@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Popup login</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/coop.js"></script>
+  </head>
+  <body>
+    <main class="lab">
+      <form id="coop-controls" class="demo-controls">
+        <fieldset>
+          <legend>Provider response header</legend>
+          <div class="toggle">
+            <label
+              ><input
+                type="radio"
+                name="policy"
+                value="permissive"
+                checked
+              /><span>No COOP header</span></label
+            >
+            <label
+              ><input type="radio" name="policy" value="restricted" /><span
+                >Cross-Origin-Opener-Policy: same-origin</span
+              ></label
+            >
+          </div>
+        </fieldset>
+      </form>
+      <section class="demo-panel" aria-labelledby="coop-title">
+        <h1 id="coop-title">Popup login</h1>
+        <button id="sign-in" type="button">Sign in</button>
+        <p id="status" role="status">Ready</p>
+        <p class="window-state">
+          <code>popup.closed: <output id="popup-closed">—</output></code>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

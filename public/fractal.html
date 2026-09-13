@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fractal renderer</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/fractal.js"></script>
+  </head>
+  <body>
+    <main class="lab">
+      <form id="fractal-controls" class="demo-controls">
+        <fieldset>
+          <legend>Content Security Policy</legend>
+          <div class="toggle">
+            <label
+              ><input
+                type="radio"
+                name="policy"
+                value="permissive"
+                checked
+              /><span>worker-src 'self' blob:</span></label
+            >
+            <label
+              ><input type="radio" name="policy" value="restricted" /><span
+                >worker-src 'self'</span
+              ></label
+            >
+          </div>
+        </fieldset>
+      </form>
+      <section class="demo-panel" aria-labelledby="fractal-title">
+        <h1 id="fractal-title">Fractal renderer</h1>
+        <canvas
+          id="fractal-canvas"
+          width="960"
+          height="600"
+          role="img"
+          aria-label="Mandelbrot fractal rendered by a Blob worker"
+        ></canvas>
+        <div class="render-progress">
+          <progress
+            id="fractal-progress"
+            max="100"
+            value="0"
+            aria-label="Rendering progress"
+          ></progress>
+          <span id="fractal-percent">0%</span>
+        </div>
+        <p id="status" role="status">Starting worker…</p>
+      </section>
+    </main>
+  </body>
+</html>

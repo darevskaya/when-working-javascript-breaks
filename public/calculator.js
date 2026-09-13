@@ -1,6 +1,6 @@
 const controls = document.querySelector('#calculator-controls');
 const button = document.querySelector('#open-calculator');
-const status = document.querySelector('#calculator-status');
+const status = document.querySelector('#status');
 const dialog = document.querySelector('#calculator-dialog');
 
 function syncControls() {

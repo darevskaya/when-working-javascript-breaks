@@ -20,7 +20,7 @@ for (const policy of ['permissive', 'restricted']) {
       response.headers()['content-security-policy'].includes("'unsafe-eval'"),
     ).toBe(policy === 'permissive');
     await expect(page.locator('iframe')).toHaveCount(0);
-    await expect(page.locator('#calculator-status')).toHaveText('Ready');
+    await expect(page.locator('#status')).toHaveText('Ready');
     await expect(page.getByRole('dialog')).not.toBeVisible();
     expect(bundles).toEqual([]);
     expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
@@ -35,10 +35,8 @@ for (const policy of ['permissive', 'restricted']) {
     ).toBeChecked();
     await page.getByRole('button', { name: 'Open calculator' }).click();
     if (policy === 'restricted') {
-      await expect(page.locator('#calculator-status')).toHaveClass('blocked');
-      await expect(page.locator('#calculator-status')).toContainText(
-        'unsafe-eval',
-      );
+      await expect(page.locator('#status')).toHaveClass('blocked');
+      await expect(page.locator('#status')).toContainText('unsafe-eval');
       await expect(page.getByRole('dialog')).not.toBeVisible();
       await expect
         .poll(() => page.evaluate(() => window.cspViolations))
@@ -84,7 +82,7 @@ test('policy selection survives refresh and history', async ({ page }) => {
     page.getByRole('radio', { name: "script-src 'self'", exact: true }),
   ).toBeChecked();
   await page.getByRole('button', { name: 'Open calculator' }).click();
-  await expect(page.locator('#calculator-status')).toContainText('unsafe-eval');
+  await expect(page.locator('#status')).toContainText('unsafe-eval');
   await page.goBack();
   await expect(
     page.getByRole('radio', {
@@ -125,7 +123,7 @@ test('calculation, input validation, Close, Escape, and responsive layout', asyn
       await page.getByRole('button', { name: 'Close', exact: true }).click();
     else await page.getByLabel('Quantity', { exact: true }).press('Escape');
     await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.locator('#calculator-status')).toHaveText('Ready');
+    await expect(page.locator('#status')).toHaveText('Ready');
     await expect(
       page.getByRole('button', { name: 'Open calculator' }),
     ).toBeFocused();
@@ -149,9 +147,7 @@ test('a failed bundle download can be retried', async ({ page }) => {
     times: 1,
   });
   await page.getByRole('button', { name: 'Open calculator' }).click();
-  await expect(page.locator('#calculator-status')).toContainText(
-    'failed to load',
-  );
+  await expect(page.locator('#status')).toContainText('failed to load');
   await page.getByRole('button', { name: 'Open calculator' }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
 });
