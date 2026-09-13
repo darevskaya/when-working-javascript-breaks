@@ -8,6 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "lint": "eslint . --max-warnings 0",
     "build": "webpack --config webpack.config.js",
     "start": "npm run build && node server.js",
     "serve": "node server.js",
@@ -22,6 +23,8 @@
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "concurrently": "^10.0.5",
+    "eslint": "^9.39.5",
+    "globals": "^17.12.0",
     "prettier": "^3.9.6",
     "webpack": "^5.0.0",
     "webpack-cli": "^6.0.0"

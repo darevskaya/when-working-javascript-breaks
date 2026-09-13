@@ -6,6 +6,13 @@ header. The page itself does not change.
 
 Use Node.js 22 or later.
 
+Run `npm run lint` to find the two lines that the demos depend on. ESLint reports
+one error in the calculator and one in the fractal. The command fails, and that is
+the point. `eslint.config.js` holds five rules, and each rule matches a policy
+directive. The demo files keep their code, with no lint exceptions.
+
+Run `npm test` to build the bundle and test the server and the lint result.
+
 ```sh
 npm ci
 npm start
