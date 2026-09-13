@@ -6,6 +6,21 @@ header. The page itself does not change.
 
 Use Node.js 22 or later.
 
+All demo source files live in `demos/`, grouped by feature:
+
+```text
+demos/
+  calculator/  HTML, CSS, page script, and dialog source
+  fractal/     HTML, CSS, page script, and worker
+  coop/        HTML, CSS, and scripts for the app and identity provider
+  profile/     HTML and page script
+  common/      Shared styles
+  tests/       Playwright demo tests and configuration
+```
+
+`server.js` maps browser URLs to these files. `dist/` holds the generated
+calculator bundle. The application's test suite lives in `test/`.
+
 Run `npm run lint` to find the two lines that the demos depend on. ESLint reports
 one error in the calculator and one in the fractal. The command fails, and that is
 the point. `eslint.config.js` holds five rules, and each rule matches a policy
@@ -65,6 +80,18 @@ The switch affects the next popup. Close detached popups by hand between
 attempts. Use the `127.0.0.1` URLs above so the login message matches the origin
 of the application. `PORT` and `PROVIDER_PORT` override the two server ports.
 
+Run `npm run demo:coop` to demonstrate the same failure through Playwright.
+The tests in `demos/tests/coop.spec.js` complete login with no policy, then add
+`Cross-Origin-Opener-Policy: same-origin` to the provider response.
+The second test prints `window.opener: null` and fails while waiting for
+`Logged in as Elena`. The command exits with code 1.
+
+The setup uses
+[`context.route`](https://playwright.dev/docs/api/class-browsercontext#browser-context-route)
+to intercept the popup's first request. Both tests open the same permissive route,
+so the test supplies the header that breaks login. The regular application tests
+remain in `test/browser`.
+
 ## Profile
 
 http://127.0.0.1:4173/demo/profile
@@ -81,7 +108,7 @@ This is an actual failure, with no `test.fail()` annotation.
 A policy must arrive on the document response. Playwright's `extraHTTPHeaders`
 option adds request headers, so it cannot apply a browser policy. Use
 [`route.fulfill`](https://playwright.dev/docs/api/class-route#route-fulfill) to
-replace the response headers instead. See `demos/profile/profile.spec.js`.
+replace the response headers instead. See `demos/tests/profile.spec.js`.
 
 The test also returns a fake identity API response, so no request reaches a live
 service. The browser still blocks the fetch before that response arrives.

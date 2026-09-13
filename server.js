@@ -61,34 +61,37 @@ export function createServer({ providerPort = 4174 } = {}) {
         // The switch on the page changes the route, and the route changes one
         // header. The HTML and the JavaScript are the same in both rows.
         '/demo/calculator/permissive': {
-          file: 'public/calculator.html',
+          file: 'demos/calculator/calculator.html',
           'Content-Security-Policy': "script-src 'self' 'unsafe-eval'",
         },
         '/demo/calculator/restricted': {
-          file: 'public/calculator.html',
+          file: 'demos/calculator/calculator.html',
           'Content-Security-Policy': "script-src 'self'",
         },
         '/demo/fractal/permissive': {
-          file: 'public/fractal.html',
+          file: 'demos/fractal/fractal.html',
           'Content-Security-Policy': "worker-src 'self' blob:",
         },
         '/demo/fractal/restricted': {
-          file: 'public/fractal.html',
+          file: 'demos/fractal/fractal.html',
           'Content-Security-Policy': "worker-src 'self'",
         },
         // The popup demo sets its header on the provider below, not here.
-        '/demo/coop/permissive': { file: 'public/coop.html' },
-        '/demo/coop/restricted': { file: 'public/coop.html' },
-        // This row sends no policy. The Playwright test in demos/profile adds
+        '/demo/coop/permissive': { file: 'demos/coop/coop.html' },
+        '/demo/coop/restricted': { file: 'demos/coop/coop.html' },
+        // This row sends no policy. The Playwright test in demos/tests adds
         // one to this document's response, because that is what it teaches.
-        '/demo/profile': { file: 'public/profile.html' },
+        '/demo/profile': { file: 'demos/profile/profile.html' },
 
-        '/styles.css': { file: 'public/styles.css' },
-        '/calculator.js': { file: 'public/calculator.js' },
-        '/fractal.js': { file: 'public/fractal.js' },
-        '/fractal-worker.js': { file: 'public/fractal-worker.js' },
-        '/coop.js': { file: 'public/coop.js' },
-        '/profile.js': { file: 'public/profile.js' },
+        '/calculator.css': { file: 'demos/calculator/calculator.css' },
+        '/fractal.css': { file: 'demos/fractal/fractal.css' },
+        '/coop.css': { file: 'demos/coop/coop.css' },
+        '/styles.css': { file: 'demos/common/styles.css' },
+        '/calculator.js': { file: 'demos/calculator/calculator.js' },
+        '/fractal.js': { file: 'demos/fractal/fractal.js' },
+        '/fractal-worker.js': { file: 'demos/fractal/fractal-worker.js' },
+        '/coop.js': { file: 'demos/coop/coop.js' },
+        '/profile.js': { file: 'demos/profile/profile.js' },
         '/bundles/dialog.js': { file: 'dist/dialog.js' },
         '/bundles/dialog.js.map': { file: 'dist/dialog.js.map' },
         '/coop-config.js': {
@@ -111,15 +114,15 @@ export function createProviderServer({
   return http.createServer(
     serve({
       // Both logins serve the same HTML. One extra header breaks the login.
-      '/login/permissive': { file: 'public/provider.html' },
+      '/login/permissive': { file: 'demos/coop/provider.html' },
       '/login/restricted': {
-        file: 'public/provider.html',
+        file: 'demos/coop/provider.html',
         'Cross-Origin-Opener-Policy': 'same-origin',
       },
 
-      '/styles.css': { file: 'public/styles.css' },
-      '/provider.css': { file: 'public/provider.css' },
-      '/provider.js': { file: 'public/provider.js' },
+      '/styles.css': { file: 'demos/common/styles.css' },
+      '/provider.css': { file: 'demos/coop/provider.css' },
+      '/provider.js': { file: 'demos/coop/provider.js' },
       '/provider-config.js': {
         body: `export const appOrigin = '${appOrigin}';\n`,
       },

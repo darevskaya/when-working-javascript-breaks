@@ -1,0 +1,50 @@
+/* Cap the height so the status line below stays on screen. The canvas keeps
+   its own 960 by 600 shape. */
+#fractal-canvas {
+  display: block;
+  max-width: 100%;
+  max-height: max(180px, 100svh - 380px);
+  margin-inline: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f5f5f2;
+}
+
+.render-progress {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+#fractal-progress {
+  flex: 1;
+  min-width: 0;
+  height: 8px;
+  overflow: hidden;
+  appearance: none;
+  border: 0;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  accent-color: var(--accent);
+}
+
+#fractal-progress::-webkit-progress-bar {
+  background: var(--accent-soft);
+}
+
+#fractal-progress::-webkit-progress-value {
+  background: var(--accent);
+}
+
+#fractal-progress::-moz-progress-bar {
+  background: var(--accent);
+}
+
+#fractal-percent {
+  min-width: 4ch;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

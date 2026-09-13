@@ -1,0 +1,82 @@
+dialog {
+  width: min(420px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 28px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: inherit;
+  box-shadow: 0 24px 80px #15251d30;
+}
+
+dialog::backdrop {
+  background: #1d2d2466;
+}
+
+dialog h2 {
+  margin: 0 0 24px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+dialog label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+dialog input,
+dialog select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #adb8af;
+  border-radius: 7px;
+  background: var(--surface);
+  color: inherit;
+}
+
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.order-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-width: 480px;
+  margin-bottom: 24px;
+}
+
+.order-fields input {
+  display: block;
+  margin-top: 8px;
+}
+
+#total {
+  margin: 28px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+#calculator-dialog {
+  width: min(480px, calc(100% - 32px));
+}
+
+@media (max-width: 540px) {
+  dialog {
+    padding: 22px;
+  }
+
+  .order-fields {
+    gap: 12px;
+  }
+}

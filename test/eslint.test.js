@@ -7,7 +7,7 @@ import { ESLint } from 'eslint';
 test('lint flags the calculator Function and the fractal Blob worker', async () => {
   const results = await new ESLint().lintFiles([
     'demos/calculator/calculate.js',
-    'public/fractal.js',
+    'demos/fractal/fractal.js',
   ]);
   const found = results.flatMap((result) =>
     result.messages.map((message) => message.ruleId),
