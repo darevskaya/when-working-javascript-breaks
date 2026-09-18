@@ -48,16 +48,3 @@
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
-
-/* Put the two switches side by side, so the status line below the canvas
-   stays on screen. They wrap on a narrow screen. */
-#fractal-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 32px;
-}
-
-/* Share the row equally. Below 512px, each switch takes its own row. */
-#fractal-controls fieldset {
-  flex: 1 1 240px;
-}

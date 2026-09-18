@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>When working JavaScript breaks</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="lab demo-index">
+      <h1>When working JavaScript breaks</h1>
+      <p>
+        Each link opens one demo in one mode, in a new tab. The modes of a demo
+        differ in one response header. The HTML and the JavaScript are the same.
+      </p>
+
+      <h2>Calculator: <code>new Function</code></h2>
+      <ul>
+        <li>
+          <a href="/demo/calculator/permissive" target="_blank">Works</a>
+          <code>script-src 'self' 'unsafe-eval'</code>
+        </li>
+        <li>
+          <a href="/demo/calculator/restricted" target="_blank">Blocked</a>
+          <code>script-src 'self'</code>
+        </li>
+      </ul>
+
+      <h2>Fractal: Blob worker</h2>
+      <ul>
+        <li>
+          <a href="/demo/fractal/permissive" target="_blank">Works</a>
+          <code>worker-src 'self' blob:</code>
+        </li>
+        <li>
+          <a href="/demo/fractal/restricted" target="_blank">Blocked</a>
+          <code>worker-src 'self'</code>
+        </li>
+        <li>
+          <a href="/demo/fractal/module" target="_blank">Module worker works</a>
+          <code>worker-src 'self'</code>
+        </li>
+      </ul>
+
+      <h2>Popup login: COOP</h2>
+      <ul>
+        <li>
+          <a href="/demo/coop/permissive" target="_blank">Works</a>
+          The provider sends no COOP header.
+        </li>
+        <li>
+          <a href="/demo/coop/restricted" target="_blank">Breaks</a>
+          The provider sends
+          <code>Cross-Origin-Opener-Policy: same-origin</code>
+        </li>
+      </ul>
+
+      <h2>Browser reports</h2>
+      <ul>
+        <li>
+          <a href="/demo/reporting" target="_blank">Reporting examples</a>
+          The browser delivers reports only over HTTPS. For delivery, run
+          <code>npm run demo:reports</code>
+        </li>
+      </ul>
+
+      <h2>Playwright demos</h2>
+      <p>These demos run in a terminal, not from a link.</p>
+      <ul>
+        <li>
+          <code>npm run demo:csp</code> loads the profile page under
+          <code>connect-src</code>.
+        </li>
+        <li>
+          <code>npm run demo:coop</code> adds COOP to the provider response.
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>

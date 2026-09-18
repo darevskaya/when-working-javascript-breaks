@@ -10,41 +10,6 @@
   </head>
   <body>
     <main class="lab">
-      <form id="fractal-controls" class="demo-controls">
-        <fieldset>
-          <legend>Content Security Policy</legend>
-          <div class="toggle">
-            <label
-              ><input
-                type="radio"
-                name="policy"
-                value="permissive"
-                checked
-              /><span>worker-src 'self' blob:</span></label
-            >
-            <label
-              ><input type="radio" name="policy" value="restricted" /><span
-                >worker-src 'self'</span
-              ></label
-            >
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend>Worker script</legend>
-          <div class="toggle">
-            <label
-              ><input type="radio" name="script" value="blob" checked /><span
-                >Blob URL</span
-              ></label
-            >
-            <label
-              ><input type="radio" name="script" value="module" /><span
-                >Module file</span
-              ></label
-            >
-          </div>
-        </fieldset>
-      </form>
       <section class="demo-panel" aria-labelledby="fractal-title">
         <h1 id="fractal-title">Fractal renderer</h1>
         <canvas

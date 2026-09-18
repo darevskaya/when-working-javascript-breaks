@@ -14,14 +14,14 @@ const contentTypes = {
 };
 
 // Serves one route table. A row is a file path on its own, an object that adds
-// the policy headers for that route, a redirect, or a generated body, or a
-// function that answers the request. The server adds Content-Type and nothing
+// the policy headers for that route or a generated body, or a function that
+// answers the request. The server adds Content-Type and nothing
 // else, so a row is the only place a header can come from, and the table is
 // what the browser gets.
 function serve(routes) {
   return async (request, response) => {
     const url = new URL(request.url, 'http://localhost');
-    // Treat /demo/calculator/ the same as /demo/calculator.
+    // Treat /demo/profile/ the same as /demo/profile.
     const pathname = url.pathname.replace(/(.)\/$/, '$1');
     const route = routes[pathname];
 
@@ -33,14 +33,9 @@ function serve(routes) {
     // The /reports row is the collector itself. It writes its own response.
     if (typeof route === 'function') return route(request, response);
 
-    const { file, body, redirect, ...headers } =
+    const { file, body, ...headers } =
       typeof route === 'string' ? { file: route } : route;
 
-    if (redirect) {
-      response.writeHead(302, { Location: redirect });
-      response.end();
-      return;
-    }
     if (body !== undefined) {
       response.writeHead(200, {
         'Content-Type': contentTypes['.js'],
@@ -76,8 +71,11 @@ export function createServer({
   return listener(
     tls,
     serve({
-      // Pages. The switch on the page changes the route, and the route changes
-      // one header. The HTML and the JavaScript are the same in both rows.
+      // The index links to every page below, one link per mode.
+      '/': 'demos/index.html',
+
+      // Pages. Each mode of a demo is its own route, and the routes differ in
+      // one header. The HTML and the JavaScript are the same in every mode.
       '/demo/calculator/permissive': {
         file: 'demos/calculator/calculator.html',
         'Content-Security-Policy': "script-src 'self' 'unsafe-eval'",
@@ -91,6 +89,11 @@ export function createServer({
         'Content-Security-Policy': "worker-src 'self' blob:",
       },
       '/demo/fractal/restricted': {
+        file: 'demos/fractal/fractal.html',
+        'Content-Security-Policy': "worker-src 'self'",
+      },
+      // The same policy, but this page starts the worker from a module file.
+      '/demo/fractal/module': {
         file: 'demos/fractal/fractal.html',
         'Content-Security-Policy': "worker-src 'self'",
       },
@@ -145,12 +148,6 @@ export function createServer({
       '/reporting.js': 'demos/reporting/reporting.js',
       // The receiver the rows above name. It writes its own response.
       '/reports': collector,
-
-      // Short URLs for the talk. Each one opens the permissive route.
-      '/': { redirect: '/demo/calculator/permissive' },
-      '/demo/calculator': { redirect: '/demo/calculator/permissive' },
-      '/demo/fractal': { redirect: '/demo/fractal/permissive' },
-      '/demo/coop': { redirect: '/demo/coop/permissive' },
 
       // Files the pages ask for. No row here sends a policy header.
       '/styles.css': 'demos/common/styles.css',

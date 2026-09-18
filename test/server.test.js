@@ -45,20 +45,23 @@ test('static assets, demo entry routes, and one dialog bundle', async (t) => {
   ]) {
     assert.equal((await fetch(`${origin}${route}`)).status, 404);
   }
-  const root = await fetch(`${origin}/`, { redirect: 'manual' });
-  assert.equal(root.status, 302);
-  assert.equal(root.headers.get('location'), '/demo/calculator/permissive');
-  for (const demo of ['calculator', 'fractal', 'coop']) {
-    for (const suffix of ['', '/']) {
-      const entry = await fetch(`${origin}/demo/${demo}${suffix}`, {
-        redirect: 'manual',
-      });
-      assert.equal(entry.status, 302);
-      assert.equal(entry.headers.get('location'), `/demo/${demo}/permissive`);
-    }
-    const page = await fetch(`${origin}/demo/${demo}/permissive`);
-    assert.equal(page.status, 200);
-    assert.match(await page.text(), new RegExp(`id="${demo}-controls"`));
+  // The index links to every demo mode, and every link opens a page.
+  const index = await (await fetch(`${origin}/`)).text();
+  const links = [...index.matchAll(/href="(\/demo\/[^"]+)"/g)].map(
+    (match) => match[1],
+  );
+  assert.deepEqual(links, [
+    '/demo/calculator/permissive',
+    '/demo/calculator/restricted',
+    '/demo/fractal/permissive',
+    '/demo/fractal/restricted',
+    '/demo/fractal/module',
+    '/demo/coop/permissive',
+    '/demo/coop/restricted',
+    '/demo/reporting',
+  ]);
+  for (const link of links) {
+    assert.equal((await fetch(`${origin}${link}`)).status, 200, link);
   }
 });
 
@@ -164,6 +167,10 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
         },
         {
           path: '/demo/fractal/restricted',
+          headers: { [csp]: "worker-src 'self'" },
+        },
+        {
+          path: '/demo/fractal/module',
           headers: { [csp]: "worker-src 'self'" },
         },
         { path: '/demo/coop/permissive' },

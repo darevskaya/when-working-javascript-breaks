@@ -1,8 +1,11 @@
 # When Working JavaScript Breaks
 
 Demo code for a conference talk. Three pages show working JavaScript that breaks
-under a browser security policy. Each page has a switch that changes one response
-header. The page itself does not change.
+under a browser security policy. Each demo has one URL per mode, and the modes
+differ in one response header. The page itself does not change.
+
+After `npm start`, open the index at http://127.0.0.1:4173. It links to every
+demo in every mode, and each link opens a new tab.
 
 Use Node.js 22 or later.
 
@@ -10,6 +13,7 @@ All demo source files live in `demos/`, grouped by feature:
 
 ```text
 demos/
+  index.html   Links to every demo in every mode
   calculator/  HTML, CSS, page script, and dialog source
   fractal/     HTML, CSS, page script, worker, and worker factory
   coop/        HTML, CSS, and scripts for the app and identity provider
@@ -41,7 +45,7 @@ calculator bundle on save. Refresh the browser to see the change. Restart
 
 `server.js` holds one route table per server. A plain row names the file to
 send and nothing more. A row with braces adds the policy headers for that
-route, a redirect, or a generated body. One row is a function: `/reports`
+route, or a generated body. One row is a function: `/reports`
 receives browser reports. The server adds `Content-Type` and nothing else, so
 the table is what the browser receives.
 
@@ -53,40 +57,51 @@ calculator sends `Content-Security-Policy: script-src`. The fractal sends
 
 ## Calculator
 
-http://127.0.0.1:4173/demo/calculator
+http://127.0.0.1:4173/demo/calculator/permissive
 
 The dialog compiles a formula string with `new Function`. It runs under
-`script-src 'self' 'unsafe-eval'`. Select `script-src 'self'` and open the
-calculator again. The bundle still downloads, but the browser refuses to compile
-the formula. The page prints the error in red.
+`script-src 'self' 'unsafe-eval'`. Open the restricted page, which sends
+`script-src 'self'`, and open the calculator:
+
+http://127.0.0.1:4173/demo/calculator/restricted
+
+The bundle still downloads, but the browser refuses to compile the formula. The
+page prints the error in red.
 
 ## Fractal
 
-http://127.0.0.1:4173/demo/fractal
+http://127.0.0.1:4173/demo/fractal/permissive
 
 The page builds a Worker from a Blob URL and draws a Mandelbrot set strip by
 strip. `workerFactory()` in `worker-factory.js` is the only code that starts a
-Worker. The page runs under `worker-src 'self' blob:`. Select `worker-src 'self'` and
-the canvas stays empty. The browser fires a `securitypolicyviolation` event for
-the blocked `blob:` URL.
+Worker. The page runs under `worker-src 'self' blob:`. The restricted page sends
+`worker-src 'self'`, and its canvas stays empty. The browser fires a
+`securitypolicyviolation` event for the blocked `blob:` URL:
 
-Select Module file to start the same renderer from `fractal-module-worker.js`.
-The browser loads that file from the origin of the page, so `worker-src 'self'`
-allows it. The fractal renders under both policies.
+http://127.0.0.1:4173/demo/fractal/restricted
+
+The module page sends the same `worker-src 'self'`, but it starts the renderer
+from `fractal-module-worker.js`. The browser loads that file from the origin of
+the page, so the policy allows it, and the fractal renders:
+
+http://127.0.0.1:4173/demo/fractal/module
 
 ## Popup login
 
-http://127.0.0.1:4173/demo/coop
+http://127.0.0.1:4173/demo/coop/permissive
 
 This demo starts a fake identity provider on port 4174. Sign in and continue as
 Elena. The provider posts the result back through `window.opener`, and the app
-shows the name. Now select the provider's `Cross-Origin-Opener-Policy:
-same-origin` header and sign in again. The popup stays open, but the app reports
-`popup.closed: true` and the provider reports `window.opener: null`. Login cannot
-complete. Both modes serve the same provider HTML and JavaScript.
+shows the name. Now open the restricted page and sign in again:
 
-The switch affects the next popup. Close detached popups by hand between
-attempts. Use the `127.0.0.1` URLs above so the login message matches the origin
+http://127.0.0.1:4173/demo/coop/restricted
+
+This page opens a provider login that sends `Cross-Origin-Opener-Policy:
+same-origin`. The popup stays open, but the app reports `popup.closed: true` and
+the provider reports `window.opener: null`. Login cannot complete. Both modes
+serve the same provider HTML and JavaScript.
+
+Close detached popups by hand between attempts. Use the `127.0.0.1` URLs above so the login message matches the origin
 of the application. `PORT` and `PROVIDER_PORT` override the two server ports.
 
 Run `npm run demo:coop` to demonstrate the same failure through Playwright.

@@ -1,20 +1,6 @@
-const controls = document.querySelector('#calculator-controls');
 const button = document.querySelector('#open-calculator');
 const status = document.querySelector('#status');
 const dialog = document.querySelector('#calculator-dialog');
-
-function syncControls() {
-  controls.elements.policy.value = location.pathname.endsWith('/restricted')
-    ? 'restricted'
-    : 'permissive';
-}
-
-syncControls();
-window.addEventListener('pageshow', syncControls);
-controls.addEventListener('change', () => {
-  const { policy } = controls.elements;
-  location.assign(`/demo/calculator/${policy.value}`);
-});
 
 function loadDialog() {
   if (window.CalculatorDialog) return Promise.resolve();

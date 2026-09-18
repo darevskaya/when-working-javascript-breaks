@@ -24,15 +24,6 @@ for (const policy of ['permissive', 'restricted']) {
     await expect(page.getByRole('dialog')).not.toBeVisible();
     expect(bundles).toEqual([]);
     expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
-    await expect(
-      page.getByRole('radio', {
-        name:
-          policy === 'permissive'
-            ? "script-src 'self' 'unsafe-eval'"
-            : "script-src 'self'",
-        exact: true,
-      }),
-    ).toBeChecked();
     await page.getByRole('button', { name: 'Open calculator' }).click();
     if (policy === 'restricted') {
       await expect(page.locator('#status')).toHaveClass('blocked');
@@ -68,36 +59,6 @@ for (const policy of ['permissive', 'restricted']) {
     expect(bundles[0]).toContain('/bundles/dialog.js');
   });
 }
-
-test('policy selection survives refresh and history', async ({ page }) => {
-  await page.goto('/');
-  await expect(page).toHaveURL('/demo/calculator/permissive');
-  await expect(page.getByRole('radio')).toHaveCount(2);
-  await page
-    .getByRole('radio', { name: "script-src 'self'", exact: true })
-    .check();
-  await expect(page).toHaveURL('/demo/calculator/restricted');
-  await page.reload();
-  await expect(
-    page.getByRole('radio', { name: "script-src 'self'", exact: true }),
-  ).toBeChecked();
-  await page.getByRole('button', { name: 'Open calculator' }).click();
-  await expect(page.locator('#status')).toContainText('unsafe-eval');
-  await page.goBack();
-  await expect(
-    page.getByRole('radio', {
-      name: "script-src 'self' 'unsafe-eval'",
-      exact: true,
-    }),
-  ).toBeChecked();
-  await page.getByRole('button', { name: 'Open calculator' }).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
-  await page.getByRole('button', { name: 'Close', exact: true }).click();
-  await page.goForward();
-  await expect(
-    page.getByRole('radio', { name: "script-src 'self'", exact: true }),
-  ).toBeChecked();
-});
 
 test('calculation, input validation, Close, Escape, and responsive layout', async ({
   page,

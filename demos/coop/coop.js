@@ -1,25 +1,15 @@
 import { providerOrigin } from '/coop-config.js';
 
-const controls = document.querySelector('#coop-controls');
 const button = document.querySelector('#sign-in');
 const status = document.querySelector('#status');
 const closed = document.querySelector('#popup-closed');
 let popup;
 let poll;
 
-function syncControls() {
-  controls.elements.policy.value = location.pathname.endsWith('/restricted')
-    ? 'restricted'
-    : 'permissive';
-}
-syncControls();
-window.addEventListener('pageshow', syncControls);
-// The other demos reload here. This switch only affects the next popup, so
-// change the URL without a reload and keep the status line on screen.
-controls.addEventListener('change', () => {
-  history.pushState(null, '', `/demo/coop/${controls.elements.policy.value}`);
-});
-window.addEventListener('popstate', syncControls);
+// The restricted page opens the provider login that sends COOP.
+const loginPath = location.pathname.endsWith('/restricted')
+  ? '/login/restricted'
+  : '/login/permissive';
 
 window.addEventListener('message', (event) => {
   if (
@@ -36,7 +26,7 @@ button.addEventListener('click', () => {
   clearInterval(poll);
   if (popup && !popup.closed) popup.close();
   popup = window.open(
-    `${providerOrigin}/login/${controls.elements.policy.value}`,
+    `${providerOrigin}${loginPath}`,
     '_blank',
     'popup,width=500,height=600',
   );
