@@ -159,6 +159,8 @@ export function createServer({
       '/fractal.css': 'demos/fractal/fractal.css',
       '/fractal.js': 'demos/fractal/fractal.js',
       '/fractal-worker.js': 'demos/fractal/fractal-worker.js',
+      '/worker-factory.js': 'demos/fractal/worker-factory.js',
+      '/fractal-module-worker.js': 'demos/fractal/fractal-module-worker.js',
       '/coop.css': 'demos/coop/coop.css',
       '/coop.js': 'demos/coop/coop.js',
       '/profile.js': 'demos/profile/profile.js',

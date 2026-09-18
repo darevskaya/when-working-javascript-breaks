@@ -69,3 +69,26 @@ test('Blob worker renders automatically, is blocked by CSP, and recovers on poli
   ).toBe(true);
   await page.screenshot({ path: 'test-results/fractal-mobile.png' });
 });
+
+test('module worker renders under worker-src self with no violations', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.cspViolations = [];
+    document.addEventListener('securitypolicyviolation', (event) => {
+      window.cspViolations.push(event.effectiveDirective);
+    });
+  });
+  await page.goto('/demo/fractal/restricted');
+  await expect(page.locator('#status')).toHaveText(
+    'Worker blocked by Content Security Policy',
+  );
+
+  await page.getByRole('radio', { name: 'Module file', exact: true }).check();
+  await expect(page).toHaveURL('/demo/fractal/restricted?script=module');
+  await expect(
+    page.getByRole('radio', { name: "worker-src 'self'", exact: true }),
+  ).toBeChecked();
+  await expect(page.locator('#status')).toHaveText('Render complete');
+  expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
+});

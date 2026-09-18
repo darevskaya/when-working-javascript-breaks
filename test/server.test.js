@@ -33,6 +33,8 @@ test('static assets, demo entry routes, and one dialog bundle', async (t) => {
     '/styles.css',
     '/fractal.js',
     '/fractal-worker.js',
+    '/worker-factory.js',
+    '/fractal-module-worker.js',
   ]) {
     assert.equal((await fetch(`${origin}${asset}`)).status, 200);
   }

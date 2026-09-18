@@ -1,4 +1,5 @@
 import { renderFractal } from '/fractal-worker.js';
+import { workerFactory, moduleWorkerFactory } from '/worker-factory.js';
 
 const controls = document.querySelector('#fractal-controls');
 const canvas = document.querySelector('#fractal-canvas');
@@ -11,18 +12,23 @@ function syncControls() {
   controls.elements.policy.value = location.pathname.endsWith('/restricted')
     ? 'restricted'
     : 'permissive';
+  controls.elements.script.value =
+    new URLSearchParams(location.search).get('script') === 'module'
+      ? 'module'
+      : 'blob';
 }
 syncControls();
 window.addEventListener('pageshow', syncControls);
 controls.addEventListener('change', () => {
-  location.assign(`/demo/fractal/${controls.elements.policy.value}`);
+  const { policy, script } = controls.elements;
+  // The Blob worker is the default, so only the module worker needs a query.
+  const query = script.value === 'module' ? '?script=module' : '';
+  location.assign(`/demo/fractal/${policy.value}${query}`);
 });
 
 let worker;
-let workerURL;
 function cleanup() {
   worker?.terminate();
-  if (workerURL) URL.revokeObjectURL(workerURL);
 }
 
 function fail(message) {
@@ -42,11 +48,11 @@ document.addEventListener('securitypolicyviolation', (event) => {
 });
 
 try {
-  const blob = new Blob([`(${renderFractal.toString()})();`], {
-    type: 'text/javascript',
-  });
-  workerURL = URL.createObjectURL(blob);
-  worker = new Worker(workerURL);
+  // The same renderer, from a Blob URL or from a module file.
+  worker =
+    controls.elements.script.value === 'module'
+      ? moduleWorkerFactory('/fractal-module-worker.js')
+      : workerFactory(`(${renderFractal.toString()})();`);
   worker.onmessage = ({ data: { row, rows, pixels } }) => {
     context.putImageData(new ImageData(pixels, canvas.width, rows), 0, row);
     const value = Math.round(((row + rows) / canvas.height) * 100);

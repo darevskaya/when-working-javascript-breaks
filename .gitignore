@@ -67,3 +67,7 @@ temp/
 *.tmp
 *.pid
 *.pid.lock
+
+# Talk notes
+outline.md
+examples.md

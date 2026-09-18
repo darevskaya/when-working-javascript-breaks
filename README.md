@@ -11,7 +11,7 @@ All demo source files live in `demos/`, grouped by feature:
 ```text
 demos/
   calculator/  HTML, CSS, page script, and dialog source
-  fractal/     HTML, CSS, page script, and worker
+  fractal/     HTML, CSS, page script, worker, and worker factory
   coop/        HTML, CSS, and scripts for the app and identity provider
   profile/     HTML and page script
   common/      Shared styles
@@ -22,9 +22,11 @@ demos/
 calculator bundle. The application's test suite lives in `test/`.
 
 Run `npm run lint` to find the two lines that the demos depend on. ESLint reports
-one error in the calculator and one in the fractal. The command fails, and that is
-the point. `eslint.config.js` holds five rules, and each rule matches a policy
-directive. The demo files keep their code, with no lint exceptions.
+one error in the calculator and one in the fractal worker factory. The command
+fails, and that is the point. `eslint.config.js` holds five rules, and each rule
+matches a policy directive. A sixth rule allows `new Worker` only in
+`demos/fractal/worker-factory.js`. That file is the only lint exception, and the
+five policy rules still apply to it.
 
 Run `npm test` to build the bundle and test the server and the lint result.
 
@@ -63,9 +65,14 @@ the formula. The page prints the error in red.
 http://127.0.0.1:4173/demo/fractal
 
 The page builds a Worker from a Blob URL and draws a Mandelbrot set strip by
-strip. It runs under `worker-src 'self' blob:`. Select `worker-src 'self'` and
+strip. `workerFactory()` in `worker-factory.js` is the only code that starts a
+Worker. The page runs under `worker-src 'self' blob:`. Select `worker-src 'self'` and
 the canvas stays empty. The browser fires a `securitypolicyviolation` event for
 the blocked `blob:` URL.
+
+Select Module file to start the same renderer from `fractal-module-worker.js`.
+The browser loads that file from the origin of the page, so `worker-src 'self'`
+allows it. The fractal renders under both policies.
 
 ## Popup login
 

@@ -29,6 +29,21 @@
             >
           </div>
         </fieldset>
+        <fieldset>
+          <legend>Worker script</legend>
+          <div class="toggle">
+            <label
+              ><input type="radio" name="script" value="blob" checked /><span
+                >Blob URL</span
+              ></label
+            >
+            <label
+              ><input type="radio" name="script" value="module" /><span
+                >Module file</span
+              ></label
+            >
+          </div>
+        </fieldset>
       </form>
       <section class="demo-panel" aria-labelledby="fractal-title">
         <h1 id="fractal-title">Fractal renderer</h1>
@@ -37,7 +52,7 @@
           width="960"
           height="600"
           role="img"
-          aria-label="Mandelbrot fractal rendered by a Blob worker"
+          aria-label="Mandelbrot fractal rendered by a worker"
         ></canvas>
         <div class="render-progress">
           <progress
