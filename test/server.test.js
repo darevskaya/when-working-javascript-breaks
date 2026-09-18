@@ -73,7 +73,7 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
 });
 
 test('COOP changes only the provider header, with identical documents and scripts', async (t) => {
-  const app = createServer({ providerPort: 4999 });
+  const app = createServer({ providerOrigin: 'http://127.0.0.1:4999' });
   const provider = createProviderServer({ appOrigin: 'http://127.0.0.1:4998' });
   for (const server of [app, provider]) {
     await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
