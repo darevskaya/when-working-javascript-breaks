@@ -22,8 +22,8 @@ demos/
   tests/       Playwright demo tests and configuration
 ```
 
-`server.js` maps browser URLs to these files. `dist/` holds the generated
-calculator bundle. The application's test suite lives in `test/`.
+`server.js` maps browser URLs to these files. `dist/` holds the two generated
+calculator bundles. The application's test suite lives in `test/`.
 
 Run `npm run lint` to find the two lines that the demos depend on. ESLint reports
 one error in the calculator and one in the fractal worker factory. The command
@@ -32,7 +32,7 @@ matches a policy directive. A sixth rule allows `new Worker` only in
 `demos/fractal/worker-factory.js`. That file is the only lint exception, and the
 five policy rules still apply to it.
 
-Run `npm test` to build the bundle and test the server and the lint result.
+Run `npm test` to build the bundles and test the server and the lint result.
 
 ```sh
 npm ci
@@ -40,7 +40,7 @@ npm start
 ```
 
 For development, run `npm run dev`. It restarts the server and rebuilds the
-calculator bundle on save. Refresh the browser to see the change. Restart
+calculator bundles on save. Refresh the browser to see the change. Restart
 `npm run dev` after you edit `webpack.config.js`. Press Ctrl+C to stop it.
 
 `server.js` holds one route table per server. A plain row names the file to
@@ -67,6 +67,15 @@ http://127.0.0.1:4173/demo/calculator/restricted
 
 The bundle still downloads, but the browser refuses to compile the formula. The
 page prints the error in red.
+
+The eval-build page also sends `script-src 'self'`, but it loads a second bundle:
+
+http://127.0.0.1:4173/demo/calculator/eval-build
+
+`webpack.config.js` builds this bundle from `calculate-safe.js`, which has
+regular functions and no `eval`, so lint passes. But the bundle uses the
+`eval-source-map` devtool, which wraps every module in `eval()`. The browser
+blocks the bundle, and the page reports that it downloaded but did not run.
 
 ## Fractal
 

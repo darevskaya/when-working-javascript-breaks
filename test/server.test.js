@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer, createProviderServer } from '../server.js';
 
-test('static assets, demo entry routes, and one dialog bundle', async (t) => {
+test('static assets, demo entry routes, and both dialog bundles', async (t) => {
   const server = createServer();
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise((resolve) => server.close(resolve)));
@@ -28,6 +28,12 @@ test('static assets, demo entry routes, and one dialog bundle', async (t) => {
   const source = await response.text();
   assert.doesNotMatch(source, /\beval\(/);
   assert.match(source, /new Function\(/);
+  // The eval build is the other way around: no new Function, but eval.
+  const evalBuild = await (
+    await fetch(`${origin}/bundles/eval/dialog.js`)
+  ).text();
+  assert.match(evalBuild, /\beval\(/);
+  assert.doesNotMatch(evalBuild, /new Function\(/);
   for (const asset of [
     '/calculator.js',
     '/styles.css',
@@ -53,6 +59,7 @@ test('static assets, demo entry routes, and one dialog bundle', async (t) => {
   assert.deepEqual(links, [
     '/demo/calculator/permissive',
     '/demo/calculator/restricted',
+    '/demo/calculator/eval-build',
     '/demo/fractal/permissive',
     '/demo/fractal/restricted',
     '/demo/fractal/module',
@@ -159,6 +166,10 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
         },
         {
           path: '/demo/calculator/restricted',
+          headers: { [csp]: "script-src 'self'" },
+        },
+        {
+          path: '/demo/calculator/eval-build',
           headers: { [csp]: "script-src 'self'" },
         },
         {

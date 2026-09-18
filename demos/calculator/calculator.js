@@ -2,11 +2,16 @@ const button = document.querySelector('#open-calculator');
 const status = document.querySelector('#status');
 const dialog = document.querySelector('#calculator-dialog');
 
+// The eval-build page loads the bundle that webpack built with an eval devtool.
+const bundle = location.pathname.endsWith('/eval-build')
+  ? '/bundles/eval/dialog.js'
+  : '/bundles/dialog.js';
+
 function loadDialog() {
   if (window.CalculatorDialog) return Promise.resolve();
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = '/bundles/dialog.js';
+    script.src = bundle;
     script.onload = () =>
       // A successful download does not mean CSP allowed the code to execute.
       window.CalculatorDialog

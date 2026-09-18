@@ -60,6 +60,32 @@ for (const policy of ['permissive', 'restricted']) {
   });
 }
 
+test('eval-build: a clean source still fails, because the bundle uses eval', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.cspViolations = [];
+    document.addEventListener('securitypolicyviolation', (event) => {
+      window.cspViolations.push({
+        directive: event.effectiveDirective,
+        blocked: event.blockedURI,
+      });
+    });
+  });
+  const bundle = page.waitForResponse('**/bundles/eval/dialog.js');
+  await page.goto('/demo/calculator/eval-build');
+  await page.getByRole('button', { name: 'Open calculator' }).click();
+  expect((await bundle).status()).toBe(200);
+  await expect(page.locator('#status')).toHaveClass('blocked');
+  await expect(page.locator('#status')).toHaveText(
+    'The dialog bundle downloaded but did not run.',
+  );
+  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => window.cspViolations))
+    .toContainEqual({ directive: 'script-src', blocked: 'eval' });
+});
+
 test('calculation, input validation, Close, Escape, and responsive layout', async ({
   page,
 }) => {

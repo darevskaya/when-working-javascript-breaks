@@ -84,6 +84,11 @@ export function createServer({
         file: 'demos/calculator/calculator.html',
         'Content-Security-Policy': "script-src 'self'",
       },
+      // The same policy, but this page loads the bundle with the eval devtool.
+      '/demo/calculator/eval-build': {
+        file: 'demos/calculator/calculator.html',
+        'Content-Security-Policy': "script-src 'self'",
+      },
       '/demo/fractal/permissive': {
         file: 'demos/fractal/fractal.html',
         'Content-Security-Policy': "worker-src 'self' blob:",
@@ -163,6 +168,7 @@ export function createServer({
       '/profile.js': 'demos/profile/profile.js',
       '/bundles/dialog.js': 'dist/dialog.js',
       '/bundles/dialog.js.map': 'dist/dialog.js.map',
+      '/bundles/eval/dialog.js': 'dist/eval/dialog.js',
       '/coop-config.js': {
         body: `export const providerOrigin = '${providerOrigin}';\n`,
       },
