@@ -131,8 +131,8 @@ test('fractal routes differ only in permission for Blob workers', async (t) => {
 });
 
 test('responses contain only the demonstrated policies and ordinary HTTP headers', async (t) => {
-  // Headers every HTTP response may carry. A route sends one policy header on
-  // top of these, or none at all. Anything else fails the test.
+  // Headers every HTTP response may carry. A route sends the policy headers
+  // listed below on top of these, or none at all. Anything else fails the test.
   const ordinary = new Set([
     'content-type',
     'content-length',
@@ -143,33 +143,80 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
     'transfer-encoding',
   ]);
   const csp = 'content-security-policy';
+  const endpoints = { 'reporting-endpoints': 'demo="/reports"' };
   const cases = [
     {
       server: createServer(),
       routes: [
         {
           path: '/demo/calculator/permissive',
-          header: csp,
-          value: "script-src 'self' 'unsafe-eval'",
+          headers: { [csp]: "script-src 'self' 'unsafe-eval'" },
         },
         {
           path: '/demo/calculator/restricted',
-          header: csp,
-          value: "script-src 'self'",
+          headers: { [csp]: "script-src 'self'" },
         },
         {
           path: '/demo/fractal/permissive',
-          header: csp,
-          value: "worker-src 'self' blob:",
+          headers: { [csp]: "worker-src 'self' blob:" },
         },
         {
           path: '/demo/fractal/restricted',
-          header: csp,
-          value: "worker-src 'self'",
+          headers: { [csp]: "worker-src 'self'" },
         },
         { path: '/demo/coop/permissive' },
         { path: '/demo/coop/restricted' },
         { path: '/demo/profile' },
+        // Each reporting route names the receiver, then points one policy at
+        // that name. The legacy route names no receiver.
+        { path: '/demo/reporting' },
+        {
+          path: '/demo/reporting/csp/enforce',
+          headers: { ...endpoints, [csp]: "script-src 'self'; report-to demo" },
+        },
+        {
+          path: '/demo/reporting/csp/report-only',
+          headers: {
+            ...endpoints,
+            'content-security-policy-report-only':
+              "script-src 'self'; report-to demo",
+          },
+        },
+        {
+          path: '/demo/reporting/csp/legacy',
+          headers: { [csp]: "script-src 'self'; report-uri /reports" },
+        },
+        {
+          path: '/demo/reporting/coop/enforce',
+          headers: {
+            ...endpoints,
+            'cross-origin-opener-policy': 'same-origin; report-to="demo"',
+          },
+        },
+        {
+          path: '/demo/reporting/coop/report-only',
+          headers: {
+            ...endpoints,
+            'cross-origin-opener-policy-report-only':
+              'same-origin; report-to="demo"',
+          },
+        },
+        {
+          path: '/demo/reporting/coep/enforce',
+          headers: {
+            ...endpoints,
+            'cross-origin-embedder-policy': 'require-corp; report-to="demo"',
+          },
+        },
+        {
+          path: '/demo/reporting/coep/report-only',
+          headers: {
+            ...endpoints,
+            'cross-origin-embedder-policy-report-only':
+              'require-corp; report-to="demo"',
+          },
+        },
+        { path: '/reporting.js' },
         { path: '/calculator.js' },
         { path: '/profile.js' },
         { path: '/bundles/dialog.js' },
@@ -186,9 +233,10 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
         { path: '/login/permissive' },
         {
           path: '/login/restricted',
-          header: 'cross-origin-opener-policy',
-          value: 'same-origin',
+          headers: { 'cross-origin-opener-policy': 'same-origin' },
         },
+        { path: '/reporting-popup' },
+        { path: '/reporting-resource.js' },
         { path: '/provider.js' },
         { path: '/provider-config.js' },
         { path: '/missing' },
@@ -201,13 +249,15 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
     await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
     t.after(() => new Promise((resolve) => server.close(resolve)));
     const origin = `http://127.0.0.1:${server.address().port}`;
-    for (const { path, header, value } of routes) {
+    for (const { path, headers = {} } of routes) {
       const response = await fetch(`${origin}${path}`, { redirect: 'manual' });
       await response.arrayBuffer();
-      if (header) assert.equal(response.headers.get(header), value, path);
+      for (const [name, value] of Object.entries(headers)) {
+        assert.equal(response.headers.get(name), value, path);
+      }
       for (const name of response.headers.keys()) {
         assert.ok(
-          ordinary.has(name) || name === header,
+          ordinary.has(name) || name in headers,
           `${path}: unexpected ${name}`,
         );
       }

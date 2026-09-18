@@ -38,9 +38,10 @@ calculator bundle on save. Refresh the browser to see the change. Restart
 `npm run dev` after you edit `webpack.config.js`. Press Ctrl+C to stop it.
 
 `server.js` holds one route table per server. A plain row names the file to
-send and nothing more. A row with braces adds the single policy header for that
-route, a redirect, or a generated body. The server adds `Content-Type` and
-nothing else, so the table is what the browser receives.
+send and nothing more. A row with braces adds the policy headers for that
+route, a redirect, or a generated body. One row is a function: `/reports`
+receives browser reports. The server adds `Content-Type` and nothing else, so
+the table is what the browser receives.
 
 To see a header, open the browser developer tools and select Network. Reload
 the page, select its document request, and read the response headers. The
@@ -120,3 +121,58 @@ To show a corrected policy, replace `https://api.example.com` in the test with
 These presentation tests fail on purpose. `npm test` and `npm run test:browser`
 do not run them. The demo serves the page on port 4177, so it never collides
 with `npm start`.
+
+## Browser reports
+
+Run `npm run demo:reports` to open the reporting examples in a separate Chromium window.
+The launcher starts HTTPS servers on ports 4185 and 4186.
+It needs OpenSSL and the Playwright Chromium installation (`npx playwright install chromium`).
+On Windows, it uses OpenSSL from Git for Windows.
+Set `OPENSSL` to use another executable path.
+
+The launcher creates a temporary certificate and browser profile.
+Only this browser session accepts that certificate. The system certificate store stays unchanged.
+Close the browser or press Ctrl+C to stop the servers and remove the temporary files.
+
+Select CSP, COOP, or COEP, then select an enforced or report-only policy.
+Click **Trigger violation** and read the report in the server terminal.
+The enforced policy blocks the action. The report-only policy permits the action and requests a report.
+Close each popup after the COOP example.
+
+The collector also saves reports in `logs/browser-reports.jsonl`.
+JSONL stores one JSON object per line. Each entry includes the receipt time, delivery format, and original report.
+The terminal replaces control characters and shortens long values for display.
+The saved original keeps all fields. Git ignores the log directory.
+
+The modern examples register both `Reporting-Endpoints` and the older `Report-To` header.
+Both mechanisms send arrays with the `application/reports+json` content type.
+The CSP policies include both `report-to` and `report-uri`.
+Browsers that support `report-to` ignore `report-uri`.
+The separate legacy CSP example uses only `report-uri` and sends an `application/csp-report` object.
+COOP and COEP have no legacy CSP payload format.
+
+The receiver runs at `POST /reports` on both servers.
+It accepts up to 256 KiB per request and returns `204` after saving valid reports.
+The original HTTP service also accepts reports, but use the HTTPS launcher for browser delivery.
+The launcher uses a temporary regular profile because private browser contexts can suppress delivery.
+It enables background networking and requests shorter reporting delays for the demo.
+The browser still controls delivery time. Keep the server running while reports are pending.
+
+To inspect queued reports in Chromium, open **Application → Reporting API** in the developer tools.
+`npm run test:browser -- test/browser/reporting.spec.js` tests browser actions and actual delivery.
+`npm test` tests both payload formats, saved output, and invalid requests.
+
+To test the receiver directly while the HTTP server runs, use PowerShell:
+
+```powershell
+$modern = '[{"type":"coep","age":0,"url":"https://example.test/demo","body":{"type":"corp","blockedURL":"https://other.test/script.js","destination":"script","disposition":"enforce"}}]'
+Invoke-WebRequest http://127.0.0.1:4173/reports -Method Post -ContentType 'application/reports+json' -Body $modern
+$legacy = '{"csp-report":{"document-uri":"https://example.test/demo","effective-directive":"script-src","blocked-uri":"inline","disposition":"enforce"}}'
+Invoke-WebRequest http://127.0.0.1:4173/reports -Method Post -ContentType 'application/csp-report' -Body $legacy
+```
+
+These commands send sample payloads. They do not trigger browser violations.
+See the [Reporting API specification](https://www.w3.org/TR/reporting-1/),
+[CSP specification](https://www.w3.org/TR/CSP3/), and
+[Chrome Reporting API guide](https://developer.chrome.com/docs/capabilities/web-apis/reporting-api)
+for the reporting formats and header configuration.

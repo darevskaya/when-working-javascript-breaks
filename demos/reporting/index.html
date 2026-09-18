@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Browser reports</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="lab">
+      <p>WHEN WORKING JAVASCRIPT BREAKS</p>
+      <h1>Browser reports</h1>
+      <p>
+        Trigger a policy violation, then read the report in the server terminal.
+      </p>
+      <h2>CSP: script execution</h2>
+      <p>
+        <a href="/demo/reporting/csp/enforce">Enforce</a> ·
+        <a href="/demo/reporting/csp/report-only">Report only</a> ·
+        <a href="/demo/reporting/csp/legacy">Legacy report-uri</a>
+      </p>
+      <h2>COOP: popup isolation</h2>
+      <p>
+        <a href="/demo/reporting/coop/enforce">Enforce</a> ·
+        <a href="/demo/reporting/coop/report-only">Report only</a>
+      </p>
+      <h2>COEP: cross-origin resource loading</h2>
+      <p>
+        <a href="/demo/reporting/coep/enforce">Enforce</a> ·
+        <a href="/demo/reporting/coep/report-only">Report only</a>
+      </p>
+      <p>
+        The browser controls delivery. Keep the server running while you wait
+        for reports.
+      </p>
+      <p>
+        Reports also appear in <code>logs/browser-reports.jsonl</code>, one JSON
+        object per line.
+      </p>
+    </main>
+  </body>
+</html>

@@ -19,6 +19,7 @@
     "test:browser": "playwright test",
     "demo:csp": "playwright test --config demos/tests/playwright.config.js profile.spec.js",
     "demo:coop": "playwright test --config demos/tests/playwright.config.js coop.spec.js",
+    "demo:reports": "node reporting-demo.js",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trigger a browser report</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/reporting.js"></script>
+  </head>
+  <body>
+    <main class="lab">
+      <a href="/demo/reporting">All reporting examples</a>
+      <section class="demo-panel" aria-labelledby="title">
+        <h1 id="title">Browser report</h1>
+        <p id="description"></p>
+        <button id="trigger" type="button">Trigger violation</button>
+        <p id="status" role="status">Ready.</p>
+      </section>
+      <p>
+        Read incoming reports in the server terminal. Delivery can take a minute
+        or longer.
+      </p>
+      <p>
+        The status here describes the page action, not confirmation of report
+        delivery.
+      </p>
+    </main>
+  </body>
+</html>

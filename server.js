@@ -1,7 +1,9 @@
 import http from 'node:http';
+import https from 'node:https';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { createReportCollector } from './reporting.js';
 
 const root = import.meta.dirname;
 const contentTypes = {
@@ -11,10 +13,11 @@ const contentTypes = {
   '.map': 'application/json',
 };
 
-// Serves one route table. A row is either a file path on its own, or an object
-// that adds the one policy header for that route, a redirect, or a generated
-// body. The server adds Content-Type and nothing else, so a row with braces is
-// the only place a header can come from, and the table is what the browser gets.
+// Serves one route table. A row is a file path on its own, an object that adds
+// the policy headers for that route, a redirect, or a generated body, or a
+// function that answers the request. The server adds Content-Type and nothing
+// else, so a row is the only place a header can come from, and the table is
+// what the browser gets.
 function serve(routes) {
   return async (request, response) => {
     const url = new URL(request.url, 'http://localhost');
@@ -27,6 +30,9 @@ function serve(routes) {
       response.end('Not found');
       return;
     }
+    // The /reports row is the collector itself. It writes its own response.
+    if (typeof route === 'function') return route(request, response);
+
     const { file, body, redirect, ...headers } =
       typeof route === 'string' ? { file: route } : route;
 
@@ -57,8 +63,18 @@ function serve(routes) {
   };
 }
 
-export function createServer({ providerPort = 4174 } = {}) {
-  return http.createServer(
+// The reporting demo needs HTTPS, because Chromium does not deliver reports
+// over plain HTTP. Every other demo runs over HTTP. See reporting-demo.js.
+const listener = (tls, handler) =>
+  tls ? https.createServer(tls, handler) : http.createServer(handler);
+
+export function createServer({
+  providerOrigin = 'http://127.0.0.1:4174',
+  collector = createReportCollector(),
+  tls,
+} = {}) {
+  return listener(
+    tls,
     serve({
       // Pages. The switch on the page changes the route, and the route changes
       // one header. The HTML and the JavaScript are the same in both rows.
@@ -85,6 +101,51 @@ export function createServer({ providerPort = 4174 } = {}) {
       // one to this document's response, because that is what it teaches.
       '/demo/profile': 'demos/profile/profile.html',
 
+      // Reporting examples. Reporting-Endpoints gives the receiver a name.
+      // The policy then sends its reports to that name with report-to.
+      '/demo/reporting': 'demos/reporting/index.html',
+      '/demo/reporting/csp/enforce': {
+        file: 'demos/reporting/example.html',
+        'Reporting-Endpoints': 'demo="/reports"',
+        'Content-Security-Policy': "script-src 'self'; report-to demo",
+      },
+      '/demo/reporting/csp/report-only': {
+        file: 'demos/reporting/example.html',
+        'Reporting-Endpoints': 'demo="/reports"',
+        'Content-Security-Policy-Report-Only':
+          "script-src 'self'; report-to demo",
+      },
+      // The legacy route names no receiver. report-uri holds the URL itself.
+      '/demo/reporting/csp/legacy': {
+        file: 'demos/reporting/example.html',
+        'Content-Security-Policy': "script-src 'self'; report-uri /reports",
+      },
+      '/demo/reporting/coop/enforce': {
+        file: 'demos/reporting/example.html',
+        'Reporting-Endpoints': 'demo="/reports"',
+        'Cross-Origin-Opener-Policy': 'same-origin; report-to="demo"',
+      },
+      '/demo/reporting/coop/report-only': {
+        file: 'demos/reporting/example.html',
+        'Reporting-Endpoints': 'demo="/reports"',
+        'Cross-Origin-Opener-Policy-Report-Only':
+          'same-origin; report-to="demo"',
+      },
+      '/demo/reporting/coep/enforce': {
+        file: 'demos/reporting/example.html',
+        'Reporting-Endpoints': 'demo="/reports"',
+        'Cross-Origin-Embedder-Policy': 'require-corp; report-to="demo"',
+      },
+      '/demo/reporting/coep/report-only': {
+        file: 'demos/reporting/example.html',
+        'Reporting-Endpoints': 'demo="/reports"',
+        'Cross-Origin-Embedder-Policy-Report-Only':
+          'require-corp; report-to="demo"',
+      },
+      '/reporting.js': 'demos/reporting/reporting.js',
+      // The receiver the rows above name. It writes its own response.
+      '/reports': collector,
+
       // Short URLs for the talk. Each one opens the permissive route.
       '/': { redirect: '/demo/calculator/permissive' },
       '/demo/calculator': { redirect: '/demo/calculator/permissive' },
@@ -104,7 +165,7 @@ export function createServer({ providerPort = 4174 } = {}) {
       '/bundles/dialog.js': 'dist/dialog.js',
       '/bundles/dialog.js.map': 'dist/dialog.js.map',
       '/coop-config.js': {
-        body: `export const providerOrigin = 'http://127.0.0.1:${providerPort}';\n`,
+        body: `export const providerOrigin = '${providerOrigin}';\n`,
       },
     }),
   );
@@ -112,8 +173,11 @@ export function createServer({ providerPort = 4174 } = {}) {
 
 export function createProviderServer({
   appOrigin = 'http://127.0.0.1:4173',
+  collector = createReportCollector(),
+  tls,
 } = {}) {
-  return http.createServer(
+  return listener(
+    tls,
     serve({
       // Both logins serve the same HTML. One extra header breaks the login.
       '/login/permissive': 'demos/coop/provider.html',
@@ -121,6 +185,13 @@ export function createProviderServer({
         file: 'demos/coop/provider.html',
         'Cross-Origin-Opener-Policy': 'same-origin',
       },
+
+      // The second origin the reporting examples reach for.
+      '/reporting-popup': 'demos/reporting/popup.html',
+      '/reporting-resource.js': {
+        body: '// A script served by the second origin.\n',
+      },
+      '/reports': collector,
 
       '/styles.css': 'demos/common/styles.css',
       '/provider.css': 'demos/coop/provider.css',
@@ -138,12 +209,17 @@ if (
 ) {
   const port = Number(process.env.PORT || 4173);
   const providerPort = Number(process.env.PROVIDER_PORT || 4174);
-  createServer({ providerPort }).listen(port, '127.0.0.1', () =>
+  const collector = createReportCollector();
+  createServer({
+    providerOrigin: `http://127.0.0.1:${providerPort}`,
+    collector,
+  }).listen(port, '127.0.0.1', () =>
     console.log(`Demos: http://127.0.0.1:${port}`),
   );
-  createProviderServer({ appOrigin: `http://127.0.0.1:${port}` }).listen(
-    providerPort,
-    '127.0.0.1',
-    () => console.log(`Identity provider: http://127.0.0.1:${providerPort}`),
+  createProviderServer({
+    appOrigin: `http://127.0.0.1:${port}`,
+    collector,
+  }).listen(providerPort, '127.0.0.1', () =>
+    console.log(`Identity provider: http://127.0.0.1:${providerPort}`),
   );
 }
