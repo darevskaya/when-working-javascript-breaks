@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer, createProviderServer } from '../server.js';
-import { client, challengeFor } from '../demos/common/orbit-auth.js';
+import { client, challengeFor } from '../orbit-auth.js';
 
 async function listen(server, t) {
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));

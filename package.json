@@ -8,17 +8,11 @@
     "node": ">=22"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
-    "scan": "node semgrep.js scan --config .semgrep.yml --metrics off --error demos",
-    "scan:registry": "node semgrep.js scan --config p/javascript --config p/xss --config p/default --metrics off demos",
-    "start": "node server.js",
-    "stop": "node stop.js",
-    "dev": "node --watch --watch-preserve-output server.js",
-    "test": "node --test test/*.test.js",
-    "test:browser": "playwright test",
-    "demo:csp": "playwright test --config demos/tests/playwright.config.js profile.spec.js",
-    "demo:coop": "playwright test --config demos/tests/playwright.config.js coop.spec.js",
-    "demo:reports": "node reporting-demo.js",
+    "test": "npm test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "scan": "npm run scan --workspaces --if-present",
+    "scan:registry": "node demos/common/semgrep.js scan --config p/javascript --config p/xss --config p/default --metrics off demos",
+    "stop": "node demos/common/stop.js",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -28,5 +22,15 @@
     "eslint-plugin-no-unsanitized": "^4.1.5",
     "globals": "^17.12.0",
     "prettier": "^3.9.6"
-  }
+  },
+  "workspaces": [
+    "demos/summary",
+    "demos/widget",
+    "demos/fractal",
+    "demos/coop",
+    "demos/broadcast",
+    "demos/embed",
+    "demos/profile",
+    "demos/reporting"
+  ]
 }

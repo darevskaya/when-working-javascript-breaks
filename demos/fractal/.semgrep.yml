@@ -1,0 +1,16 @@
+# The Blob URL rule from eslint.config.js as a Semgrep taint rule. It follows
+# the Blob URL through variables and functions before it reaches new Worker.
+# An ESLint selector sees one expression at a time.
+rules:
+  - id: worker-src-blob-worker
+    languages: [javascript]
+    severity: ERROR
+    message: >-
+      worker-src without blob: blocks a Worker from a Blob URL. Start the
+      worker from a script file on the page origin.
+    mode: taint
+    pattern-sources:
+      - pattern: URL.createObjectURL(...)
+    pattern-sinks:
+      - pattern: new Worker($URL, ...)
+        focus-metavariable: $URL

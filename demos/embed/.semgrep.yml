@@ -1,0 +1,13 @@
+# The same policy as eslint.config.js, as a Semgrep rule.
+rules:
+  - id: sandbox-top-navigation
+    languages: [javascript]
+    severity: WARNING
+    message: >-
+      In a sandboxed iframe, this needs allow-top-navigation-by-user-activation
+      and a click. Put it in the embedding contract.
+    pattern-either:
+      - pattern: window.top.location.href = $X
+      - pattern: window.top.location = $X
+      - pattern: top.location.href = $X
+      - pattern: window.top.location.assign(...)

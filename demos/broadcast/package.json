@@ -1,0 +1,11 @@
+{
+  "name": "broadcast",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "lint": "eslint .",
+    "scan": "node ../common/semgrep.js scan --config .semgrep.yml --metrics off --error .",
+    "test": "node --test \"test/*.test.js\" && playwright test"
+  }
+}

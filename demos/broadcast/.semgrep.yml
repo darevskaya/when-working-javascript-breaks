@@ -1,0 +1,24 @@
+# The same policy as eslint.config.js, as Semgrep rules.
+rules:
+  - id: coop-popup-closed
+    languages: [javascript]
+    severity: WARNING
+    paths:
+      exclude: [test/, stage/]
+    message: >-
+      popup.closed is true when COOP separates the popup, even while it is
+      open. Do not read it as a cancel.
+    patterns:
+      - pattern: $POPUP.closed
+      - pattern-inside: |
+          $POPUP = window.open(...);
+          ...
+  - id: coop-window-opener
+    languages: [javascript]
+    severity: WARNING
+    paths:
+      exclude: [test/, stage/]
+    message: >-
+      window.opener is null when either page sends
+      Cross-Origin-Opener-Policy: same-origin, and with noopener.
+    pattern: window.opener

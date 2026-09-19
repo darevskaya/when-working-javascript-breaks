@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { startReportingDemo } from '../../reporting-demo.js';
-import { createReportCollector } from '../../reporting.js';
+import { startReportingDemo } from '../launch.js';
+import { createReportCollector } from '../collector.js';
 
 test('Chromium delivers CSP, COOP, COEP and legacy CSP to the collector', async () => {
   test.setTimeout(60000);
@@ -14,7 +14,7 @@ test('Chromium delivers CSP, COOP, COEP and legacy CSP to the collector', async 
   const demo = await startReportingDemo({
     headless: true,
     port: 0,
-    providerPort: 0,
+    secondPort: 0,
     collector: createReportCollector({ file }),
   });
   try {

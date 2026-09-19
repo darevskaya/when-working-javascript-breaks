@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Order summary: eval</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="lab demo-index">
+      <h1>Order summary: eval</h1>
+      <p>Each link opens one mode of this demo in a new tab.</p>
+      <ul>
+        <li>
+          <a href="/demo/summary/permissive" target="_blank">Works</a>
+          <code>script-src 'self' 'unsafe-eval'</code>
+        </li>
+        <li>
+          <a href="/demo/summary/restricted" target="_blank">Blocked</a>
+          <code>script-src 'self'</code> The templates and data are our own. No
+          user input reaches <code>eval</code>.
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>

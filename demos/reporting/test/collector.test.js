@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { createServer, createProviderServer } from '../server.js';
-import { createReportCollector } from '../reporting.js';
+import { createServer, createSecondServer } from '../server.js';
+import { createReportCollector } from '../collector.js';
 
 // A terminal escape, of the kind a browser can put in a blocked URL.
 const terminalEscape = String.fromCharCode(27);
@@ -20,7 +20,7 @@ test('both servers collect modern batches and legacy CSP reports', async (t) => 
   });
   const servers = [
     createServer({ collector }),
-    createProviderServer({ collector }),
+    createSecondServer({ collector }),
   ];
   const origins = [];
   for (const server of servers) {

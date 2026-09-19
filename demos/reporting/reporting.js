@@ -1,4 +1,4 @@
-import { providerOrigin } from '/coop-config.js';
+import { secondOrigin } from '/reporting-config.js';
 
 // The route is /demo/reporting/<policy>/<mode>.
 const [policy, mode] = location.pathname.split('/').slice(-2);
@@ -31,7 +31,7 @@ const examples = {
       'Open a popup on the second origin. Enforced isolation disconnects the opener from the popup.',
     trigger() {
       const popup = window.open(
-        `${providerOrigin}/reporting-popup`,
+        `${secondOrigin}/reporting-popup`,
         '_blank',
         'popup,width=500,height=350',
       );
@@ -54,7 +54,7 @@ const examples = {
       'Load a script from the second origin without its permission for cross-origin embedding.',
     trigger() {
       const script = document.createElement('script');
-      script.src = `${providerOrigin}/reporting-resource.js`;
+      script.src = `${secondOrigin}/reporting-resource.js`;
       script.onload = () => show(false, 'Cross-origin script loaded.');
       script.onerror = () => show(true, 'Cross-origin script blocked.');
       document.body.append(script);

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fractal: Blob worker</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="lab demo-index">
+      <h1>Fractal: Blob worker</h1>
+      <p>Each link opens one mode of this demo in a new tab.</p>
+      <ul>
+        <li>
+          <a href="/demo/fractal/permissive" target="_blank">Works</a>
+          <code>worker-src 'self' blob:</code>
+        </li>
+        <li>
+          <a href="/demo/fractal/restricted" target="_blank">Blocked</a>
+          <code>worker-src 'self'</code>
+        </li>
+        <li>
+          <a href="/demo/fractal/module" target="_blank">Module worker works</a>
+          <code>worker-src 'self'</code>
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>

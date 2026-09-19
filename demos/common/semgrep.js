@@ -6,7 +6,7 @@ import path from 'node:path';
 // Scripts or bin folder that is often not on PATH, and semgrep then cannot
 // start its own pysemgrep helper. So look there too, and put that folder on
 // PATH for the child process.
-// Usage: node semgrep.js scan --config .semgrep.yml demos
+// Usage: node ../common/semgrep.js scan --config .semgrep.yml .
 
 const executable = process.platform === 'win32' ? 'semgrep.exe' : 'semgrep';
 
@@ -47,6 +47,24 @@ export function semgrepEnv() {
     ...process.env,
     [key]: `${folder}${path.delimiter}${process.env[key] ?? ''}`,
   };
+}
+
+// The findings of one Semgrep configuration, as "file:line rule" strings,
+// sorted. Returns null when Semgrep is not installed.
+export function findings(config, target) {
+  const env = semgrepEnv();
+  if (!env) return null;
+  const result = spawnSync(
+    'semgrep',
+    ['scan', '--config', config, '--metrics', 'off', '--json', target],
+    { encoding: 'utf8', env, stdio: ['ignore', 'pipe', 'ignore'] },
+  );
+  return JSON.parse(result.stdout)
+    .results.map(
+      (found) =>
+        `${path.basename(found.path)}:${found.start.line} ${found.check_id.split('.').pop()}`,
+    )
+    .sort();
 }
 
 if (import.meta.filename === path.resolve(process.argv[1] ?? '')) {

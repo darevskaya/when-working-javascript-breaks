@@ -1,0 +1,14 @@
+# The same policy as eslint.config.js, as a Semgrep rule.
+rules:
+  - id: script-src-string-to-code
+    languages: [javascript]
+    severity: ERROR
+    message: >-
+      script-src without 'unsafe-eval' blocks code that is compiled from a
+      string.
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)
+      - pattern: Function(...)
+      - pattern: setTimeout("...", ...)
+      - pattern: setInterval("...", ...)

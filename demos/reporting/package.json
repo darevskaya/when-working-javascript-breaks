@@ -1,0 +1,10 @@
+{
+  "name": "reporting",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node launch.js",
+    "lint": "eslint .",
+    "test": "node --test \"test/*.test.js\" && playwright test"
+  }
+}

@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import { client, challengeFor } from '../common/orbit-auth.js';
+import { client, challengeFor } from './orbit-auth.js';
 
 // A minimal Backend for Frontend (BFF) for the BroadcastChannel login. The
 // BFF is the OAuth client. It runs the authorization code flow with PKCE,

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Widget: innerHTML under Trusted Types</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="lab demo-index">
+      <h1>Widget: innerHTML under Trusted Types</h1>
+      <p>Each link opens one mode of this demo in a new tab.</p>
+      <ul>
+        <li>
+          <a href="/demo/widget/escaped" target="_blank"
+            >Escaped widget breaks</a
+          >
+          <code>require-trusted-types-for 'script'</code> Escaped values are
+          still a string.
+        </li>
+        <li>
+          <a href="/demo/widget/policy" target="_blank">Policy widget works</a>
+          <code>require-trusted-types-for 'script'</code> The widget keeps
+          <code>innerHTML</code> and uses a Trusted Types policy.
+        </li>
+        <li>
+          <a href="/demo/widget/policy-not-allowed" target="_blank"
+            >Policy widget breaks</a
+          >
+          <code>trusted-types shop-policy</code> The customer allows only its
+          own policy name.
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>

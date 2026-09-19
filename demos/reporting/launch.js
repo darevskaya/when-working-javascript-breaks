@@ -6,8 +6,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
-import { createServer, createProviderServer } from './server.js';
-import { createReportCollector, reportsFile } from './reporting.js';
+import { createServer, createSecondServer } from './server.js';
+import { createReportCollector, reportsFile } from './collector.js';
 
 // Chromium delivers no reports over plain HTTP, not even to 127.0.0.1, so this
 // launcher serves the reporting examples over HTTPS. It creates a throwaway
@@ -16,7 +16,7 @@ import { createReportCollector, reportsFile } from './reporting.js';
 export async function startReportingDemo({
   headless = false,
   port = 4185,
-  providerPort = 4186,
+  secondPort = 4186,
   collector = createReportCollector(),
 } = {}) {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'reporting-demo-'));
@@ -68,16 +68,16 @@ export async function startReportingDemo({
       });
       return server.address().port;
     };
-    // Start the provider first so an ephemeral port can be used in tests.
-    const actualProviderPort = await listen(
-      createProviderServer({ tls, collector }),
-      providerPort,
+    // Start the second origin first so an ephemeral port can be used in tests.
+    const actualSecondPort = await listen(
+      createSecondServer({ tls, collector }),
+      secondPort,
     );
     const actualPort = await listen(
       createServer({
         tls,
         collector,
-        providerOrigin: `https://127.0.0.1:${actualProviderPort}`,
+        secondOrigin: `https://127.0.0.1:${actualSecondPort}`,
       }),
       port,
     );

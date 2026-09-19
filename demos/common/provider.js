@@ -48,7 +48,7 @@ function redirectLogin(returnTo) {
 
   button.addEventListener('click', () => {
     // The BFF login asks for a code with PKCE. The Orbit ID server issues the
-    // code and checks the return address. See orbit-auth.js.
+    // code and checks the return address. See demos/broadcast/orbit-auth.js.
     if (new URLSearchParams(location.search).has('code_challenge')) {
       location.assign(`/login/approve${location.search}`);
       return;
