@@ -1,5 +1,5 @@
 {
-  "name": "summary",
+  "name": "script-src-eval",
   "private": true,
   "type": "module",
   "scripts": {

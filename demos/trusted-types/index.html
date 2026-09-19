@@ -3,32 +3,33 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Widget: innerHTML under Trusted Types</title>
+    <title>Trusted Types: innerHTML</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <main class="lab demo-index">
-      <h1>Widget: innerHTML under Trusted Types</h1>
+      <h1>Trusted Types: innerHTML</h1>
       <p>Each link opens one mode of this demo in a new tab.</p>
       <ul>
         <li>
-          <a href="/demo/widget/escaped" target="_blank"
-            >Escaped widget breaks</a
+          <a href="/demo/trusted-types/escaped-string" target="_blank"
+            >Escaped string in innerHTML: blocked</a
           >
-          <code>require-trusted-types-for 'script'</code> Escaped values are
-          still a string.
+          <code>require-trusted-types-for 'script'</code>
         </li>
         <li>
-          <a href="/demo/widget/policy" target="_blank">Policy widget works</a>
-          <code>require-trusted-types-for 'script'</code> The widget keeps
-          <code>innerHTML</code> and uses a Trusted Types policy.
+          <a href="/demo/trusted-types/named-policy" target="_blank"
+            >TrustedHTML from a named policy: renders</a
+          >
+          <code>require-trusted-types-for 'script'</code>
         </li>
         <li>
-          <a href="/demo/widget/policy-not-allowed" target="_blank"
-            >Policy widget breaks</a
+          <a href="/demo/trusted-types/policy-not-allowed" target="_blank"
+            >Policy name not in the CSP list: blocked</a
           >
-          <code>trusted-types shop-policy</code> The customer allows only its
-          own policy name.
+          <code
+            >require-trusted-types-for 'script'; trusted-types shop-policy</code
+          >
         </li>
       </ul>
     </main>

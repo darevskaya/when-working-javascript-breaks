@@ -7,7 +7,7 @@ const folder = `${import.meta.dirname}/..`;
 
 test('lint flags the redirect of the whole page', async () => {
   assert.deepEqual(await lintFindings(folder), [
-    'frame.js:20 no-restricted-syntax',
+    'redirect-frame.js:20 no-restricted-syntax',
   ]);
 });
 
@@ -16,6 +16,6 @@ test(
   'Semgrep flags the same line',
   { skip: !semgrep && 'Semgrep is not installed' },
   () => {
-    assert.deepEqual(semgrep, ['frame.js:20 sandbox-top-navigation']);
+    assert.deepEqual(semgrep, ['redirect-frame.js:20 sandbox-top-navigation']);
   },
 );

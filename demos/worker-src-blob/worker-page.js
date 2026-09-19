@@ -1,4 +1,4 @@
-import { renderFractal } from '/fractal-worker.js';
+import { renderFractal } from '/blob-worker-source.js';
 import { workerFactory, moduleWorkerFactory } from '/worker-factory.js';
 
 const canvas = document.querySelector('#fractal-canvas');
@@ -30,8 +30,8 @@ document.addEventListener('securitypolicyviolation', (event) => {
 
 try {
   // The same renderer, from a Blob URL or, on the module page, a module file.
-  worker = location.pathname.endsWith('/module')
-    ? moduleWorkerFactory('/fractal-module-worker.js')
+  worker = location.pathname.endsWith('/module-worker')
+    ? moduleWorkerFactory('/module-worker.js')
     : workerFactory(`(${renderFractal.toString()})();`);
   worker.onmessage = ({ data: { row, rows, pixels } }) => {
     context.putImageData(new ImageData(pixels, canvas.width, rows), 0, row);

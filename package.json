@@ -24,13 +24,13 @@
     "prettier": "^3.9.6"
   },
   "workspaces": [
-    "demos/summary",
-    "demos/widget",
-    "demos/fractal",
-    "demos/coop",
-    "demos/broadcast",
-    "demos/embed",
-    "demos/profile",
-    "demos/reporting"
+    "demos/script-src-eval",
+    "demos/trusted-types",
+    "demos/worker-src-blob",
+    "demos/coop-popup",
+    "demos/coop-broadcast-channel",
+    "demos/iframe-sandbox",
+    "demos/connect-src",
+    "demos/reporting-api"
   ]
 }

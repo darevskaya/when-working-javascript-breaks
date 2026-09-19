@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
 const values = (page) => page.locator('.summary dd').allTextContents();
 
 test('the templates render under unsafe-eval', async ({ page }) => {
-  await page.goto('/demo/summary/permissive');
+  await page.goto('/demo/script-src-eval/unsafe-eval-allowed');
   await expect(page.locator('.summary dd')).toHaveText([
     '2',
     '$52.00',
@@ -37,7 +37,7 @@ test('script-src self blocks eval, and the raw templates stay', async ({
   page,
 }) => {
   const error = page.waitForEvent('pageerror');
-  await page.goto('/demo/summary/restricted');
+  await page.goto('/demo/script-src-eval/eval-blocked');
   expect((await error).name).toBe('EvalError');
   await expect
     .poll(() => page.evaluate(() => window.cspViolations))
@@ -51,7 +51,7 @@ test('the webpack bundle has a clean source, but the build adds eval', async ({
   page,
 }) => {
   const error = page.waitForEvent('pageerror');
-  await page.goto('/demo/summary/bundle');
+  await page.goto('/demo/script-src-eval/eval-source-map-bundle');
   expect((await error).name).toBe('EvalError');
   await expect
     .poll(() => page.evaluate(() => window.cspViolations))

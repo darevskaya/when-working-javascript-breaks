@@ -10,10 +10,16 @@ const folder = path.join(import.meta.dirname, '..');
 
 // npm test runs npm run build first.
 test('the eval-source-map bundle contains eval, and its source does not', async () => {
-  const bundle = await readFile(path.join(folder, 'dist/summary.js'), 'utf8');
+  const bundle = await readFile(
+    path.join(folder, 'dist/templates-page.js'),
+    'utf8',
+  );
   assert.match(bundle, /\beval\(/);
   assert.doesNotMatch(bundle, /String\(eval\(/);
-  const source = await readFile(path.join(folder, 'template-safe.js'), 'utf8');
+  const source = await readFile(
+    path.join(folder, 'function-renderer.js'),
+    'utf8',
+  );
   // The comments explain eval. The code does not call it.
   assert.doesNotMatch(source.replace(/\/\/.*$/gm, ''), /\beval\(/);
 });
@@ -33,7 +39,7 @@ test('with devtool source-map, the bundle has no eval', async (t) => {
     ),
   );
   assert.equal(stats.hasErrors(), false);
-  const bundle = await readFile(path.join(output, 'summary.js'), 'utf8');
+  const bundle = await readFile(path.join(output, 'templates-page.js'), 'utf8');
   assert.doesNotMatch(bundle, /\beval\(/);
-  assert.match(bundle, /sourceMappingURL=summary\.js\.map/);
+  assert.match(bundle, /sourceMappingURL=templates-page\.js\.map/);
 });

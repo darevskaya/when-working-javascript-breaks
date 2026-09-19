@@ -11,13 +11,13 @@ test('the profile page sends no policy', async (t) => {
   const origin = await listen(createServer(), t);
   await assertHeaders(origin, {
     '/': {},
-    '/demo/profile': {},
-    '/profile.js': {},
+    '/demo/connect-src': {},
+    '/api-call.js': {},
   });
 });
 
 test('lint flags the API host in the page script', async () => {
   assert.deepEqual(await lintFindings(`${import.meta.dirname}/..`), [
-    'profile.js:3 no-restricted-syntax',
+    'api-call.js:3 no-restricted-syntax',
   ]);
 });

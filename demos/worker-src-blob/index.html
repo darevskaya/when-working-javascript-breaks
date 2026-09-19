@@ -3,24 +3,30 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Fractal: Blob worker</title>
+    <title>worker-src: Blob workers</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <main class="lab demo-index">
-      <h1>Fractal: Blob worker</h1>
+      <h1>worker-src: Blob workers</h1>
       <p>Each link opens one mode of this demo in a new tab.</p>
       <ul>
         <li>
-          <a href="/demo/fractal/permissive" target="_blank">Works</a>
+          <a href="/demo/worker-src-blob/blob-allowed" target="_blank"
+            >Blob worker allowed: renders</a
+          >
           <code>worker-src 'self' blob:</code>
         </li>
         <li>
-          <a href="/demo/fractal/restricted" target="_blank">Blocked</a>
+          <a href="/demo/worker-src-blob/blob-blocked" target="_blank"
+            >Blob worker blocked: canvas stays empty</a
+          >
           <code>worker-src 'self'</code>
         </li>
         <li>
-          <a href="/demo/fractal/module" target="_blank">Module worker works</a>
+          <a href="/demo/worker-src-blob/module-worker" target="_blank"
+            >Module worker file: renders</a
+          >
           <code>worker-src 'self'</code>
         </li>
       </ul>

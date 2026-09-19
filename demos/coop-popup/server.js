@@ -9,16 +9,16 @@ export function createServer({ providerOrigin, tls } = {}) {
     serve(
       {
         '/': 'index.html',
-        '/demo/coop/permissive': 'coop.html',
-        '/demo/coop/host-coop': {
-          file: 'coop.html',
+        '/demo/coop-popup/no-coop': 'popup-login.html',
+        '/demo/coop-popup/coop-on-app': {
+          file: 'popup-login.html',
           'Cross-Origin-Opener-Policy': 'same-origin',
         },
-        '/demo/coop/restricted': 'coop.html',
+        '/demo/coop-popup/coop-on-login': 'popup-login.html',
         '/styles.css': common('styles.css'),
-        '/coop.css': 'coop.css',
-        '/coop.js': 'coop.js',
-        '/coop-config.js': {
+        '/popup-login.css': 'popup-login.css',
+        '/popup-login.js': 'popup-login.js',
+        '/login-config.js': {
           body: `export const providerOrigin = '${providerOrigin}';\n`,
         },
       },
@@ -35,7 +35,7 @@ if (isMain(import.meta)) {
   createServer({ providerOrigin: provider }).listen(
     ports.app,
     '127.0.0.1',
-    () => console.log(`Popup login: ${app}`),
+    () => console.log(`coop-popup: ${app}`),
   );
   createProviderServer({ appOrigin: app }).listen(
     ports.provider,

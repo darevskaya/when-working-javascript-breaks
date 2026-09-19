@@ -13,19 +13,19 @@ export function createServer({ providerOrigin, tls } = {}) {
     serve(
       {
         '/': 'index.html',
-        '/demo/broadcast/permissive': 'broadcast.html',
-        '/demo/broadcast/host-coop': {
-          file: 'broadcast.html',
+        '/demo/coop-broadcast-channel/no-coop': 'channel-login.html',
+        '/demo/coop-broadcast-channel/coop-on-app': {
+          file: 'channel-login.html',
           'Cross-Origin-Opener-Policy': 'same-origin',
         },
-        '/demo/broadcast/restricted': 'broadcast.html',
-        '/demo/broadcast/callback': 'callback.html',
+        '/demo/coop-broadcast-channel/coop-on-login': 'channel-login.html',
+        '/demo/coop-broadcast-channel/callback': 'callback.html',
         '/bff/login': bff.login,
         '/bff/callback': bff.callback,
         '/bff/user': bff.user,
         '/styles.css': common('styles.css'),
-        '/broadcast.css': 'broadcast.css',
-        '/broadcast.js': 'broadcast.js',
+        '/channel-login.css': 'channel-login.css',
+        '/channel-login.js': 'channel-login.js',
         '/callback.js': 'callback.js',
       },
       { root: import.meta.dirname },
@@ -49,7 +49,7 @@ if (isMain(import.meta)) {
   createServer({ providerOrigin: provider }).listen(
     ports.app,
     '127.0.0.1',
-    () => console.log(`Popup login with BroadcastChannel: ${app}`),
+    () => console.log(`coop-broadcast-channel: ${app}`),
   );
   createProviderServer({ appOrigin: app }).listen(
     ports.provider,

@@ -23,7 +23,7 @@ const canvasIsEmpty = (page) =>
   });
 
 test('Blob worker renders under worker-src self blob:', async ({ page }) => {
-  await page.goto('/demo/fractal/permissive');
+  await page.goto('/demo/worker-src-blob/blob-allowed');
   await expect(page.locator('#status')).toHaveText('Render complete');
   await expect(page.getByRole('progressbar')).toHaveJSProperty('value', 100);
   expect(
@@ -51,7 +51,7 @@ test('Blob worker renders under worker-src self blob:', async ({ page }) => {
 });
 
 test('Blob worker is blocked under worker-src self', async ({ page }) => {
-  await page.goto('/demo/fractal/restricted');
+  await page.goto('/demo/worker-src-blob/blob-blocked');
   await expect(page.locator('#status')).toHaveText(
     'Worker blocked by Content Security Policy',
   );
@@ -66,7 +66,7 @@ test('Blob worker is blocked under worker-src self', async ({ page }) => {
 });
 
 test('module worker renders under worker-src self', async ({ page }) => {
-  await page.goto('/demo/fractal/module');
+  await page.goto('/demo/worker-src-blob/module-worker');
   await expect(page.locator('#status')).toHaveText('Render complete');
   expect(await canvasIsEmpty(page)).toBe(false);
   expect(await page.evaluate(() => window.cspViolations)).toEqual([]);

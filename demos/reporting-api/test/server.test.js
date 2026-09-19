@@ -8,36 +8,36 @@ test('each example names the receiver and points one policy at it', async (t) =>
   const endpoints = { 'reporting-endpoints': 'demo="/reports"' };
   await assertHeaders(origin, {
     '/': {},
-    '/demo/reporting/csp/enforce': {
+    '/demo/reporting-api/csp/enforce': {
       ...endpoints,
       'content-security-policy': "script-src 'self'; report-to demo",
     },
-    '/demo/reporting/csp/report-only': {
+    '/demo/reporting-api/csp/report-only': {
       ...endpoints,
       'content-security-policy-report-only':
         "script-src 'self'; report-to demo",
     },
-    '/demo/reporting/csp/legacy': {
+    '/demo/reporting-api/csp/legacy': {
       'content-security-policy': "script-src 'self'; report-uri /reports",
     },
-    '/demo/reporting/coop/enforce': {
+    '/demo/reporting-api/coop/enforce': {
       ...endpoints,
       'cross-origin-opener-policy': 'same-origin; report-to="demo"',
     },
-    '/demo/reporting/coop/report-only': {
+    '/demo/reporting-api/coop/report-only': {
       ...endpoints,
       'cross-origin-opener-policy-report-only': 'same-origin; report-to="demo"',
     },
-    '/demo/reporting/coep/enforce': {
+    '/demo/reporting-api/coep/enforce': {
       ...endpoints,
       'cross-origin-embedder-policy': 'require-corp; report-to="demo"',
     },
-    '/demo/reporting/coep/report-only': {
+    '/demo/reporting-api/coep/report-only': {
       ...endpoints,
       'cross-origin-embedder-policy-report-only':
         'require-corp; report-to="demo"',
     },
-    '/reporting.js': {},
+    '/trigger-violation.js': {},
   });
   await assertHeaders(second, {
     '/reporting-popup': {},

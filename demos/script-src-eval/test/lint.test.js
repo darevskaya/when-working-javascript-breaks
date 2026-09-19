@@ -9,7 +9,7 @@ const folder = `${import.meta.dirname}/..`;
 // bundle, so lint checks the build configuration too.
 test('lint flags the eval and the eval devtool', async () => {
   assert.deepEqual(await lintFindings(folder), [
-    'template.js:10 no-eval',
+    'eval-renderer.js:10 no-eval',
     'webpack.config.js:18 no-restricted-syntax',
   ]);
 });
@@ -20,7 +20,7 @@ test(
   { skip: !semgrep && 'Semgrep is not installed' },
   () => {
     assert.deepEqual(semgrep, [
-      'template.js:10 script-src-string-to-code',
+      'eval-renderer.js:10 script-src-string-to-code',
       'webpack.config.js:18 webpack-eval-devtool',
     ]);
   },

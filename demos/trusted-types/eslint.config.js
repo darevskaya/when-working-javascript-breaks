@@ -6,7 +6,7 @@ import noUnsanitized from 'eslint-plugin-no-unsanitized';
 // with a constant or escaped string. eslint-plugin-no-unsanitized allows
 // both, because they are not an XSS risk, so this rule stays.
 // The one exception: el.innerHTML = html`…`, because the html tag returns
-// TrustedHTML from the Trusted Types policy in widget-policy.js.
+// TrustedHTML from the Trusted Types policy in innerhtml-policy.js.
 const innerHTML = {
   selector:
     "AssignmentExpression:matches([left.property.name='innerHTML'],[left.property.value='innerHTML'])" +

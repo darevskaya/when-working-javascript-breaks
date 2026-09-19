@@ -28,7 +28,7 @@ export function createBff({ providerOrigin, tls }) {
   const logins = new Map(); // state → { verifier, expires }
   const sessions = new Map(); // session id → { user, accessToken }
 
-  // GET /bff/login?login=restricted. The popup starts here, on the app
+  // GET /bff/login?login=coop. The popup starts here, on the app
   // origin. A new login ends the old session.
   function login(request, response) {
     const params = new URL(request.url, 'http://localhost').searchParams;
@@ -38,9 +38,7 @@ export function createBff({ providerOrigin, tls }) {
     logins.set(state, { verifier, expires: Date.now() + 300_000 });
     const origin = `${tls ? 'https' : 'http'}://${request.headers.host}`;
     const loginPath =
-      params.get('login') === 'restricted'
-        ? '/login/restricted'
-        : '/login/permissive';
+      params.get('login') === 'coop' ? '/login/coop' : '/login/no-coop';
     const authorize = new URL(loginPath, providerOrigin);
     authorize.searchParams.set('return_to', `${origin}/bff/callback`);
     authorize.searchParams.set('state', state);
@@ -99,8 +97,8 @@ export function createBff({ providerOrigin, tls }) {
       );
     }
     headers.Location = result
-      ? '/demo/broadcast/callback'
-      : '/demo/broadcast/callback?error=login_failed';
+      ? '/demo/coop-broadcast-channel/callback'
+      : '/demo/coop-broadcast-channel/callback?error=login_failed';
     response.writeHead(302, headers);
     response.end();
   }

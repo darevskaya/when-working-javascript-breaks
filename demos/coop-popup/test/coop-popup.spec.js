@@ -16,9 +16,9 @@ test('provider COOP severs references; a fresh permissive login recovers', async
   page,
   context,
 }) => {
-  await page.goto('/demo/coop/permissive');
+  await page.goto('/demo/coop-popup/no-coop');
   await expect(page.locator('#status')).toHaveText('Ready');
-  let popup = await openLogin(page, context, 'permissive');
+  let popup = await openLogin(page, context, 'no-coop');
   await expect(page.locator('#popup-closed')).toHaveText('false');
   await expect(popup.locator('#opener-state')).toHaveText('present');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
@@ -26,8 +26,8 @@ test('provider COOP severs references; a fresh permissive login recovers', async
   await expect.poll(() => popup.isClosed()).toBe(true);
   await expect(page.locator('#popup-closed')).toHaveText('true');
 
-  await page.goto('/demo/coop/restricted');
-  popup = await openLogin(page, context, 'restricted');
+  await page.goto('/demo/coop-popup/coop-on-login');
+  popup = await openLogin(page, context, 'coop');
   await expect(page.locator('#popup-closed')).toHaveText('true');
   expect(popup.isClosed()).toBe(false);
   await expect(popup.locator('#opener-state')).toHaveText('null');
@@ -46,8 +46,8 @@ test('provider COOP severs references; a fresh permissive login recovers', async
   );
   await popup.close();
 
-  await page.goto('/demo/coop/permissive');
-  popup = await openLogin(page, context, 'permissive');
+  await page.goto('/demo/coop-popup/no-coop');
+  popup = await openLogin(page, context, 'no-coop');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
 });
@@ -56,13 +56,13 @@ test('host COOP cuts the popup, and the app blames the user', async ({
   page,
   context,
 }) => {
-  const document = page.waitForResponse('**/demo/coop/host-coop');
-  await page.goto('/demo/coop/host-coop');
+  const document = page.waitForResponse('**/demo/coop-popup/coop-on-app');
+  await page.goto('/demo/coop-popup/coop-on-app');
   expect((await document).headers()['cross-origin-opener-policy']).toBe(
     'same-origin',
   );
   // The provider sends no COOP here. The host page alone cuts the popup.
-  const popup = await openLogin(page, context, 'permissive');
+  const popup = await openLogin(page, context, 'no-coop');
   await expect(popup.locator('#opener-state')).toHaveText('null');
   await expect(page.locator('#popup-closed')).toHaveText('true');
   await expect(page.locator('#status')).toHaveText(
@@ -82,8 +82,8 @@ test('closing the popup without a login reports a cancel', async ({
   page,
   context,
 }) => {
-  await page.goto('/demo/coop/permissive');
-  const popup = await openLogin(page, context, 'permissive');
+  await page.goto('/demo/coop-popup/no-coop');
+  const popup = await openLogin(page, context, 'no-coop');
   await expect(page.locator('#popup-closed')).toHaveText('false');
   await popup.close();
   await expect(page.locator('#popup-closed')).toHaveText('true');
@@ -96,8 +96,8 @@ test('narrow layouts and messages from unrelated windows', async ({
   page,
   context,
 }) => {
-  await page.goto('/demo/coop/permissive');
-  const popup = await openLogin(page, context, 'permissive');
+  await page.goto('/demo/coop-popup/no-coop');
+  const popup = await openLogin(page, context, 'no-coop');
   await page.evaluate(() =>
     window.postMessage(
       { type: 'login-complete', user: 'Mallory' },
@@ -122,7 +122,7 @@ test('narrow layouts and messages from unrelated windows', async ({
 });
 
 test('a blocked popup can be retried', async ({ page, context }) => {
-  await page.goto('/demo/coop/permissive');
+  await page.goto('/demo/coop-popup/no-coop');
   await page.evaluate(() => {
     const open = window.open;
     window.open = (...args) => {
@@ -132,7 +132,7 @@ test('a blocked popup can be retried', async ({ page, context }) => {
   });
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.locator('#status')).toContainText('Popup blocked');
-  const popup = await openLogin(page, context, 'permissive');
+  const popup = await openLogin(page, context, 'no-coop');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
 });

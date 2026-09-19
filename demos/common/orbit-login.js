@@ -1,4 +1,4 @@
-import { appOrigin } from '/provider-config.js';
+import { appOrigin } from '/orbit-login-config.js';
 
 const button = document.querySelector('#complete-login');
 const status = document.querySelector('#status');
@@ -37,7 +37,7 @@ function redirectLogin(returnTo) {
   document.querySelector('#provider-intro').textContent =
     'You are now on Orbit ID. When you continue, Orbit ID sends you back to the site that sent you here.';
   status.textContent = 'Continue to return to the site.';
-  if (location.pathname === '/login/embed') {
+  if (location.pathname === '/login/redirect') {
     document.querySelector('#provider-connection').hidden = true;
   } else {
     document.querySelector('#opener-state').value =
@@ -48,7 +48,7 @@ function redirectLogin(returnTo) {
 
   button.addEventListener('click', () => {
     // The BFF login asks for a code with PKCE. The Orbit ID server issues the
-    // code and checks the return address. See demos/broadcast/orbit-auth.js.
+    // code and checks the return address. See demos/coop-broadcast-channel/orbit-auth.js.
     if (new URLSearchParams(location.search).has('code_challenge')) {
       location.assign(`/login/approve${location.search}`);
       return;
@@ -67,7 +67,7 @@ function redirectLogin(returnTo) {
 }
 
 const returnTo = new URLSearchParams(location.search).get('return_to');
-if (location.pathname === '/login/embed' || returnTo !== null) {
+if (location.pathname === '/login/redirect' || returnTo !== null) {
   redirectLogin(returnTo);
 } else {
   popupLogin();

@@ -8,7 +8,7 @@ export default demoConfig({
   use: { baseURL: 'http://127.0.0.1:4177', trace: 'off' },
   webServer: {
     command: 'node server.js',
-    url: 'http://127.0.0.1:4177/demo/profile',
+    url: 'http://127.0.0.1:4177/demo/connect-src',
     env: { PORT: '4177', PROVIDER_PORT: '4178' },
     reuseExistingServer: true,
   },

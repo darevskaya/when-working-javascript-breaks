@@ -60,13 +60,13 @@ test('the BFF starts a login and rejects a callback it did not start', async (t)
     createServer({ providerOrigin: 'http://127.0.0.1:4999' }),
     t,
   );
-  const login = await fetch(`${app}/bff/login?login=restricted`, {
+  const login = await fetch(`${app}/bff/login?login=coop`, {
     redirect: 'manual',
   });
   assert.equal(login.status, 302);
   const authorize = new URL(login.headers.get('location'));
   assert.equal(authorize.origin, 'http://127.0.0.1:4999');
-  assert.equal(authorize.pathname, '/login/restricted');
+  assert.equal(authorize.pathname, '/login/coop');
   assert.equal(authorize.searchParams.get('code_challenge_method'), 'S256');
   assert.equal(authorize.searchParams.get('return_to'), `${app}/bff/callback`);
   // The verifier stays on the server. Only its hash leaves.
@@ -82,7 +82,7 @@ test('the BFF starts a login and rejects a callback it did not start', async (t)
   );
   assert.equal(
     callback.headers.get('location'),
-    '/demo/broadcast/callback?error=login_failed',
+    '/demo/coop-broadcast-channel/callback?error=login_failed',
   );
   assert.ok(
     !callback.headers.getSetCookie().some((c) => /^bff_session=\w/.test(c)),

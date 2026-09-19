@@ -13,21 +13,27 @@ test('the modes differ in one COOP header', async (t) => {
     t,
   );
   const html = async (url) => (await fetch(url)).text();
-  const page = await html(`${app}/demo/broadcast/permissive`);
-  assert.equal(page, await html(`${app}/demo/broadcast/host-coop`));
-  assert.equal(page, await html(`${app}/demo/broadcast/restricted`));
+  const page = await html(`${app}/demo/coop-broadcast-channel/no-coop`);
+  assert.equal(
+    page,
+    await html(`${app}/demo/coop-broadcast-channel/coop-on-app`),
+  );
+  assert.equal(
+    page,
+    await html(`${app}/demo/coop-broadcast-channel/coop-on-login`),
+  );
   const coop = 'cross-origin-opener-policy';
   await assertHeaders(app, {
     '/': {},
-    '/demo/broadcast/permissive': {},
-    '/demo/broadcast/host-coop': { [coop]: 'same-origin' },
-    '/demo/broadcast/restricted': {},
-    '/demo/broadcast/callback': {},
-    '/broadcast.js': {},
+    '/demo/coop-broadcast-channel/no-coop': {},
+    '/demo/coop-broadcast-channel/coop-on-app': { [coop]: 'same-origin' },
+    '/demo/coop-broadcast-channel/coop-on-login': {},
+    '/demo/coop-broadcast-channel/callback': {},
+    '/channel-login.js': {},
     '/callback.js': {},
   });
   await assertHeaders(provider, {
-    '/login/permissive': {},
-    '/login/restricted': { [coop]: 'same-origin' },
+    '/login/no-coop': {},
+    '/login/coop': { [coop]: 'same-origin' },
   });
 });

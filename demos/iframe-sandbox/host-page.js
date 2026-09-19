@@ -1,13 +1,13 @@
-import { embedOrbitFrame } from '/orbit-loader.js';
-import { providerOrigin } from '/embed-config.js';
+import { embedOrbitFrame } from '/frame-loader.js';
+import { providerOrigin } from '/frame-config.js';
 
 // The shop's own embed code. Each route stands for one customer
 // configuration, and the configurations differ only in the sandbox attribute.
 const base = 'allow-scripts allow-same-origin';
 const sandboxes = {
   'no-sandbox': null,
-  'no-top-navigation': base,
-  'user-activation': `${base} allow-top-navigation-by-user-activation`,
+  'sandbox-without-top-navigation': base,
+  'top-navigation-by-user-activation': `${base} allow-top-navigation-by-user-activation`,
 };
 const sandbox = sandboxes[location.pathname.split('/').pop()];
 
@@ -18,7 +18,7 @@ if (sandbox) iframe.setAttribute('sandbox', sandbox);
 const user = embedOrbitFrame(iframe);
 
 // Show the tag the customer wrote, so the audience can read the attribute.
-const tag = `<iframe src="${providerOrigin}/embed?…"`;
+const tag = `<iframe src="${providerOrigin}/frame?…"`;
 document.querySelector('#embed-code').textContent = sandbox
   ? `${tag}\n        sandbox="${sandbox}">`
   : `${tag}>`;

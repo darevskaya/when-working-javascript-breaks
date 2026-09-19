@@ -28,7 +28,7 @@ test('Chromium delivers CSP, COOP, COEP and legacy CSP to the collector', async 
       ['csp', 'legacy'],
     ]) {
       const page = await demo.browser.newPage();
-      await page.goto(`${demo.origin}/demo/reporting/${policy}/${mode}`);
+      await page.goto(`${demo.origin}/demo/reporting-api/${policy}/${mode}`);
       await page.getByRole('button', { name: 'Trigger violation' }).click();
     }
     await expect
@@ -67,7 +67,7 @@ test('reporting examples enforce or report each policy', async ({
   page,
   context,
 }) => {
-  await page.goto('/demo/reporting');
+  await page.goto('/demo/reporting-api');
   await page.screenshot({
     path: 'test-results/reporting-desktop.png',
     fullPage: true,
@@ -84,19 +84,19 @@ test('reporting examples enforce or report each policy', async ({
   ).toBe(true);
   await page.setViewportSize({ width: 1280, height: 720 });
   for (const mode of ['enforce', 'report-only', 'legacy']) {
-    await page.goto(`/demo/reporting/csp/${mode}`);
+    await page.goto(`/demo/reporting-api/csp/${mode}`);
     await page.getByRole('button', { name: 'Trigger violation' }).click();
     await expect(page.getByRole('status')).toContainText(
       mode === 'report-only' ? 'Inline script ran' : 'Inline script blocked',
     );
   }
   for (const mode of ['enforce', 'report-only']) {
-    await page.goto(`/demo/reporting/coep/${mode}`);
+    await page.goto(`/demo/reporting-api/coep/${mode}`);
     await page.getByRole('button', { name: 'Trigger violation' }).click();
     await expect(page.getByRole('status')).toContainText(
       mode === 'report-only' ? 'script loaded' : 'script blocked',
     );
-    await page.goto(`/demo/reporting/coop/${mode}`);
+    await page.goto(`/demo/reporting-api/coop/${mode}`);
     const popupPromise = context.waitForEvent('page');
     await page.getByRole('button', { name: 'Trigger violation' }).click();
     const popup = await popupPromise;

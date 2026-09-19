@@ -13,14 +13,14 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('profile loads with no policy', async ({ page }) => {
-  await page.goto('/demo/profile');
+  await page.goto('/demo/connect-src');
   await expect(page.getByText('Profile loaded')).toBeVisible();
 });
 
 test('profile loads under connect-src', async ({ page }) => {
   // A policy must arrive on the document response, so replace the response
   // headers here. `extraHTTPHeaders` sets request headers and does not work.
-  await page.route('**/demo/profile', async (route) => {
+  await page.route('**/demo/connect-src', async (route) => {
     const response = await route.fetch();
     await route.fulfill({
       response,
@@ -31,6 +31,6 @@ test('profile loads under connect-src', async ({ page }) => {
     });
   });
 
-  await page.goto('/demo/profile');
+  await page.goto('/demo/connect-src');
   await expect(page.getByText('Profile loaded')).toBeVisible();
 });

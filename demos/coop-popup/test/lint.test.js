@@ -9,10 +9,10 @@ const folder = `${import.meta.dirname}/..`;
 // of the window that window.open() returned.
 test('lint flags each read of popup.closed', async () => {
   assert.deepEqual(await lintFindings(folder), [
-    'coop.js:29 no-restricted-syntax',
-    'coop.js:44 no-restricted-syntax',
-    'coop.js:49 no-restricted-syntax',
-    'coop.js:50 no-restricted-syntax',
+    'popup-login.js:29 no-restricted-syntax',
+    'popup-login.js:44 no-restricted-syntax',
+    'popup-login.js:49 no-restricted-syntax',
+    'popup-login.js:50 no-restricted-syntax',
   ]);
 });
 
@@ -22,9 +22,9 @@ test(
   { skip: !semgrep && 'Semgrep is not installed' },
   () => {
     assert.deepEqual(semgrep, [
-      'coop.js:44 coop-popup-closed',
-      'coop.js:49 coop-popup-closed',
-      'coop.js:50 coop-popup-closed',
+      'popup-login.js:44 coop-popup-closed',
+      'popup-login.js:49 coop-popup-closed',
+      'popup-login.js:50 coop-popup-closed',
     ]);
   },
 );

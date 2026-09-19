@@ -1,4 +1,4 @@
-// The same renderer as template.js, without eval. Each template expression
+// The same renderer as eval-renderer.js, without eval. Each template expression
 // on the page is a regular function here, so lint passes. webpack builds the
 // bundle from this file. The bundle can still contain eval, because the
 // eval-source-map devtool wraps every module in eval(). See webpack.config.js.

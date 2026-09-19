@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Popup login: BroadcastChannel</title>
+    <title>COOP: popup login with BroadcastChannel</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <main class="lab demo-index">
-      <h1>Popup login: BroadcastChannel</h1>
+      <h1>COOP: popup login with BroadcastChannel</h1>
       <p>Each link opens one mode of this demo in a new tab.</p>
       <p>
         The same modes. The login returns through a callback page on the app
@@ -16,17 +16,23 @@
       </p>
       <ul>
         <li>
-          <a href="/demo/broadcast/permissive" target="_blank">Works</a>
+          <a href="/demo/coop-broadcast-channel/no-coop" target="_blank"
+            >No COOP: login works</a
+          >
           Neither page sends COOP.
         </li>
         <li>
-          <a href="/demo/broadcast/host-coop" target="_blank">Works</a>
+          <a href="/demo/coop-broadcast-channel/coop-on-app" target="_blank"
+            >COOP on the app page: login works</a
+          >
           The app page sends
           <code>Cross-Origin-Opener-Policy: same-origin</code>
         </li>
         <li>
-          <a href="/demo/broadcast/restricted" target="_blank">Works</a>
-          The provider sends
+          <a href="/demo/coop-broadcast-channel/coop-on-login" target="_blank"
+            >COOP on the login page: login works</a
+          >
+          The Orbit ID login sends
           <code>Cross-Origin-Opener-Policy: same-origin</code>
         </li>
       </ul>

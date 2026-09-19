@@ -8,24 +8,24 @@ export function createServer({ tls } = {}) {
     serve(
       {
         '/': 'index.html',
-        '/demo/fractal/permissive': {
-          file: 'fractal.html',
+        '/demo/worker-src-blob/blob-allowed': {
+          file: 'worker-page.html',
           'Content-Security-Policy': "worker-src 'self' blob:",
         },
-        '/demo/fractal/restricted': {
-          file: 'fractal.html',
+        '/demo/worker-src-blob/blob-blocked': {
+          file: 'worker-page.html',
           'Content-Security-Policy': "worker-src 'self'",
         },
-        '/demo/fractal/module': {
-          file: 'fractal.html',
+        '/demo/worker-src-blob/module-worker': {
+          file: 'worker-page.html',
           'Content-Security-Policy': "worker-src 'self'",
         },
         '/styles.css': common('styles.css'),
-        '/fractal.css': 'fractal.css',
-        '/fractal.js': 'fractal.js',
-        '/fractal-worker.js': 'fractal-worker.js',
+        '/worker-page.css': 'worker-page.css',
+        '/worker-page.js': 'worker-page.js',
+        '/blob-worker-source.js': 'blob-worker-source.js',
         '/worker-factory.js': 'worker-factory.js',
-        '/fractal-module-worker.js': 'fractal-module-worker.js',
+        '/module-worker.js': 'module-worker.js',
       },
       { root: import.meta.dirname },
     ),
@@ -34,6 +34,6 @@ export function createServer({ tls } = {}) {
 
 if (isMain(import.meta)) {
   createServer().listen(ports.app, '127.0.0.1', () =>
-    console.log(`Fractal: http://127.0.0.1:${ports.app}`),
+    console.log(`worker-src-blob: http://127.0.0.1:${ports.app}`),
   );
 }

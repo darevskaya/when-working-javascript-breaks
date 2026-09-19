@@ -1,5 +1,5 @@
 {
-  "name": "coop",
+  "name": "coop-popup",
   "private": true,
   "type": "module",
   "scripts": {

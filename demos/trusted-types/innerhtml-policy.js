@@ -1,4 +1,4 @@
-// The Orbit ID widget from widget.js, with a Trusted Types policy. The templates
+// The Orbit ID widget from innerhtml-string.js, with a Trusted Types policy. The templates
 // and the innerHTML assignments stay. The html tagged template escapes each
 // value, and the policy turns the result into TrustedHTML, which
 // require-trusted-types-for 'script' accepts.

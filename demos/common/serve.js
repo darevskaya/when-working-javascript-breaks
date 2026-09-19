@@ -21,7 +21,7 @@ export const common = (name) => path.join(import.meta.dirname, name);
 export function serve(routes, { root }) {
   return async (request, response) => {
     const url = new URL(request.url, 'http://localhost');
-    // Treat /demo/profile/ the same as /demo/profile.
+    // Treat /demo/connect-src/ the same as /demo/connect-src.
     const pathname = url.pathname.replace(/(.)\/$/, '$1');
     const route = routes[pathname];
 

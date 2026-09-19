@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 async function signIn(page, context) {
-  await page.goto('/demo/coop/permissive');
+  await page.goto('/demo/coop-popup/no-coop');
   // Listen on the context because COOP can detach the popup from its opener.
   const opened = context.waitForEvent('page');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
@@ -18,7 +18,7 @@ test('login completes with no policy', async ({ page, context }) => {
 test('login completes under COOP', async ({ page, context }) => {
   // context.route catches the popup's first request; page.route does not.
   // Add the header to the provider document, where the login result is sent.
-  await context.route('**/login/permissive', async (route) => {
+  await context.route('**/login/no-coop', async (route) => {
     const response = await route.fetch();
     await route.fulfill({
       response,

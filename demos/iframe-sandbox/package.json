@@ -1,5 +1,5 @@
 {
-  "name": "embed",
+  "name": "iframe-sandbox",
   "private": true,
   "type": "module",
   "scripts": {

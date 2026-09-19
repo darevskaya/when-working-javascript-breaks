@@ -1,4 +1,4 @@
-# Browser reports
+# Reporting API: report-only policies
 
 CSP, COOP, and COEP examples in enforce and report-only modes. The browser
 sends each violation report to `/reports`, and the terminal prints it.

@@ -1,5 +1,5 @@
-// The original Orbit ID sign-in widget. No page loads it. widget-escaped.js
-// and widget-policy.js are changed copies of it, and the lint and Semgrep
+// The original Orbit ID sign-in widget. No page loads it. innerhtml-escaped.js
+// and innerhtml-policy.js are changed copies of it, and the lint and Semgrep
 // demos flag its two innerHTML lines. The markup is a template string in
 // innerHTML, which require-trusted-types-for 'script' refuses with a
 // TypeError.

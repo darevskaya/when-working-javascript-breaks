@@ -10,25 +10,25 @@ export function createServer({ tls } = {}) {
       {
         '/': 'index.html',
         // The escaped widget still assigns strings to innerHTML, so it breaks.
-        '/demo/widget/escaped': {
-          file: 'shop-escaped.html',
+        '/demo/trusted-types/escaped-string': {
+          file: 'escaped-page.html',
           'Content-Security-Policy': trustedTypes,
         },
         // This widget passes its markup through a Trusted Types policy.
-        '/demo/widget/policy': {
-          file: 'shop-policy.html',
+        '/demo/trusted-types/named-policy': {
+          file: 'policy-page.html',
           'Content-Security-Policy': trustedTypes,
         },
         // The customer lists the allowed policy names, without orbit-widget.
-        '/demo/widget/policy-not-allowed': {
-          file: 'shop-policy.html',
+        '/demo/trusted-types/policy-not-allowed': {
+          file: 'policy-page.html',
           'Content-Security-Policy': `${trustedTypes}; trusted-types shop-policy`,
         },
         '/styles.css': common('styles.css'),
         '/shop.css': common('shop.css'),
         '/orbit.css': common('orbit.css'),
-        '/widget-escaped.js': 'widget-escaped.js',
-        '/widget-policy.js': 'widget-policy.js',
+        '/innerhtml-escaped.js': 'innerhtml-escaped.js',
+        '/innerhtml-policy.js': 'innerhtml-policy.js',
       },
       { root: import.meta.dirname },
     ),
@@ -37,6 +37,6 @@ export function createServer({ tls } = {}) {
 
 if (isMain(import.meta)) {
   createServer().listen(ports.app, '127.0.0.1', () =>
-    console.log(`Widget: http://127.0.0.1:${ports.app}`),
+    console.log(`trusted-types: http://127.0.0.1:${ports.app}`),
   );
 }

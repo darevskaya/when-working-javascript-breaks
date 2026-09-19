@@ -8,9 +8,9 @@ export function createServer({ tls } = {}) {
     serve(
       {
         '/': 'index.html',
-        '/demo/profile': 'profile.html',
+        '/demo/connect-src': 'api-page.html',
         '/styles.css': common('styles.css'),
-        '/profile.js': 'profile.js',
+        '/api-call.js': 'api-call.js',
       },
       { root: import.meta.dirname },
     ),
@@ -19,6 +19,6 @@ export function createServer({ tls } = {}) {
 
 if (isMain(import.meta)) {
   createServer().listen(ports.app, '127.0.0.1', () =>
-    console.log(`Profile: http://127.0.0.1:${ports.app}`),
+    console.log(`connect-src: http://127.0.0.1:${ports.app}`),
   );
 }

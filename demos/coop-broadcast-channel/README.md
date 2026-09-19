@@ -1,6 +1,6 @@
-# Popup login: BroadcastChannel
+# COOP: popup login with BroadcastChannel
 
-The same three COOP modes as the COOP demo. This login needs no window
+The same three COOP modes as the `coop-popup` demo. This login needs no window
 reference, and the browser holds no token.
 
 1. The app opens `/bff/login` with `noopener`. The BFF in `bff.js` sends the
@@ -11,7 +11,7 @@ reference, and the browser holds no token.
 4. The callback page posts "done" on a `BroadcastChannel`. The app then asks
    `/bff/user` who signed in.
 
-The login works in all three modes. `npm run lint` uses the COOP demo's rules,
+The login works in all three modes. `npm run lint` uses the `coop-popup` demo's rules,
 and it finds nothing.
 
 Source: [RFC 10017](https://www.rfc-editor.org/rfc/rfc10017), section 6.1.

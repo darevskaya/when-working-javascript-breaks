@@ -10,24 +10,24 @@ export function createServer({ tls } = {}) {
     serve(
       {
         '/': 'index.html',
-        '/demo/summary/permissive': {
-          file: 'summary.html',
+        '/demo/script-src-eval/unsafe-eval-allowed': {
+          file: 'templates.html',
           'Content-Security-Policy': "script-src 'self' 'unsafe-eval'",
         },
-        '/demo/summary/restricted': {
-          file: 'summary.html',
+        '/demo/script-src-eval/eval-blocked': {
+          file: 'templates.html',
           'Content-Security-Policy': "script-src 'self'",
         },
-        '/demo/summary/bundle': {
-          file: 'summary-bundle.html',
+        '/demo/script-src-eval/eval-source-map-bundle': {
+          file: 'templates-bundle.html',
           'Content-Security-Policy': "script-src 'self'",
         },
         '/styles.css': common('styles.css'),
-        '/summary.css': 'summary.css',
-        '/summary.js': 'summary.js',
-        '/template.js': 'template.js',
-        '/bundle/summary.js': 'dist/summary.js',
-        '/bundle/summary.js.map': 'dist/summary.js.map',
+        '/templates.css': 'templates.css',
+        '/templates-page.js': 'templates-page.js',
+        '/eval-renderer.js': 'eval-renderer.js',
+        '/bundle/templates-page.js': 'dist/templates-page.js',
+        '/bundle/templates-page.js.map': 'dist/templates-page.js.map',
       },
       { root: import.meta.dirname },
     ),
@@ -36,6 +36,6 @@ export function createServer({ tls } = {}) {
 
 if (isMain(import.meta)) {
   createServer().listen(ports.app, '127.0.0.1', () =>
-    console.log(`Order summary: http://127.0.0.1:${ports.app}`),
+    console.log(`script-src-eval: http://127.0.0.1:${ports.app}`),
   );
 }

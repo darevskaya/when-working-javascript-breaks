@@ -10,45 +10,45 @@ export function createServer({
   tls,
 } = {}) {
   const endpoints = { 'Reporting-Endpoints': 'demo="/reports"' };
-  const example = (headers) => ({ file: 'example.html', ...headers });
+  const example = (headers) => ({ file: 'violation.html', ...headers });
   return listener(
     tls,
     serve(
       {
         '/': 'index.html',
-        '/demo/reporting': 'index.html',
-        '/demo/reporting/csp/enforce': example({
+        '/demo/reporting-api': 'index.html',
+        '/demo/reporting-api/csp/enforce': example({
           ...endpoints,
           'Content-Security-Policy': "script-src 'self'; report-to demo",
         }),
-        '/demo/reporting/csp/report-only': example({
+        '/demo/reporting-api/csp/report-only': example({
           ...endpoints,
           'Content-Security-Policy-Report-Only':
             "script-src 'self'; report-to demo",
         }),
         // The legacy route names no receiver. report-uri holds the URL.
-        '/demo/reporting/csp/legacy': example({
+        '/demo/reporting-api/csp/legacy': example({
           'Content-Security-Policy': "script-src 'self'; report-uri /reports",
         }),
-        '/demo/reporting/coop/enforce': example({
+        '/demo/reporting-api/coop/enforce': example({
           ...endpoints,
           'Cross-Origin-Opener-Policy': 'same-origin; report-to="demo"',
         }),
-        '/demo/reporting/coop/report-only': example({
+        '/demo/reporting-api/coop/report-only': example({
           ...endpoints,
           'Cross-Origin-Opener-Policy-Report-Only':
             'same-origin; report-to="demo"',
         }),
-        '/demo/reporting/coep/enforce': example({
+        '/demo/reporting-api/coep/enforce': example({
           ...endpoints,
           'Cross-Origin-Embedder-Policy': 'require-corp; report-to="demo"',
         }),
-        '/demo/reporting/coep/report-only': example({
+        '/demo/reporting-api/coep/report-only': example({
           ...endpoints,
           'Cross-Origin-Embedder-Policy-Report-Only':
             'require-corp; report-to="demo"',
         }),
-        '/reporting.js': 'reporting.js',
+        '/trigger-violation.js': 'trigger-violation.js',
         '/reporting-config.js': {
           body: `export const secondOrigin = '${secondOrigin}';\n`,
         },
@@ -70,7 +70,7 @@ export function createSecondServer({
     tls,
     serve(
       {
-        '/reporting-popup': 'popup.html',
+        '/reporting-popup': 'second-origin-popup.html',
         '/reporting-resource.js': {
           body: '// A script served by the second origin.\n',
         },
@@ -87,7 +87,7 @@ export function createSecondServer({
 if (isMain(import.meta)) {
   const collector = createReportCollector();
   createServer({ collector }).listen(ports.app, '127.0.0.1', () =>
-    console.log(`Reporting over HTTP: http://127.0.0.1:${ports.app}`),
+    console.log(`reporting-api over HTTP: http://127.0.0.1:${ports.app}`),
   );
   createSecondServer({ collector }).listen(ports.provider, '127.0.0.1');
 }

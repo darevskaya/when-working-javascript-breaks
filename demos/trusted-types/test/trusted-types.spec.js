@@ -16,7 +16,7 @@ test('escaped values are still a string, so Trusted Types blocks them', async ({
   page,
 }) => {
   const error = page.waitForEvent('pageerror');
-  await page.goto('/demo/widget/escaped');
+  await page.goto('/demo/trusted-types/escaped-string');
   expect((await error).name).toBe('TypeError');
   expect((await error).message).toMatch(/innerHTML.*TrustedHTML/);
   await expect
@@ -37,7 +37,7 @@ test('the policy widget keeps innerHTML and works under Trusted Types', async ({
 }) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error));
-  await page.goto('/demo/widget/policy');
+  await page.goto('/demo/trusted-types/named-policy');
   const widget = page.getByRole('region', { name: 'Sign in' });
   // The html tag escaped the & in the shop name, and the page shows it as &.
   await expect(
@@ -64,7 +64,7 @@ test('a CSP that does not name the policy stops the policy widget', async ({
   page,
 }) => {
   const error = page.waitForEvent('pageerror');
-  await page.goto('/demo/widget/policy-not-allowed');
+  await page.goto('/demo/trusted-types/policy-not-allowed');
   expect((await error).name).toBe('TypeError');
   expect((await error).message).toMatch(/orbit-widget/);
   await expect

@@ -11,7 +11,7 @@ const status = document.querySelector('#status');
 const signIn = document.querySelector('#sign-in');
 
 signIn.addEventListener('click', () => {
-  const login = new URL('/login/embed', location.origin);
+  const login = new URL('/login/redirect', location.origin);
   login.searchParams.set('return_to', returnTo);
   status.textContent = 'Opening Orbit ID…';
   // A sandbox without allow-top-navigation or

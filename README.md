@@ -9,7 +9,7 @@ Each folder in `demos/` is one demo, with its own server, lint rules, Semgrep
 rules, tests, and README. Run one demo at a time:
 
 ```sh
-cd demos/widget
+cd demos/trusted-types
 npm start
 npm run lint
 npm run scan
@@ -21,14 +21,14 @@ Orbit ID, a fake identity provider, on port 4174.
 
 The demos:
 
-- `widget/`: `innerHTML` under Trusted Types
-- `embed/`: an iframe sandbox and a redirect login
-- `summary/`: `eval` under `script-src`
-- `fractal/`: a Blob worker under `worker-src`
-- `coop/`: a popup login under COOP
-- `broadcast/`: a popup login that COOP does not break
-- `profile/`: `connect-src` in a Playwright test
-- `reporting/`: report-only policies and browser reports
+- `trusted-types/`: Trusted Types blocks strings in `innerHTML`
+- `iframe-sandbox/`: a sandboxed frame needs a token to redirect the page
+- `script-src-eval/`: `script-src` blocks `eval`, also in a webpack build
+- `worker-src-blob/`: `worker-src` blocks a Worker from a Blob URL
+- `coop-popup/`: COOP cuts the window relationship of a popup login
+- `coop-broadcast-channel/`: a popup login that COOP does not break
+- `connect-src/`: `connect-src` blocks an API host
+- `reporting-api/`: report-only policies and browser reports
 
 `demos/common/` holds the files that several demos share.
 

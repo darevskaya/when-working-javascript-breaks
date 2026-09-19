@@ -3,26 +3,32 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Popup login: COOP</title>
+    <title>COOP: popup login</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <main class="lab demo-index">
-      <h1>Popup login: COOP</h1>
+      <h1>COOP: popup login</h1>
       <p>Each link opens one mode of this demo in a new tab.</p>
       <ul>
         <li>
-          <a href="/demo/coop/permissive" target="_blank">Works</a>
+          <a href="/demo/coop-popup/no-coop" target="_blank"
+            >No COOP: login works</a
+          >
           Neither page sends COOP.
         </li>
         <li>
-          <a href="/demo/coop/host-coop" target="_blank">Breaks</a>
+          <a href="/demo/coop-popup/coop-on-app" target="_blank"
+            >COOP on the app page: login looks canceled</a
+          >
           The app page sends
           <code>Cross-Origin-Opener-Policy: same-origin</code>
         </li>
         <li>
-          <a href="/demo/coop/restricted" target="_blank">Breaks</a>
-          The provider sends
+          <a href="/demo/coop-popup/coop-on-login" target="_blank"
+            >COOP on the login page: login looks canceled</a
+          >
+          The Orbit ID login sends
           <code>Cross-Origin-Opener-Policy: same-origin</code>
         </li>
       </ul>

@@ -21,7 +21,7 @@ test('lint flags the Blob worker in the factory', async () => {
 test('lint allows new Worker only in the worker factory', async () => {
   const eslint = new ESLint({ cwd: folder });
   const code = "new Worker('/worker.js');";
-  const [outside] = await eslint.lintText(code, { filePath: 'fractal.js' });
+  const [outside] = await eslint.lintText(code, { filePath: 'worker-page.js' });
   const [inside] = await eslint.lintText(code, {
     filePath: 'worker-factory.js',
   });

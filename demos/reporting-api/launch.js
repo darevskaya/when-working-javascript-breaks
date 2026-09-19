@@ -111,8 +111,8 @@ if (
 ) {
   const demo = await startReportingDemo();
   const page = await demo.browser.newPage();
-  await page.goto(`${demo.origin}/demo/reporting`);
-  console.log(`Reporting demo: ${demo.origin}/demo/reporting`);
+  await page.goto(`${demo.origin}/demo/reporting-api`);
+  console.log(`Reporting demo: ${demo.origin}/demo/reporting-api`);
   console.log(`Browser reports: ${reportsFile}`);
   console.log('Close the demo browser or press Ctrl+C to stop.');
   let closing = false;

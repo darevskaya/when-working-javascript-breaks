@@ -13,25 +13,31 @@ test('the pages send no policy and serve the same HTML', async (t) => {
     t,
   );
   const html = async (url) => (await fetch(url)).text();
-  const page = await html(`${app}/demo/embed/no-sandbox`);
-  assert.equal(page, await html(`${app}/demo/embed/no-top-navigation`));
-  assert.equal(page, await html(`${app}/demo/embed/user-activation`));
-  await assertHeaders(app, {
-    '/': {},
-    '/demo/embed/no-sandbox': {},
-    '/demo/embed/no-top-navigation': {},
-    '/demo/embed/user-activation': {},
-    '/embed.js': {},
-    '/orbit-loader.js': {},
-  });
-  // The embed login is the same page as the other Orbit ID logins.
-  await assertHeaders(provider, { '/embed': {}, '/login/embed': {} });
+  const page = await html(`${app}/demo/iframe-sandbox/no-sandbox`);
   assert.equal(
-    await html(`${provider}/login/embed`),
-    await html(`${provider}/login/permissive`),
+    page,
+    await html(`${app}/demo/iframe-sandbox/sandbox-without-top-navigation`),
   );
   assert.equal(
-    await html(`${app}/embed-config.js`),
+    page,
+    await html(`${app}/demo/iframe-sandbox/top-navigation-by-user-activation`),
+  );
+  await assertHeaders(app, {
+    '/': {},
+    '/demo/iframe-sandbox/no-sandbox': {},
+    '/demo/iframe-sandbox/sandbox-without-top-navigation': {},
+    '/demo/iframe-sandbox/top-navigation-by-user-activation': {},
+    '/host-page.js': {},
+    '/frame-loader.js': {},
+  });
+  // The embed login is the same page as the other Orbit ID logins.
+  await assertHeaders(provider, { '/frame': {}, '/login/redirect': {} });
+  assert.equal(
+    await html(`${provider}/login/redirect`),
+    await html(`${provider}/login/no-coop`),
+  );
+  assert.equal(
+    await html(`${app}/frame-config.js`),
     "export const providerOrigin = 'http://127.0.0.1:4999';\n",
   );
 });

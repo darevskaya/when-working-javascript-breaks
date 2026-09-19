@@ -1,4 +1,4 @@
-import { providerOrigin } from '/coop-config.js';
+import { providerOrigin } from '/login-config.js';
 
 const button = document.querySelector('#sign-in');
 const status = document.querySelector('#status');
@@ -8,9 +8,9 @@ let poll;
 let loggedIn = false;
 
 // The restricted page opens the provider login that sends COOP.
-const loginPath = location.pathname.endsWith('/restricted')
-  ? '/login/restricted'
-  : '/login/permissive';
+const loginPath = location.pathname.endsWith('/coop-on-login')
+  ? '/login/coop'
+  : '/login/no-coop';
 
 window.addEventListener('message', (event) => {
   if (

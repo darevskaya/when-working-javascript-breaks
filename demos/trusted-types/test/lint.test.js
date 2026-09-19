@@ -6,19 +6,19 @@ import { findings } from '../../common/semgrep.js';
 
 const folder = `${import.meta.dirname}/..`;
 
-// widget.js is the original, and no page loads it. Both rules flag its two
+// innerhtml-string.js is the original, and no page loads it. Both rules flag its two
 // innerHTML lines. no-unsanitized accepts the escaped values in
-// widget-escaped.js, but Trusted Types does not, so only the innerHTML rule
+// innerhtml-escaped.js, but Trusted Types does not, so only the innerHTML rule
 // flags them. html`…` returns TrustedHTML, so both rules accept
-// widget-policy.js.
+// innerhtml-policy.js.
 test('lint flags the original and the escaped widget', async () => {
   assert.deepEqual(await lintFindings(folder), [
-    'widget-escaped.js:23 no-restricted-syntax',
-    'widget-escaped.js:36 no-restricted-syntax',
-    'widget.js:22 no-restricted-syntax',
-    'widget.js:22 no-unsanitized/property',
-    'widget.js:9 no-restricted-syntax',
-    'widget.js:9 no-unsanitized/property',
+    'innerhtml-escaped.js:23 no-restricted-syntax',
+    'innerhtml-escaped.js:36 no-restricted-syntax',
+    'innerhtml-string.js:22 no-restricted-syntax',
+    'innerhtml-string.js:22 no-unsanitized/property',
+    'innerhtml-string.js:9 no-restricted-syntax',
+    'innerhtml-string.js:9 no-unsanitized/property',
   ]);
 });
 
@@ -55,10 +55,10 @@ test(
   { skip: !semgrep && 'Semgrep is not installed' },
   () => {
     assert.deepEqual(semgrep, [
-      'widget-escaped.js:23 trusted-types-markup-sink',
-      'widget-escaped.js:36 trusted-types-markup-sink',
-      'widget.js:22 trusted-types-markup-sink',
-      'widget.js:9 trusted-types-markup-sink',
+      'innerhtml-escaped.js:23 trusted-types-markup-sink',
+      'innerhtml-escaped.js:36 trusted-types-markup-sink',
+      'innerhtml-string.js:22 trusted-types-markup-sink',
+      'innerhtml-string.js:9 trusted-types-markup-sink',
     ]);
   },
 );

@@ -1,4 +1,4 @@
-// The same popup login as coop.js, without window references. The popup
+// The same popup login as popup-login.js, without window references. The popup
 // starts at the BFF on this origin, and the BFF runs the login with Orbit ID.
 // At the end, Orbit ID sends the popup back to this origin, and a callback
 // page posts "done" on a BroadcastChannel. A channel reaches every page of
@@ -14,9 +14,7 @@ const channel = new BroadcastChannel('orbit-login');
 let waiting = false;
 
 // The restricted page asks for the provider login that sends COOP.
-const login = location.pathname.endsWith('/restricted')
-  ? 'restricted'
-  : 'permissive';
+const login = location.pathname.endsWith('/coop-on-login') ? 'coop' : 'no-coop';
 
 channel.addEventListener('message', async ({ data }) => {
   if (!waiting) return;

@@ -17,9 +17,9 @@ async function openLogin(page, context, loginPath) {
 }
 
 const modes = [
-  { mode: 'permissive', loginPath: '/login/permissive' },
-  { mode: 'host-coop', loginPath: '/login/permissive' },
-  { mode: 'restricted', loginPath: '/login/restricted' },
+  { mode: 'no-coop', loginPath: '/login/no-coop' },
+  { mode: 'coop-on-app', loginPath: '/login/no-coop' },
+  { mode: 'coop-on-login', loginPath: '/login/coop' },
 ];
 
 for (const { mode, loginPath } of modes) {
@@ -34,7 +34,7 @@ for (const { mode, loginPath } of modes) {
         window.recordMessage(event.data),
       ),
     );
-    await page.goto(`/demo/broadcast/${mode}`);
+    await page.goto(`/demo/coop-broadcast-channel/${mode}`);
     const popup = await openLogin(page, context, loginPath);
     // noopener: no window relationship in any mode, so COOP has nothing to
     // cut, and the page gets no window back.
@@ -60,11 +60,11 @@ test('a "done" message without a session does not sign in', async ({
   page,
   context,
 }) => {
-  await page.goto('/demo/broadcast/permissive');
-  const popup = await openLogin(page, context, '/login/permissive');
+  await page.goto('/demo/coop-broadcast-channel/no-coop');
+  const popup = await openLogin(page, context, '/login/no-coop');
   // Another page of the same origin posts "done" before the login ends.
   const other = await context.newPage();
-  await other.goto('/demo/broadcast/permissive');
+  await other.goto('/demo/coop-broadcast-channel/no-coop');
   await other.evaluate(() =>
     new BroadcastChannel('orbit-login').postMessage({ type: 'login-complete' }),
   );
@@ -76,7 +76,7 @@ test('a "done" message without a session does not sign in', async ({
 });
 
 test('the BFF answers only with its CSRF header', async ({ page, request }) => {
-  await page.goto('/demo/broadcast/permissive');
+  await page.goto('/demo/coop-broadcast-channel/no-coop');
   expect((await request.get('/bff/user')).status()).toBe(403);
   expect(
     (await request.get('/bff/user', { headers: { 'X-CSRF': '1' } })).status(),

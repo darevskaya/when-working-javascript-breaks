@@ -1,6 +1,6 @@
 import { secondOrigin } from '/reporting-config.js';
 
-// The route is /demo/reporting/<policy>/<mode>.
+// The route is /demo/reporting-api/<policy>/<mode>.
 const [policy, mode] = location.pathname.split('/').slice(-2);
 const status = document.querySelector('#status');
 

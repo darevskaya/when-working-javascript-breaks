@@ -1,16 +1,16 @@
 import path from 'node:path';
 import webpack from 'webpack';
 
-// Builds the page script into dist/summary.js for the bundle page. The build
-// uses template-safe.js, so the source has no eval.
+// Builds the page script into dist/templates-page.js for the bundle page. The build
+// uses function-renderer.js, so the source has no eval.
 export default {
   mode: 'production',
   context: import.meta.dirname,
-  entry: './summary.js',
+  entry: './templates-page.js',
   plugins: [
     new webpack.NormalModuleReplacementPlugin(
-      /^\.\/template\.js$/,
-      './template-safe.js',
+      /^\.\/eval-renderer\.js$/,
+      './function-renderer.js',
     ),
   ],
   // eval-source-map wraps every module in eval(), so the bundle needs
@@ -21,7 +21,7 @@ export default {
   // devtool: 'source-map',
   output: {
     path: path.join(import.meta.dirname, 'dist'),
-    filename: 'summary.js',
+    filename: 'templates-page.js',
     clean: true,
   },
 };
