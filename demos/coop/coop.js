@@ -5,6 +5,7 @@ const status = document.querySelector('#status');
 const closed = document.querySelector('#popup-closed');
 let popup;
 let poll;
+let loggedIn = false;
 
 // The restricted page opens the provider login that sends COOP.
 const loginPath = location.pathname.endsWith('/restricted')
@@ -19,6 +20,7 @@ window.addEventListener('message', (event) => {
     typeof event.data.user !== 'string'
   )
     return;
+  loggedIn = true;
   status.textContent = `Logged in as ${event.data.user}`;
 });
 
@@ -37,11 +39,16 @@ button.addEventListener('click', () => {
     status.className = 'blocked';
     return;
   }
+  loggedIn = false;
   status.textContent = 'Waiting for login…';
   closed.value = String(popup.closed);
-  // Under COOP the popup is detached, so this stays false while it is open.
+  // A closed popup with no result looks like a cancel. Under COOP, the popup
+  // is detached and reports closed while it is still open, so the SDK blames
+  // the user.
   poll = setInterval(() => {
     closed.value = String(popup.closed);
-    if (popup.closed) clearInterval(poll);
+    if (!popup.closed) return;
+    clearInterval(poll);
+    if (!loggedIn) status.textContent = 'Login canceled by the user.';
   }, 100);
 });

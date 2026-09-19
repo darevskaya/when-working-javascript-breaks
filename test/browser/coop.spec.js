@@ -40,13 +40,56 @@ test('provider COOP severs references; a fresh permissive login recovers', async
     path: 'test-results/coop-provider-restricted.png',
     fullPage: true,
   });
-  await expect(page.locator('#status')).toHaveText('Waiting for login…');
+  // The popup is still open, but the app reports a cancel by the user.
+  await expect(page.locator('#status')).toHaveText(
+    'Login canceled by the user.',
+  );
   await popup.close();
 
   await page.goto('/demo/coop/permissive');
   popup = await openLogin(page, context, 'permissive');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
+});
+
+test('host COOP cuts the popup, and the app blames the user', async ({
+  page,
+  context,
+}) => {
+  const document = page.waitForResponse('**/demo/coop/host-coop');
+  await page.goto('/demo/coop/host-coop');
+  expect((await document).headers()['cross-origin-opener-policy']).toBe(
+    'same-origin',
+  );
+  // The provider sends no COOP here. The host page alone cuts the popup.
+  const popup = await openLogin(page, context, 'permissive');
+  await expect(popup.locator('#opener-state')).toHaveText('null');
+  await expect(page.locator('#popup-closed')).toHaveText('true');
+  await expect(page.locator('#status')).toHaveText(
+    'Login canceled by the user.',
+  );
+  expect(popup.isClosed()).toBe(false);
+  await popup.getByRole('button', { name: 'Continue as Elena' }).click();
+  await expect(popup.locator('#status')).toHaveClass('blocked');
+  await expect(page.locator('#status')).toHaveText(
+    'Login canceled by the user.',
+  );
+  await page.screenshot({ path: 'test-results/coop-host.png' });
+  await popup.close();
+});
+
+test('closing the popup without a login reports a cancel', async ({
+  page,
+  context,
+}) => {
+  await page.goto('/demo/coop/permissive');
+  const popup = await openLogin(page, context, 'permissive');
+  await expect(page.locator('#popup-closed')).toHaveText('false');
+  await popup.close();
+  await expect(page.locator('#popup-closed')).toHaveText('true');
+  await expect(page.locator('#status')).toHaveText(
+    'Login canceled by the user.',
+  );
 });
 
 test('narrow layouts and messages from unrelated windows', async ({

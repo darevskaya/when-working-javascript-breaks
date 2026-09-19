@@ -89,7 +89,12 @@
       <ul>
         <li>
           <a href="/demo/coop/permissive" target="_blank">Works</a>
-          The provider sends no COOP header.
+          Neither page sends COOP.
+        </li>
+        <li>
+          <a href="/demo/coop/host-coop" target="_blank">Breaks</a>
+          The app page sends
+          <code>Cross-Origin-Opener-Policy: same-origin</code>
         </li>
         <li>
           <a href="/demo/coop/restricted" target="_blank">Breaks</a>

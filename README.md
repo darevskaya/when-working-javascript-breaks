@@ -54,7 +54,8 @@ To see a header, open the browser developer tools and select Network. Reload
 the page, select its document request, and read the response headers. The
 restricted shop sends `Content-Security-Policy: require-trusted-types-for`. The
 calculator sends `Content-Security-Policy: script-src`. The fractal sends
-`Content-Security-Policy: worker-src`. For the popup demo, select the popup's
+`Content-Security-Policy: worker-src`. The host-coop page sends
+`Cross-Origin-Opener-Policy`. On the restricted popup page, select the popup's
 `/login/restricted` request, which sends `Cross-Origin-Opener-Policy`.
 
 ## SDK widget
@@ -143,14 +144,27 @@ http://127.0.0.1:4173/demo/coop/permissive
 
 This demo starts a fake identity provider on port 4174. Sign in and continue as
 Elena. The provider posts the result back through `window.opener`, and the app
-shows the name. Now open the restricted page and sign in again:
+shows the name. If you close the popup without a login, the app reports "Login
+canceled by the user."
+
+Now open the host-coop page. It sends `Cross-Origin-Opener-Policy: same-origin`
+on the app page, and the provider sends nothing:
+
+http://127.0.0.1:4173/demo/coop/host-coop
+
+The popup opens, but COOP separates it from the app. The app sees
+`popup.closed: true` at once and reports "Login canceled by the user." The
+popup is still open, and the provider reports `window.opener: null`. Nobody
+canceled anything.
+
+The restricted page sends no header itself. It opens a provider login that
+sends `Cross-Origin-Opener-Policy: same-origin`:
 
 http://127.0.0.1:4173/demo/coop/restricted
 
-This page opens a provider login that sends `Cross-Origin-Opener-Policy:
-same-origin`. The popup stays open, but the app reports `popup.closed: true` and
-the provider reports `window.opener: null`. Login cannot complete. Both modes
-serve the same provider HTML and JavaScript.
+The result is the same. The provider changed its own header, and the app and
+the customer changed nothing. All modes serve the same app and provider HTML
+and JavaScript.
 
 Close detached popups by hand between attempts. Use the `127.0.0.1` URLs above so the login message matches the origin
 of the application. `PORT` and `PROVIDER_PORT` override the two server ports.

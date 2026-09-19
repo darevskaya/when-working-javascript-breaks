@@ -75,6 +75,7 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
     '/demo/fractal/restricted',
     '/demo/fractal/module',
     '/demo/coop/permissive',
+    '/demo/coop/host-coop',
     '/demo/coop/restricted',
     '/demo/reporting',
   ]);
@@ -115,6 +116,13 @@ test('COOP changes only the provider header, with identical documents and script
     second.headers.get('content-security-policy'),
   );
   assert.equal(await first.text(), await second.text());
+  // The host-coop page is the same document with COOP on the app side.
+  const host = await fetch(`${appOrigin}/demo/coop/host-coop`);
+  assert.equal(host.headers.get('cross-origin-opener-policy'), 'same-origin');
+  assert.equal(
+    await host.text(),
+    await (await fetch(`${appOrigin}/demo/coop/permissive`)).text(),
+  );
   assert.equal(
     await (await fetch(`${appOrigin}/coop-config.js`)).text(),
     "export const providerOrigin = 'http://127.0.0.1:4999';\n",
@@ -243,6 +251,10 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
           headers: { [csp]: "worker-src 'self'" },
         },
         { path: '/demo/coop/permissive' },
+        {
+          path: '/demo/coop/host-coop',
+          headers: { 'cross-origin-opener-policy': 'same-origin' },
+        },
         { path: '/demo/coop/restricted' },
         { path: '/demo/profile' },
         // Each reporting route names the receiver, then points one policy at

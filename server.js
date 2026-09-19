@@ -115,8 +115,14 @@ export function createServer({
         file: 'demos/fractal/fractal.html',
         'Content-Security-Policy': "worker-src 'self'",
       },
-      // The popup demo sets its header on the provider below, not here.
+      // Either side of the popup login can send COOP. The host-coop page
+      // sends it here. The restricted page opens a provider login that sends
+      // it, in the provider table below.
       '/demo/coop/permissive': 'demos/coop/coop.html',
+      '/demo/coop/host-coop': {
+        file: 'demos/coop/coop.html',
+        'Cross-Origin-Opener-Policy': 'same-origin',
+      },
       '/demo/coop/restricted': 'demos/coop/coop.html',
       // This row sends no policy. The Playwright test in demos/tests adds
       // one to this document's response, because that is what it teaches.
