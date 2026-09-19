@@ -46,3 +46,16 @@ test('script-src self blocks eval, and the raw templates stay', async ({
   for (const value of await values(page)) expect(value).toMatch(/\{\{.+\}\}/);
   await page.screenshot({ path: 'test-results/summary-restricted.png' });
 });
+
+test('the webpack bundle has a clean source, but the build adds eval', async ({
+  page,
+}) => {
+  const error = page.waitForEvent('pageerror');
+  await page.goto('/demo/summary/bundle');
+  expect((await error).name).toBe('EvalError');
+  await expect
+    .poll(() => page.evaluate(() => window.cspViolations))
+    .toContainEqual({ directive: 'script-src', blocked: 'eval' });
+  for (const value of await values(page)) expect(value).toMatch(/\{\{.+\}\}/);
+  await page.screenshot({ path: 'test-results/summary-bundle.png' });
+});

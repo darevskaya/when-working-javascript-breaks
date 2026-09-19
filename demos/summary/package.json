@@ -3,9 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node server.js",
+    "build": "webpack --config webpack.config.js",
+    "start": "npm run build && node server.js",
     "lint": "eslint .",
     "scan": "node ../common/semgrep.js scan --config .semgrep.yml --metrics off --error .",
-    "test": "node --test \"test/*.test.js\" && playwright test"
+    "test": "npm run build && node --test \"test/*.test.js\" && playwright test"
+  },
+  "devDependencies": {
+    "webpack": "^5.111.1",
+    "webpack-cli": "^7.2.3"
   }
 }

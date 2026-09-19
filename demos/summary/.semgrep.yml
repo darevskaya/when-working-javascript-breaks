@@ -1,4 +1,4 @@
-# The same policy as eslint.config.js, as a Semgrep rule.
+# The same policy as eslint.config.js, as Semgrep rules.
 rules:
   - id: script-src-string-to-code
     languages: [javascript]
@@ -6,9 +6,27 @@ rules:
     message: >-
       script-src without 'unsafe-eval' blocks code that is compiled from a
       string.
+    paths:
+      exclude: [dist/]
     pattern-either:
       - pattern: eval(...)
       - pattern: new Function(...)
       - pattern: Function(...)
       - pattern: setTimeout("...", ...)
       - pattern: setInterval("...", ...)
+
+  - id: webpack-eval-devtool
+    languages: [javascript]
+    severity: ERROR
+    message: >-
+      This devtool wraps every module in eval(), and script-src without
+      'unsafe-eval' blocks the bundle. Use devtool: 'source-map'.
+    paths:
+      exclude: [dist/]
+    patterns:
+      - pattern: |
+          { ..., devtool: $VALUE, ... }
+      - metavariable-regex:
+          metavariable: $VALUE
+          regex: ^['"]eval
+      - focus-metavariable: $VALUE

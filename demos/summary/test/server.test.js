@@ -3,16 +3,29 @@ import assert from 'node:assert/strict';
 import { createServer } from '../server.js';
 import { listen, assertHeaders } from '../../common/test-helpers.js';
 
-test('the two pages differ only in unsafe-eval', async (t) => {
+test('the pages differ only in unsafe-eval and the script', async (t) => {
   const origin = await listen(createServer(), t);
   const permissive = await fetch(`${origin}/demo/summary/permissive`);
   const restricted = await fetch(`${origin}/demo/summary/restricted`);
-  assert.equal(await permissive.text(), await restricted.text());
+  const page = await permissive.text();
+  assert.equal(page, await restricted.text());
+  const bundle = await (await fetch(`${origin}/demo/summary/bundle`)).text();
+  assert.equal(
+    bundle
+      .replace(/\n *<!-- The same page as summary\.html[^>]*-->/, '')
+      .replace(
+        '<script src="/bundle/summary.js" defer></script>',
+        '<script type="module" src="/summary.js"></script>',
+      ),
+    page,
+  );
   const csp = 'content-security-policy';
   await assertHeaders(origin, {
     '/': {},
     '/demo/summary/permissive': { [csp]: "script-src 'self' 'unsafe-eval'" },
     '/demo/summary/restricted': { [csp]: "script-src 'self'" },
+    '/demo/summary/bundle': { [csp]: "script-src 'self'" },
+    '/bundle/summary.js': {},
     '/summary.js': {},
     '/template.js': {},
     '/styles.css': {},
