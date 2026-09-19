@@ -1,0 +1,44 @@
+/* The widget brings the Orbit ID look into the shop page. */
+.orbit-widget {
+  padding: 24px;
+  border: 1px solid #c9d4f2;
+  border-radius: 12px;
+  background: #fff;
+  color: #172b50;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.orbit-brand {
+  margin: 0 0 12px;
+  color: #234bc2;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.orbit-widget h2 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.orbit-widget p:not(.orbit-brand) {
+  margin: 0;
+  color: #53627c;
+  font-size: 0.9375rem;
+}
+
+.orbit-widget button {
+  width: 100%;
+  margin-top: 20px;
+  background: #234bc2;
+}
+
+.orbit-widget button:hover {
+  background: #1a3a99;
+}
+
+.orbit-widget button:focus-visible {
+  outline-color: #2355d6;
+}

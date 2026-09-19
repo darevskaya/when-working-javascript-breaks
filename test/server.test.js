@@ -35,6 +35,9 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
   assert.match(evalBuild, /\beval\(/);
   assert.doesNotMatch(evalBuild, /new Function\(/);
   for (const asset of [
+    '/sdk.js',
+    '/sdk.css',
+    '/shop.css',
     '/calculator.js',
     '/styles.css',
     '/fractal.js',
@@ -57,6 +60,8 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
     (match) => match[1],
   );
   assert.deepEqual(links, [
+    '/demo/sdk/permissive',
+    '/demo/sdk/restricted',
     '/demo/calculator/permissive',
     '/demo/calculator/restricted',
     '/demo/calculator/eval-build',
@@ -121,6 +126,26 @@ test('COOP changes only the provider header, with identical documents and script
   }
 });
 
+test('the shop routes differ only in the Trusted Types policy', async (t) => {
+  const server = createServer();
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise((resolve) => server.close(resolve)));
+  const origin = `http://127.0.0.1:${server.address().port}`;
+  const permissive = await fetch(`${origin}/demo/sdk/permissive`);
+  const restricted = await fetch(`${origin}/demo/sdk/restricted`);
+  assert.equal(permissive.status, 200);
+  assert.equal(restricted.status, 200);
+  assert.equal(permissive.headers.get('content-security-policy'), null);
+  assert.equal(
+    restricted.headers.get('content-security-policy'),
+    "require-trusted-types-for 'script'",
+  );
+  assert.equal(await permissive.text(), await restricted.text());
+  // The widget writes its markup with innerHTML, the line the policy stops.
+  const sdk = await (await fetch(`${origin}/sdk.js`)).text();
+  assert.match(sdk, /\.innerHTML = `/);
+});
+
 test('fractal routes differ only in permission for Blob workers', async (t) => {
   const server = createServer();
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
@@ -160,6 +185,11 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
     {
       server: createServer(),
       routes: [
+        { path: '/demo/sdk/permissive' },
+        {
+          path: '/demo/sdk/restricted',
+          headers: { [csp]: "require-trusted-types-for 'script'" },
+        },
         {
           path: '/demo/calculator/permissive',
           headers: { [csp]: "script-src 'self' 'unsafe-eval'" },
@@ -237,6 +267,7 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
           },
         },
         { path: '/reporting.js' },
+        { path: '/sdk.js' },
         { path: '/calculator.js' },
         { path: '/profile.js' },
         { path: '/bundles/dialog.js' },

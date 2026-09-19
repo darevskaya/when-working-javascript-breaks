@@ -76,6 +76,13 @@ export function createServer({
 
       // Pages. Each mode of a demo is its own route, and the routes differ in
       // one header. The HTML and the JavaScript are the same in every mode.
+      // The shop is the customer's page. It sends no policy until the
+      // customer adds Trusted Types, and then the SDK widget stops.
+      '/demo/sdk/permissive': 'demos/sdk/shop.html',
+      '/demo/sdk/restricted': {
+        file: 'demos/sdk/shop.html',
+        'Content-Security-Policy': "require-trusted-types-for 'script'",
+      },
       '/demo/calculator/permissive': {
         file: 'demos/calculator/calculator.html',
         'Content-Security-Policy': "script-src 'self' 'unsafe-eval'",
@@ -156,6 +163,9 @@ export function createServer({
 
       // Files the pages ask for. No row here sends a policy header.
       '/styles.css': 'demos/common/styles.css',
+      '/shop.css': 'demos/sdk/shop.css',
+      '/sdk.css': 'demos/sdk/sdk.css',
+      '/sdk.js': 'demos/sdk/sdk.js',
       '/calculator.css': 'demos/calculator/calculator.css',
       '/calculator.js': 'demos/calculator/calculator.js',
       '/fractal.css': 'demos/fractal/fractal.css',

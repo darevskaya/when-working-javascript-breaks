@@ -1,6 +1,6 @@
 # When Working JavaScript Breaks
 
-Demo code for a conference talk. Three pages show working JavaScript that breaks
+Demo code for a conference talk. Each page shows working JavaScript that breaks
 under a browser security policy. Each demo has one URL per mode, and the modes
 differ in one response header. The page itself does not change.
 
@@ -14,6 +14,7 @@ All demo source files live in `demos/`, grouped by feature:
 ```text
 demos/
   index.html   Links to every demo in every mode
+  sdk/         Shop page, SDK widget script, and CSS
   calculator/  HTML, CSS, page script, and dialog source
   fractal/     HTML, CSS, page script, worker, and worker factory
   coop/        HTML, CSS, and scripts for the app and identity provider
@@ -51,9 +52,23 @@ the table is what the browser receives.
 
 To see a header, open the browser developer tools and select Network. Reload
 the page, select its document request, and read the response headers. The
+restricted shop sends `Content-Security-Policy: require-trusted-types-for`. The
 calculator sends `Content-Security-Policy: script-src`. The fractal sends
 `Content-Security-Policy: worker-src`. For the popup demo, select the popup's
 `/login/restricted` request, which sends `Cross-Origin-Opener-Policy`.
+
+## SDK widget
+
+http://127.0.0.1:4173/demo/sdk/permissive
+
+The page is a customer's checkout. The Orbit ID SDK renders a sign-in widget
+into it with `innerHTML`. The restricted page sends one header,
+`require-trusted-types-for 'script'`:
+
+http://127.0.0.1:4173/demo/sdk/restricted
+
+The widget stays at "Loading sign-in…". The console shows a `TypeError` on the
+`innerHTML` assignment. The SDK code is the same on both pages.
 
 ## Calculator
 
