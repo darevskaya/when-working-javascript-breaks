@@ -14,22 +14,26 @@ All demo source files live in `demos/`, grouped by feature:
 ```text
 demos/
   index.html   Links to every demo in every mode
-  sdk/         Shop pages, SDK widget, SDK frame and loader, and CSS
-  calculator/  HTML, CSS, page script, and dialog source
+  widget/      Shop pages and the Orbit ID widget in four versions
+  embed/       Shop page with the Orbit ID frame, the frame, and its loader
+  summary/     HTML, CSS, page script, and eval template renderer
+
   fractal/     HTML, CSS, page script, worker, and worker factory
-  coop/        HTML, CSS, and scripts for the app, callback, and identity provider
+  coop/        HTML, CSS, and script for the popup login app
+  broadcast/   HTML, CSS, scripts, and BFF for the BroadcastChannel login
   profile/     HTML and page script
-  common/      Shared styles
+  reporting/   Reporting example pages and script
+  common/      Files that several demos share: styles, the Orbit ID login page
+               and its server code, the shop styles, and the Orbit ID card
   tests/       Playwright demo tests and configuration
 ```
 
-`server.js` maps browser URLs to these files. `dist/` holds the two generated
-calculator bundles. The application's test suite lives in `test/`.
+`server.js` maps browser URLs to these files. The application's test suite lives in `test/`.
 
-Run `npm run lint` to find the lines that the demos depend on. ESLint reports six
-errors in three files: one in the calculator, one in the fractal worker factory,
-and four in the SDK widget. The widget has two `innerHTML` assignments, and two
-rules flag each one. The command fails, and that is the point.
+Run `npm run lint` to find the lines that the demos depend on. ESLint reports eight errors in four files. The order summary template renderer and the fractal worker factory have one error each. The widget has four, and the escaped widget has two. The widget has two `innerHTML` assignments, and
+two rules flag each one. The escaped widget gets only the `innerHTML` rule,
+because `eslint-plugin-no-unsanitized` accepts escaped values. The command
+fails, and that is the point.
 
 `eslint.config.js` holds six rules, and each rule matches a policy directive. A
 seventh rule allows `new Worker` only in `demos/fractal/worker-factory.js`. That
@@ -40,16 +44,18 @@ sinks, for example `outerHTML` and `insertAdjacentHTML()`. But it looks for XSS,
 so it allows a constant string, and Trusted Types still blocks that string. For
 this reason, the `innerHTML` rule stays.
 
-Run `npm test` to build the bundles and test the server and the lint result.
+Run `npm test` to test the server and the lint result.
 
 ```sh
 npm ci
 npm start
 ```
 
-For development, run `npm run dev`. It restarts the server and rebuilds the
-calculator bundles on save. Refresh the browser to see the change. Restart
-`npm run dev` after you edit `webpack.config.js`. Press Ctrl+C to stop it.
+To stop the server from another terminal, run `npm run stop`. It stops the
+process that runs `server.js` on port 4173 or 4174, and it leaves any other
+program on those ports alone.
+
+For development, run `npm run dev`. When you save a file, it restarts the server. Refresh the browser to see the change. Press Ctrl+C to stop it.
 
 `server.js` holds one route table per server. A plain row names the file to
 send and nothing more. A row with braces adds the policy headers for that
@@ -59,8 +65,7 @@ the table is what the browser receives.
 
 To see a header, open the browser developer tools and select Network. Reload
 the page, select its document request, and read the response headers. The
-restricted shop sends `Content-Security-Policy: require-trusted-types-for`. The
-calculator sends `Content-Security-Policy: script-src`. The fractal sends
+widget pages send `Content-Security-Policy: require-trusted-types-for`. The order summary sends `Content-Security-Policy: script-src`. The fractal sends
 `Content-Security-Policy: worker-src`. The host-coop page sends
 `Cross-Origin-Opener-Policy`. On the restricted popup page, select the popup's
 `/login/restricted` request, which sends `Cross-Origin-Opener-Policy`.
@@ -78,41 +83,54 @@ npm run scan
 ```
 
 `npm run scan:registry` runs the public `p/javascript`, `p/xss`, and
-`p/default` rules. It finds nothing in `demos/`. These rules look for untrusted
-input that reaches a dangerous call, and the demo code has none. It still breaks
-under a browser policy.
+`p/default` rules. It finds one line: the `eval` in `template.js`. The message says: if the input of `eval` can come from outside the program, it is a code injection risk. No input comes from outside, so a reviewer can close the finding as
+safe, but the browser still blocks the line. The rules find nothing else,
+because they look for untrusted input that reaches a dangerous call.
 
 `npm run scan` runs the project rules in `.semgrep.yml`. Each rule names the
 policy that blocks the code: Trusted Types, `script-src`, `worker-src`, COOP,
-and the iframe sandbox. The scan finds ten lines and fails, like `npm run lint`.
+and the iframe sandbox. The scan finds twelve lines and fails, like `npm run lint`.
 The `worker-src` rule follows the Blob URL through variables. The ESLint rule
 sees one expression at a time, so it flags every Worker path that is not a
 literal.
 
-`npm test` also runs `test/semgrep.test.js`. It skips both tests when
-`semgrep.js` cannot find Semgrep.
+`npm test` also runs `test/semgrep.test.js`. If `semgrep.js` cannot find Semgrep, the file skips both tests.
 
-## SDK widget
+## Widget
 
-http://127.0.0.1:4173/demo/sdk/permissive
+The pages are a customer's checkout that sends
+`require-trusted-types-for 'script'`. The Orbit ID widget renders a sign-in
+card into the page. `widget.js` is the original widget. It writes its markup
+with `innerHTML`, and no page loads it. The pages load changed copies of it.
 
-The page is a customer's checkout. The Orbit ID SDK renders a sign-in widget
-into it with `innerHTML`. The restricted page sends one header,
-`require-trusted-types-for 'script'`:
+http://127.0.0.1:4173/demo/widget/escaped
 
-http://127.0.0.1:4173/demo/sdk/restricted
+This page loads `widget-escaped.js`. The widget escapes each value with an
+`escapeHTML` tagged template. That closes the XSS hole, and
+`eslint-plugin-no-unsanitized` accepts it. But the result is still a string.
+Trusted Types refuses every string in `innerHTML`, escaped or not. The widget
+stays at "Loading sign-in…", and the console shows a `TypeError`.
 
-The widget stays at "Loading sign-in…". The console shows a `TypeError` on the
-`innerHTML` assignment. The SDK code is the same on both pages.
+http://127.0.0.1:4173/demo/widget/policy
 
-The fixed page sends the same header, but it loads `sdk-safe.js`:
+This page loads `widget-policy.js`. The widget keeps its `innerHTML` templates.
+An `html` tagged template escapes each value and passes the markup through a
+Trusted Types policy named `orbit-widget`. The policy returns `TrustedHTML`,
+and the widget renders. Both lint rules and the Semgrep rule accept
+`el.innerHTML = html`…``.
 
-http://127.0.0.1:4173/demo/sdk/fixed
+A customer can also list the policy names that the page allows:
 
-This widget builds its markup with DOM APIs and `textContent`. It has no
-`innerHTML`, so lint passes, and the widget renders under Trusted Types.
+http://127.0.0.1:4173/demo/widget/policy-not-allowed
 
-## SDK frame
+This page sends `require-trusted-types-for 'script'; trusted-types shop-policy`.
+The list does not name `orbit-widget`, so `createPolicy` throws a `TypeError`,
+and the widget stays at "Loading sign-in…". The SDK must tell customers its
+policy name. A default policy (`createPolicy('default', …)`) needs no call-site
+changes. But a page can have only one, and it belongs to the customer, not to
+an SDK.
+
+## Embedded frame
 
 http://127.0.0.1:4173/demo/embed/no-sandbox
 
@@ -139,27 +157,21 @@ works again. This token allows a redirect only in response to a click.
 Chrome also blocks a redirect without a click from a cross-origin frame that
 has no sandbox. Only `allow-top-navigation` allows it.
 
-## Calculator
+## Order summary
 
-http://127.0.0.1:4173/demo/calculator/permissive
+http://127.0.0.1:4173/demo/summary/permissive
 
-The dialog compiles a formula string with `new Function`. It runs under
-`script-src 'self' 'unsafe-eval'`. Open the restricted page, which sends
-`script-src 'self'`, and open the calculator:
+The page fills its `{{ … }}` templates with `template.js`, a tiny template
+renderer that runs each expression with `eval()`. The templates are in the
+page's own HTML, and the data is the page's own. No user input reaches `eval`,
+so the code looks safe. The restricted page sends `script-src 'self'`:
 
-http://127.0.0.1:4173/demo/calculator/restricted
+http://127.0.0.1:4173/demo/summary/restricted
 
-The bundle still downloads, but the browser refuses to compile the formula. The
-page prints the error in red.
-
-The eval-build page also sends `script-src 'self'`, but it loads a second bundle:
-
-http://127.0.0.1:4173/demo/calculator/eval-build
-
-`webpack.config.js` builds this bundle from `calculate-safe.js`, which has
-regular functions and no `eval`, so lint passes. But the bundle uses the
-`eval-source-map` devtool, which wraps every module in `eval()`. The browser
-blocks the bundle, and the page reports that it downloaded but did not run.
+The browser blocks `eval` whatever the string holds. The first template throws
+an `EvalError`, and every value stays as raw `{{ … }}` text. Template libraries
+that compile expressions from strings have the same need, for example Alpine.js
+and the Vue build with the template compiler. Both publish CSP builds.
 
 ## Fractal
 
@@ -231,10 +243,8 @@ in the browser. It uses the Backend for Frontend (BFF) pattern from
 [RFC 10017](https://www.rfc-editor.org/rfc/rfc10017), section 6.1:
 
 1. The app opens a popup at `/bff/login` on the app origin, with `noopener`
-   and `noreferrer`. `bff.js` makes a `state`
-   value and a PKCE verifier, keeps both on the server, and sends the popup to
-   Orbit ID with the hash of the verifier.
-2. You continue as Elena. `orbit-auth.js`, the fake Orbit ID server, sends the
+   and `noreferrer`. `demos/broadcast/bff.js` makes a `state` value and a PKCE verifier and keeps both on the server. It sends the popup to Orbit ID with the hash of the verifier.
+2. You continue as Elena. `demos/common/orbit-auth.js`, the fake Orbit ID server, sends the
    popup back to `/bff/callback` with a one-time code.
 3. The BFF exchanges the code for a token, server to server, with the client
    secret and the PKCE verifier. It keeps the token and sets an `HttpOnly`,
@@ -244,8 +254,7 @@ in the browser. It uses the Backend for Frontend (BFF) pattern from
 5. The app page hears "done" and calls `/bff/user` with an `X-CSRF` header.
    The browser sends the cookie, and the BFF answers with the user name.
 
-A channel reaches every page of the same origin, so the message arrives even
-when COOP cuts the window references:
+When COOP cuts the window references, the message still arrives, because a channel reaches every page of the same origin:
 
 http://127.0.0.1:4173/demo/broadcast/host-coop
 
@@ -254,8 +263,7 @@ http://127.0.0.1:4173/demo/broadcast/restricted
 Because of `noopener`, the popup reports `window.opener: null` in every mode,
 and `window.open()` returns `null`. The page shows that value. No window
 relationship exists, so COOP has nothing to cut, and the login needs none. The
-cost: the app cannot see a blocked popup or a cancel. It asks the user to allow
-popups if no window opened.
+cost: the app cannot see a blocked popup or a cancel. If no window opened, the page asks the user to allow popups.
 
 The channel carries no secret. Any page of the origin can post "done", but the
 app then asks the BFF, and without a session the app keeps waiting. The session
@@ -266,8 +274,7 @@ For an SDK, the BFF and the callback page must be on the customer's origin, so
 the customer must run them. Libraries that do this:
 [Duende BFF](https://docs.duendesoftware.com/bff/architecture/) and the
 [Curity token handler](https://curity.io/resources/learn/the-token-handler-pattern/).
-The OpenStreetMap login library moved its popup to `BroadcastChannel` when its
-provider added COOP:
+The OpenStreetMap login library moved its popup to `BroadcastChannel` after its provider added COOP:
 [osm-auth pull request 138](https://github.com/osmlab/osm-auth/pull/138).
 
 ## Profile

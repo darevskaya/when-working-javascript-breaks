@@ -28,11 +28,14 @@ const blobWorker = [
 
 // el.innerHTML = markup, el.innerHTML += markup, el['innerHTML'] = markup
 // Under require-trusted-types-for 'script', each one throws a TypeError, even
-// with a constant string. eslint-plugin-no-unsanitized allows constant
-// strings, because they are not an XSS risk, so this rule stays.
+// with a constant or escaped string. eslint-plugin-no-unsanitized allows
+// both, because they are not an XSS risk, so this rule stays.
+// The one exception: el.innerHTML = html`…`, because the html tag returns
+// TrustedHTML from the Trusted Types policy in demos/widget/widget-policy.js.
 const innerHTML = {
   selector:
-    "AssignmentExpression:matches([left.property.name='innerHTML'],[left.property.value='innerHTML'])",
+    "AssignmentExpression:matches([left.property.name='innerHTML'],[left.property.value='innerHTML'])" +
+    ":not([right.type='TaggedTemplateExpression'][right.tag.name='html'])",
   message: 'Build markup with DOM APIs and textContent, not innerHTML.',
 };
 
@@ -48,8 +51,21 @@ const workerOutsideFactory = {
 // the innerHTML rule does not see: outerHTML, insertAdjacentHTML(), and
 // document.write().
 export default [
-  { ignores: ['dist/**', 'test-results/**', 'playwright-report/**'] },
+  { ignores: ['test-results/**', 'playwright-report/**'] },
   noUnsanitized.configs.recommended,
+  // The plugin's default escape tags, plus html, which escapes each value.
+  {
+    rules: {
+      'no-unsanitized/property': [
+        'error',
+        {
+          escape: {
+            taggedTemplates: ['Sanitizer.escapeHTML', 'escapeHTML', 'html'],
+          },
+        },
+      ],
+    },
+  },
   {
     files: ['**/*.js'],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },

@@ -1,12 +1,26 @@
-// The original Orbit ID sign-in widget. No page loads it. widget-escaped.js
-// and widget-policy.js are changed copies of it, and the lint and Semgrep
-// demos flag its two innerHTML lines. The markup is a template string in
-// innerHTML, which require-trusted-types-for 'script' refuses with a
-// TypeError.
 (() => {
+  const entities = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  function escapeHTML(strings, ...values) {
+    return strings.reduce(
+      (markup, text, index) =>
+        markup +
+        text +
+        (index < values.length
+          ? String(values[index]).replace(/[&<>"']/g, (c) => entities[c])
+          : ''),
+      '',
+    );
+  }
+
   function renderSignIn(container) {
     const shop = container.dataset.shop;
-    container.innerHTML = `
+    container.innerHTML = escapeHTML`
       <div class="orbit-widget">
         <p class="orbit-brand">Orbit ID</p>
         <h2>Sign in to ${shop}</h2>
@@ -19,7 +33,7 @@
   }
 
   function renderSignedIn(container) {
-    container.innerHTML = `
+    container.innerHTML = escapeHTML`
       <div class="orbit-widget">
         <p class="orbit-brand">Orbit ID</p>
         <h2>Signed in as Elena</h2>

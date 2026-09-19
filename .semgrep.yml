@@ -8,14 +8,17 @@ rules:
     severity: ERROR
     message: >-
       require-trusted-types-for 'script' blocks every string in this markup
-      sink, also a constant string. Build the markup with DOM APIs and
-      textContent.
-    pattern-either:
-      - pattern: $EL.innerHTML = $X
-      - pattern: $EL.innerHTML += $X
-      - pattern: $EL.outerHTML = $X
-      - pattern: $EL.insertAdjacentHTML(...)
-      - pattern: document.write(...)
+      sink, also a constant or escaped string. Build the markup with DOM APIs
+      and textContent, or pass it through a Trusted Types policy.
+    patterns:
+      - pattern-either:
+          - pattern: $EL.innerHTML = $X
+          - pattern: $EL.innerHTML += $X
+          - pattern: $EL.outerHTML = $X
+          - pattern: $EL.insertAdjacentHTML(...)
+          - pattern: document.write(...)
+      # The html tag returns TrustedHTML from a Trusted Types policy.
+      - pattern-not: $EL.innerHTML = html`...`
 
   - id: script-src-string-to-code
     languages: [javascript]

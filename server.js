@@ -4,15 +4,14 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { createReportCollector } from './reporting.js';
-import { createBff } from './bff.js';
-import { createOrbitAuth } from './orbit-auth.js';
+import { createBff } from './demos/broadcast/bff.js';
+import { createOrbitAuth } from './demos/common/orbit-auth.js';
 
 const root = import.meta.dirname;
 const contentTypes = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
-  '.map': 'application/json',
 };
 
 // Serves one route table. A row is a file path on its own, an object that adds
@@ -54,9 +53,7 @@ function serve(routes) {
       response.end(content);
     } catch {
       response.writeHead(500);
-      response.end(
-        'File unavailable. Run npm run build before starting the server.',
-      );
+      response.end('File unavailable.');
     }
   };
 }
@@ -80,35 +77,37 @@ export function createServer({
 
       // Pages. Each mode of a demo is its own route, and the routes differ in
       // one header. The HTML and the JavaScript are the same in every mode.
-      // The shop is the customer's page. It sends no policy until the
-      // customer adds Trusted Types, and then the SDK widget stops.
-      '/demo/sdk/permissive': 'demos/sdk/shop.html',
-      '/demo/sdk/restricted': {
-        file: 'demos/sdk/shop.html',
+      // The customer's shop sends Trusted Types. The escaped widget still
+      // assigns strings to innerHTML, so it breaks.
+      '/demo/widget/escaped': {
+        file: 'demos/widget/shop-escaped.html',
         'Content-Security-Policy': "require-trusted-types-for 'script'",
       },
-      // The same policy, but this page loads the SDK built with DOM APIs.
-      '/demo/sdk/fixed': {
-        file: 'demos/sdk/shop-safe.html',
+      // The same policy. This widget passes its markup through a Trusted
+      // Types policy named orbit-widget.
+      '/demo/widget/policy': {
+        file: 'demos/widget/shop-policy.html',
         'Content-Security-Policy': "require-trusted-types-for 'script'",
+      },
+      // The customer also lists the allowed policy names, without orbit-widget.
+      '/demo/widget/policy-not-allowed': {
+        file: 'demos/widget/shop-policy.html',
+        'Content-Security-Policy':
+          "require-trusted-types-for 'script'; trusted-types shop-policy",
       },
       // The shop embeds the Orbit ID frame. These routes send no policy.
       // They differ in the sandbox attribute on the iframe, which embed.js
       // reads from the path.
-      '/demo/embed/no-sandbox': 'demos/sdk/embed.html',
-      '/demo/embed/no-top-navigation': 'demos/sdk/embed.html',
-      '/demo/embed/user-activation': 'demos/sdk/embed.html',
-      '/demo/calculator/permissive': {
-        file: 'demos/calculator/calculator.html',
+      '/demo/embed/no-sandbox': 'demos/embed/embed.html',
+      '/demo/embed/no-top-navigation': 'demos/embed/embed.html',
+      '/demo/embed/user-activation': 'demos/embed/embed.html',
+      // The order summary renders its templates with eval.
+      '/demo/summary/permissive': {
+        file: 'demos/summary/summary.html',
         'Content-Security-Policy': "script-src 'self' 'unsafe-eval'",
       },
-      '/demo/calculator/restricted': {
-        file: 'demos/calculator/calculator.html',
-        'Content-Security-Policy': "script-src 'self'",
-      },
-      // The same policy, but this page loads the bundle with the eval devtool.
-      '/demo/calculator/eval-build': {
-        file: 'demos/calculator/calculator.html',
+      '/demo/summary/restricted': {
+        file: 'demos/summary/summary.html',
         'Content-Security-Policy': "script-src 'self'",
       },
       '/demo/fractal/permissive': {
@@ -135,13 +134,13 @@ export function createServer({
       '/demo/coop/restricted': 'demos/coop/coop.html',
       // The same three modes with a login that returns through a callback
       // page and a BroadcastChannel. It needs no window reference.
-      '/demo/broadcast/permissive': 'demos/coop/broadcast.html',
+      '/demo/broadcast/permissive': 'demos/broadcast/broadcast.html',
       '/demo/broadcast/host-coop': {
-        file: 'demos/coop/broadcast.html',
+        file: 'demos/broadcast/broadcast.html',
         'Cross-Origin-Opener-Policy': 'same-origin',
       },
-      '/demo/broadcast/restricted': 'demos/coop/broadcast.html',
-      '/demo/broadcast/callback': 'demos/coop/callback.html',
+      '/demo/broadcast/restricted': 'demos/broadcast/broadcast.html',
+      '/demo/broadcast/callback': 'demos/broadcast/callback.html',
       // The BFF behind the BroadcastChannel login. It keeps the token on the
       // server and sets an HttpOnly session cookie. See bff.js.
       '/bff/login': bff.login,
@@ -198,15 +197,16 @@ export function createServer({
 
       // Files the pages ask for. No row here sends a policy header.
       '/styles.css': 'demos/common/styles.css',
-      '/shop.css': 'demos/sdk/shop.css',
-      '/sdk.css': 'demos/sdk/sdk.css',
-      '/sdk.js': 'demos/sdk/sdk.js',
-      '/sdk-safe.js': 'demos/sdk/sdk-safe.js',
-      '/embed.css': 'demos/sdk/embed.css',
-      '/embed.js': 'demos/sdk/embed.js',
-      '/orbit-loader.js': 'demos/sdk/orbit-loader.js',
-      '/calculator.css': 'demos/calculator/calculator.css',
-      '/calculator.js': 'demos/calculator/calculator.js',
+      '/shop.css': 'demos/common/shop.css',
+      '/orbit.css': 'demos/common/orbit.css',
+      '/widget-escaped.js': 'demos/widget/widget-escaped.js',
+      '/widget-policy.js': 'demos/widget/widget-policy.js',
+      '/embed.css': 'demos/embed/embed.css',
+      '/embed.js': 'demos/embed/embed.js',
+      '/orbit-loader.js': 'demos/embed/orbit-loader.js',
+      '/summary.css': 'demos/summary/summary.css',
+      '/summary.js': 'demos/summary/summary.js',
+      '/template.js': 'demos/summary/template.js',
       '/fractal.css': 'demos/fractal/fractal.css',
       '/fractal.js': 'demos/fractal/fractal.js',
       '/fractal-worker.js': 'demos/fractal/fractal-worker.js',
@@ -214,16 +214,14 @@ export function createServer({
       '/fractal-module-worker.js': 'demos/fractal/fractal-module-worker.js',
       '/coop.css': 'demos/coop/coop.css',
       '/coop.js': 'demos/coop/coop.js',
-      '/broadcast.js': 'demos/coop/broadcast.js',
-      '/callback.js': 'demos/coop/callback.js',
+      '/broadcast.css': 'demos/broadcast/broadcast.css',
+      '/broadcast.js': 'demos/broadcast/broadcast.js',
+      '/callback.js': 'demos/broadcast/callback.js',
       '/profile.js': 'demos/profile/profile.js',
-      '/bundles/dialog.js': 'dist/dialog.js',
-      '/bundles/dialog.js.map': 'dist/dialog.js.map',
-      '/bundles/eval/dialog.js': 'dist/eval/dialog.js',
       '/coop-config.js': {
         body: `export const providerOrigin = '${providerOrigin}';\n`,
       },
-      '/sdk-config.js': {
+      '/embed-config.js': {
         body: `export const providerOrigin = '${providerOrigin}';\n`,
       },
     }),
@@ -240,14 +238,14 @@ export function createProviderServer({
     tls,
     serve({
       // Both logins serve the same HTML. One extra header breaks the login.
-      '/login/permissive': 'demos/coop/provider.html',
+      '/login/permissive': 'demos/common/provider.html',
       '/login/restricted': {
-        file: 'demos/coop/provider.html',
+        file: 'demos/common/provider.html',
         'Cross-Origin-Opener-Policy': 'same-origin',
       },
       // The SDK frame on the embed pages, and the login it redirects to.
-      '/embed': 'demos/sdk/frame.html',
-      '/login/embed': 'demos/coop/provider.html',
+      '/embed': 'demos/embed/frame.html',
+      '/login/embed': 'demos/common/provider.html',
       // The authorization code endpoints for the BFF login. See orbit-auth.js.
       '/login/approve': auth.approve,
       '/token': auth.token,
@@ -260,10 +258,10 @@ export function createProviderServer({
       '/reports': collector,
 
       '/styles.css': 'demos/common/styles.css',
-      '/provider.css': 'demos/coop/provider.css',
-      '/provider.js': 'demos/coop/provider.js',
-      '/sdk.css': 'demos/sdk/sdk.css',
-      '/frame.js': 'demos/sdk/frame.js',
+      '/provider.css': 'demos/common/provider.css',
+      '/provider.js': 'demos/common/provider.js',
+      '/orbit.css': 'demos/common/orbit.css',
+      '/frame.js': 'demos/embed/frame.js',
       '/provider-config.js': {
         body: `export const appOrigin = '${appOrigin}';\n`,
       },

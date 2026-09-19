@@ -1,4 +1,4 @@
-import { providerOrigin } from '/sdk-config.js';
+import { providerOrigin } from '/embed-config.js';
 
 // The SDK loader on the customer's page. It gives the Orbit ID frame the
 // address to return to after login. When Orbit ID sends the user back, the

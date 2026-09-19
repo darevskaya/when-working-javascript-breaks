@@ -1,0 +1,24 @@
+.summary {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 12px 32px;
+  margin: 0;
+}
+
+.summary dt {
+  color: var(--muted);
+}
+
+/* The rendered values, or the raw {{ … }} templates when eval is blocked. */
+.summary dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.summary dt:last-of-type,
+.summary dd:last-of-type {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}

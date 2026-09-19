@@ -23,18 +23,23 @@ function semgrep(target) {
 const skip = env ? false : 'Semgrep is not installed';
 
 test('the project rules find each line that a policy blocks', { skip }, () => {
-  assert.deepEqual(semgrep('demos').sort(), [
-    'calculate.js:9 script-src-string-to-code',
-    'frame.js:20 sandbox-top-navigation',
-    'provider.js:11 coop-window-opener',
-    'provider.js:13 coop-window-opener',
-    'provider.js:18 coop-window-opener',
-    'provider.js:24 coop-window-opener',
-    'provider.js:44 coop-window-opener',
-    'sdk.js:21 trusted-types-markup-sink',
-    'sdk.js:8 trusted-types-markup-sink',
-    'worker-factory.js:10 worker-src-blob-worker',
-  ]);
+  assert.deepEqual(
+    semgrep('demos').sort(),
+    [
+      'frame.js:20 sandbox-top-navigation',
+      'provider.js:11 coop-window-opener',
+      'provider.js:13 coop-window-opener',
+      'provider.js:18 coop-window-opener',
+      'provider.js:24 coop-window-opener',
+      'provider.js:44 coop-window-opener',
+      'widget-escaped.js:23 trusted-types-markup-sink',
+      'widget-escaped.js:36 trusted-types-markup-sink',
+      'widget.js:22 trusted-types-markup-sink',
+      'widget.js:9 trusted-types-markup-sink',
+      'template.js:10 script-src-string-to-code',
+      'worker-factory.js:10 worker-src-blob-worker',
+    ].sort(),
+  );
 });
 
 // ESLint flags every Worker path that is not a literal. The Semgrep taint

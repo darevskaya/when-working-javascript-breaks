@@ -14,24 +14,30 @@
         differ in one response header. The HTML and the JavaScript are the same.
       </p>
 
-      <h2>SDK widget: <code>innerHTML</code></h2>
+      <h2>Widget: <code>innerHTML</code></h2>
       <ul>
         <li>
-          <a href="/demo/sdk/permissive" target="_blank">Works</a>
-          The shop sends no policy.
+          <a href="/demo/widget/escaped" target="_blank"
+            >Escaped widget breaks</a
+          >
+          <code>require-trusted-types-for 'script'</code> Escaped values are
+          still a string.
         </li>
         <li>
-          <a href="/demo/sdk/restricted" target="_blank">Breaks</a>
-          <code>require-trusted-types-for 'script'</code>
+          <a href="/demo/widget/policy" target="_blank">Policy widget works</a>
+          <code>require-trusted-types-for 'script'</code> The widget keeps
+          <code>innerHTML</code> and uses a Trusted Types policy.
         </li>
         <li>
-          <a href="/demo/sdk/fixed" target="_blank">Fixed SDK works</a>
-          <code>require-trusted-types-for 'script'</code> The widget uses DOM
-          APIs, not <code>innerHTML</code>.
+          <a href="/demo/widget/policy-not-allowed" target="_blank"
+            >Policy widget breaks</a
+          >
+          <code>trusted-types shop-policy</code> The customer allows only its
+          own policy name.
         </li>
       </ul>
 
-      <h2>SDK frame: iframe sandbox</h2>
+      <h2>Embedded frame: iframe sandbox</h2>
       <p>
         These pages send no policy. The shop puts a different
         <code>sandbox</code> attribute on the Orbit ID iframe. The login
@@ -55,22 +61,16 @@
         </li>
       </ul>
 
-      <h2>Calculator: <code>new Function</code></h2>
+      <h2>Order summary: <code>eval</code></h2>
       <ul>
         <li>
-          <a href="/demo/calculator/permissive" target="_blank">Works</a>
+          <a href="/demo/summary/permissive" target="_blank">Works</a>
           <code>script-src 'self' 'unsafe-eval'</code>
         </li>
         <li>
-          <a href="/demo/calculator/restricted" target="_blank">Blocked</a>
-          <code>script-src 'self'</code>
-        </li>
-        <li>
-          <a href="/demo/calculator/eval-build" target="_blank"
-            >Clean source, blocked build</a
-          >
-          <code>script-src 'self'</code> The source has no eval. The webpack
-          devtool adds it.
+          <a href="/demo/summary/restricted" target="_blank">Blocked</a>
+          <code>script-src 'self'</code> The templates and data are our own. No
+          user input reaches <code>eval</code>.
         </li>
       </ul>
 

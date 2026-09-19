@@ -2,14 +2,16 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer, createProviderServer } from '../server.js';
 
-test('static assets, demo entry routes, and both dialog bundles', async (t) => {
+test('static assets and demo entry routes', async (t) => {
   const server = createServer();
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise((resolve) => server.close(resolve)));
   const origin = `http://127.0.0.1:${server.address().port}`;
-  const permissive = await fetch(`${origin}/demo/calculator/permissive`);
+  // The two order summary routes differ only in 'unsafe-eval'. A query
+  // string does not pick another route.
+  const permissive = await fetch(`${origin}/demo/summary/permissive`);
   const restricted = await fetch(
-    `${origin}/demo/calculator/restricted?policy=permissive`,
+    `${origin}/demo/summary/restricted?policy=permissive`,
   );
   assert.equal(permissive.status, 200);
   assert.equal(restricted.status, 200);
@@ -19,30 +21,20 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
     policy.replace(" 'unsafe-eval'", ''),
     restricted.headers.get('content-security-policy'),
   );
-  const html = await permissive.text();
-  assert.equal(html, await restricted.text());
-  assert.doesNotMatch(html, /<iframe|src="\/bundles\//i);
-
-  const response = await fetch(`${origin}/bundles/dialog.js`);
-  assert.equal(response.status, 200);
-  const source = await response.text();
-  assert.doesNotMatch(source, /\beval\(/);
-  assert.match(source, /new Function\(/);
-  // The eval build is the other way around: no new Function, but eval.
-  const evalBuild = await (
-    await fetch(`${origin}/bundles/eval/dialog.js`)
-  ).text();
-  assert.match(evalBuild, /\beval\(/);
-  assert.doesNotMatch(evalBuild, /new Function\(/);
+  assert.equal(await permissive.text(), await restricted.text());
+  const renderer = await (await fetch(`${origin}/template.js`)).text();
+  assert.match(renderer, /\beval\(/);
   for (const asset of [
-    '/sdk.js',
-    '/sdk-safe.js',
-    '/sdk.css',
+    '/widget-escaped.js',
+    '/widget-policy.js',
+    '/orbit.css',
     '/shop.css',
     '/embed.js',
     '/embed.css',
     '/orbit-loader.js',
-    '/calculator.js',
+    '/summary.js',
+    '/summary.css',
+    '/template.js',
     '/styles.css',
     '/fractal.js',
     '/fractal-worker.js',
@@ -52,7 +44,7 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
     assert.equal((await fetch(`${origin}${asset}`)).status, 200);
   }
   for (const route of [
-    '/demo/calculator/unknown',
+    '/demo/summary/unknown',
     '/demo/unknown/permissive',
     '/server.js',
   ]) {
@@ -64,15 +56,14 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
     (match) => match[1],
   );
   assert.deepEqual(links, [
-    '/demo/sdk/permissive',
-    '/demo/sdk/restricted',
-    '/demo/sdk/fixed',
+    '/demo/widget/escaped',
+    '/demo/widget/policy',
+    '/demo/widget/policy-not-allowed',
     '/demo/embed/no-sandbox',
     '/demo/embed/no-top-navigation',
     '/demo/embed/user-activation',
-    '/demo/calculator/permissive',
-    '/demo/calculator/restricted',
-    '/demo/calculator/eval-build',
+    '/demo/summary/permissive',
+    '/demo/summary/restricted',
     '/demo/fractal/permissive',
     '/demo/fractal/restricted',
     '/demo/fractal/module',
@@ -137,7 +128,7 @@ test('COOP changes only the provider header, with identical documents and script
     "export const appOrigin = 'http://127.0.0.1:4998';\n",
   );
   assert.equal(
-    await (await fetch(`${appOrigin}/sdk-config.js`)).text(),
+    await (await fetch(`${appOrigin}/embed-config.js`)).text(),
     "export const providerOrigin = 'http://127.0.0.1:4999';\n",
   );
   // The embed login is the same page as the COOP login, with no COOP.
@@ -153,7 +144,7 @@ test('COOP changes only the provider header, with identical documents and script
     '/styles.css',
     '/embed',
     '/frame.js',
-    '/sdk.css',
+    '/orbit.css',
   ]) {
     assert.equal((await fetch(`${providerOrigin}${asset}`)).status, 200);
   }
@@ -163,39 +154,36 @@ test('COOP changes only the provider header, with identical documents and script
   }
 });
 
-test('the shop routes differ only in the Trusted Types policy', async (t) => {
+test('the widget pages differ only in the widget script and the policy', async (t) => {
   const server = createServer();
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise((resolve) => server.close(resolve)));
   const origin = `http://127.0.0.1:${server.address().port}`;
-  const permissive = await fetch(`${origin}/demo/sdk/permissive`);
-  const restricted = await fetch(`${origin}/demo/sdk/restricted`);
-  assert.equal(permissive.status, 200);
-  assert.equal(restricted.status, 200);
-  assert.equal(permissive.headers.get('content-security-policy'), null);
+  const page = (route) => fetch(`${origin}/demo/widget/${route}`);
+  const escaped = await page('escaped');
+  const policy = await page('policy');
+  const notAllowed = await page('policy-not-allowed');
+  for (const response of [escaped, policy]) {
+    assert.equal(
+      response.headers.get('content-security-policy'),
+      "require-trusted-types-for 'script'",
+    );
+  }
   assert.equal(
-    restricted.headers.get('content-security-policy'),
-    "require-trusted-types-for 'script'",
+    notAllowed.headers.get('content-security-policy'),
+    "require-trusted-types-for 'script'; trusted-types shop-policy",
   );
-  assert.equal(await permissive.text(), await restricted.text());
-  // The widget writes its markup with innerHTML, the line the policy stops.
-  const sdk = await (await fetch(`${origin}/sdk.js`)).text();
-  assert.match(sdk, /\.innerHTML = `/);
-  // The fixed page sends the same policy. It differs only in the SDK script.
-  const fixed = await fetch(`${origin}/demo/sdk/fixed`);
+  const policyHtml = await policy.text();
+  assert.equal(policyHtml, await notAllowed.text());
   assert.equal(
-    fixed.headers.get('content-security-policy'),
-    "require-trusted-types-for 'script'",
+    (await escaped.text()).replace('/widget-escaped.js', '/widget-policy.js'),
+    policyHtml,
   );
-  const fixedHtml = (await fixed.text())
-    .replace(/\n *<!-- The same page as shop\.html[^>]*-->/, '')
-    .replace('/sdk-safe.js', '/sdk.js');
-  assert.equal(
-    fixedHtml,
-    await (await fetch(`${origin}/demo/sdk/permissive`)).text(),
-  );
-  const safe = await (await fetch(`${origin}/sdk-safe.js`)).text();
-  assert.doesNotMatch(safe, /innerHTML =/);
+  // The escaped widget still assigns a string to innerHTML. The policy
+  // widget assigns the TrustedHTML from its html tag.
+  const script = async (name) => (await fetch(`${origin}/${name}.js`)).text();
+  assert.match(await script('widget-escaped'), /\.innerHTML = escapeHTML`/);
+  assert.match(await script('widget-policy'), /\.innerHTML = html`/);
 });
 
 test('fractal routes differ only in permission for Blob workers', async (t) => {
@@ -237,29 +225,31 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
     {
       server: createServer(),
       routes: [
-        { path: '/demo/sdk/permissive' },
         {
-          path: '/demo/sdk/restricted',
+          path: '/demo/widget/escaped',
           headers: { [csp]: "require-trusted-types-for 'script'" },
         },
         {
-          path: '/demo/sdk/fixed',
+          path: '/demo/widget/policy',
           headers: { [csp]: "require-trusted-types-for 'script'" },
+        },
+        {
+          path: '/demo/widget/policy-not-allowed',
+          headers: {
+            [csp]:
+              "require-trusted-types-for 'script'; trusted-types shop-policy",
+          },
         },
         { path: '/demo/embed/no-sandbox' },
         { path: '/demo/embed/no-top-navigation' },
         { path: '/demo/embed/user-activation' },
-        { path: '/sdk-config.js' },
+        { path: '/embed-config.js' },
         {
-          path: '/demo/calculator/permissive',
+          path: '/demo/summary/permissive',
           headers: { [csp]: "script-src 'self' 'unsafe-eval'" },
         },
         {
-          path: '/demo/calculator/restricted',
-          headers: { [csp]: "script-src 'self'" },
-        },
-        {
-          path: '/demo/calculator/eval-build',
+          path: '/demo/summary/restricted',
           headers: { [csp]: "script-src 'self'" },
         },
         {
@@ -340,15 +330,13 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
           },
         },
         { path: '/reporting.js' },
-        { path: '/sdk.js' },
-        { path: '/calculator.js' },
+        { path: '/summary.js' },
         { path: '/profile.js' },
-        { path: '/bundles/dialog.js' },
         { path: '/coop-config.js' },
         { path: '/' },
         { path: '/missing' },
         { path: '/provider.js' },
-        { path: '/calculator.html' },
+        { path: '/summary.html' },
       ],
     },
     {
@@ -366,7 +354,7 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
         { path: '/provider.js' },
         { path: '/provider-config.js' },
         { path: '/missing' },
-        { path: '/calculator.js' },
+        { path: '/summary.js' },
         { path: '/provider.html' },
       ],
     },

@@ -12,19 +12,38 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('the widget renders and signs in on a shop with no policy', async ({
+test('escaped values are still a string, so Trusted Types blocks them', async ({
+  page,
+}) => {
+  const error = page.waitForEvent('pageerror');
+  await page.goto('/demo/widget/escaped');
+  expect((await error).name).toBe('TypeError');
+  expect((await error).message).toMatch(/innerHTML.*TrustedHTML/);
+  await expect
+    .poll(() => page.evaluate(() => window.cspViolations))
+    .toContainEqual({
+      directive: 'require-trusted-types-for',
+      blocked: 'trusted-types-sink',
+    });
+  // The shop still renders. Only the widget's part of the page is missing.
+  await expect(page.getByRole('heading', { name: 'Your order' })).toBeVisible();
+  await expect(page.getByText('Loading sign-in…')).toBeVisible();
+  await expect(page.getByRole('button')).toHaveCount(0);
+  await page.screenshot({ path: 'test-results/widget-escaped.png' });
+});
+
+test('the policy widget keeps innerHTML and works under Trusted Types', async ({
   page,
 }) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error));
-  await page.goto('/demo/sdk/permissive');
+  await page.goto('/demo/widget/policy');
   const widget = page.getByRole('region', { name: 'Sign in' });
+  // The html tag escaped the & in the shop name, and the page shows it as &.
   await expect(
     widget.getByRole('heading', { name: 'Sign in to Fern & Co.' }),
   ).toBeVisible();
-  await expect(page.getByText('Loading sign-in…')).toHaveCount(0);
-  await page.screenshot({ path: 'test-results/sdk-permissive.png' });
-
+  await page.screenshot({ path: 'test-results/widget-policy.png' });
   await widget.getByRole('button', { name: 'Continue with Orbit ID' }).click();
   await expect(
     widget.getByRole('heading', { name: 'Signed in as Elena' }),
@@ -38,48 +57,18 @@ test('the widget renders and signs in on a shop with no policy', async ({
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
-  await page.screenshot({ path: 'test-results/sdk-mobile.png' });
+  await page.screenshot({ path: 'test-results/widget-mobile.png' });
 });
 
-test('Trusted Types stops the widget at its innerHTML assignment', async ({
+test('a CSP that does not name the policy stops the policy widget', async ({
   page,
 }) => {
   const error = page.waitForEvent('pageerror');
-  await page.goto('/demo/sdk/restricted');
+  await page.goto('/demo/widget/policy-not-allowed');
   expect((await error).name).toBe('TypeError');
-  expect((await error).message).toMatch(/innerHTML.*TrustedHTML/);
+  expect((await error).message).toMatch(/orbit-widget/);
   await expect
     .poll(() => page.evaluate(() => window.cspViolations))
-    .toContainEqual({
-      directive: 'require-trusted-types-for',
-      blocked: 'trusted-types-sink',
-    });
-  // The shop still renders. Only the SDK's part of the page is missing.
-  await expect(page.getByRole('heading', { name: 'Your order' })).toBeVisible();
+    .toContainEqual(expect.objectContaining({ directive: 'trusted-types' }));
   await expect(page.getByText('Loading sign-in…')).toBeVisible();
-  await expect(page.getByRole('button')).toHaveCount(0);
-  await page.screenshot({ path: 'test-results/sdk-restricted.png' });
-});
-
-test('the fixed widget renders and signs in under Trusted Types', async ({
-  page,
-}) => {
-  const errors = [];
-  page.on('pageerror', (error) => errors.push(error));
-  const document = page.waitForResponse('**/demo/sdk/fixed');
-  await page.goto('/demo/sdk/fixed');
-  expect((await document).headers()['content-security-policy']).toBe(
-    "require-trusted-types-for 'script'",
-  );
-  const widget = page.getByRole('region', { name: 'Sign in' });
-  await expect(
-    widget.getByRole('heading', { name: 'Sign in to Fern & Co.' }),
-  ).toBeVisible();
-  await widget.getByRole('button', { name: 'Continue with Orbit ID' }).click();
-  await expect(
-    widget.getByRole('heading', { name: 'Signed in as Elena' }),
-  ).toBeVisible();
-  expect(errors).toEqual([]);
-  expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
-  await page.screenshot({ path: 'test-results/sdk-fixed.png' });
 });

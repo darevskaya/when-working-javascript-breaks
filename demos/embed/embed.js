@@ -1,5 +1,5 @@
 import { embedOrbitFrame } from '/orbit-loader.js';
-import { providerOrigin } from '/sdk-config.js';
+import { providerOrigin } from '/embed-config.js';
 
 // The shop's own embed code. Each route stands for one customer
 // configuration, and the configurations differ only in the sandbox attribute.

@@ -11,13 +11,10 @@
     "lint": "eslint . --max-warnings 0",
     "scan": "node semgrep.js scan --config .semgrep.yml --metrics off --error demos",
     "scan:registry": "node semgrep.js scan --config p/javascript --config p/xss --config p/default --metrics off demos",
-    "build": "webpack --config webpack.config.js",
-    "start": "npm run build && node server.js",
-    "serve": "node server.js",
-    "dev": "npm run build && concurrently --kill-others --names server,bundle \"npm:watch:server\" \"npm:watch:bundle\"",
-    "watch:server": "node --watch --watch-preserve-output server.js",
-    "watch:bundle": "webpack --config webpack.config.js --watch",
-    "test": "npm run build && node --test test/*.test.js",
+    "start": "node server.js",
+    "stop": "node stop.js",
+    "dev": "node --watch --watch-preserve-output server.js",
+    "test": "node --test test/*.test.js",
     "test:browser": "playwright test",
     "demo:csp": "playwright test --config demos/tests/playwright.config.js profile.spec.js",
     "demo:coop": "playwright test --config demos/tests/playwright.config.js coop.spec.js",
@@ -27,12 +24,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "concurrently": "^10.0.5",
     "eslint": "^9.39.5",
     "eslint-plugin-no-unsanitized": "^4.1.5",
     "globals": "^17.12.0",
-    "prettier": "^3.9.6",
-    "webpack": "^5.0.0",
-    "webpack-cli": "^6.0.0"
+    "prettier": "^3.9.6"
   }
 }
