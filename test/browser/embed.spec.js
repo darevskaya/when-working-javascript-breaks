@@ -54,7 +54,7 @@ test('the login returns only to the shop origin', async ({ page }) => {
   await page.goto(login.href);
   await page.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText(
-    'Login could not finish. The return address is not the shop.',
+    'Login could not finish. The return address is not allowed.',
   );
   await expect(page).toHaveURL(login.href);
 });

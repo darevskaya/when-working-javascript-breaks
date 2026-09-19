@@ -17,7 +17,7 @@ demos/
   sdk/         Shop pages, SDK widget, SDK frame and loader, and CSS
   calculator/  HTML, CSS, page script, and dialog source
   fractal/     HTML, CSS, page script, worker, and worker factory
-  coop/        HTML, CSS, and scripts for the app and identity provider
+  coop/        HTML, CSS, and scripts for the app, callback, and identity provider
   profile/     HTML and page script
   common/      Shared styles
   tests/       Playwright demo tests and configuration
@@ -26,12 +26,19 @@ demos/
 `server.js` maps browser URLs to these files. `dist/` holds the two generated
 calculator bundles. The application's test suite lives in `test/`.
 
-Run `npm run lint` to find the two lines that the demos depend on. ESLint reports
-one error in the calculator and one in the fractal worker factory. The command
-fails, and that is the point. `eslint.config.js` holds five rules, and each rule
-matches a policy directive. A sixth rule allows `new Worker` only in
-`demos/fractal/worker-factory.js`. That file is the only lint exception, and the
-five policy rules still apply to it.
+Run `npm run lint` to find the lines that the demos depend on. ESLint reports six
+errors in three files: one in the calculator, one in the fractal worker factory,
+and four in the SDK widget. The widget has two `innerHTML` assignments, and two
+rules flag each one. The command fails, and that is the point.
+
+`eslint.config.js` holds six rules, and each rule matches a policy directive. A
+seventh rule allows `new Worker` only in `demos/fractal/worker-factory.js`. That
+file is the only lint exception, and the six policy rules still apply to it.
+
+The configuration also uses `eslint-plugin-no-unsanitized`. It flags more markup
+sinks, for example `outerHTML` and `insertAdjacentHTML()`. But it looks for XSS,
+so it allows a constant string, and Trusted Types still blocks that string. For
+this reason, the `innerHTML` rule stays.
 
 Run `npm test` to build the bundles and test the server and the lint result.
 
@@ -58,6 +65,33 @@ calculator sends `Content-Security-Policy: script-src`. The fractal sends
 `Cross-Origin-Opener-Policy`. On the restricted popup page, select the popup's
 `/login/restricted` request, which sends `Cross-Origin-Opener-Policy`.
 
+## Semgrep
+
+Semgrep is a Python tool, so npm does not install it. Install it with
+`pip install semgrep`. The npm scripts run it through `semgrep.js`. If
+`semgrep` is not on your `PATH`, that script finds it in the user `Scripts` or
+`bin` folder of pip. Then run the two scans:
+
+```sh
+npm run scan:registry
+npm run scan
+```
+
+`npm run scan:registry` runs the public `p/javascript`, `p/xss`, and
+`p/default` rules. It finds nothing in `demos/`. These rules look for untrusted
+input that reaches a dangerous call, and the demo code has none. It still breaks
+under a browser policy.
+
+`npm run scan` runs the project rules in `.semgrep.yml`. Each rule names the
+policy that blocks the code: Trusted Types, `script-src`, `worker-src`, COOP,
+and the iframe sandbox. The scan finds ten lines and fails, like `npm run lint`.
+The `worker-src` rule follows the Blob URL through variables. The ESLint rule
+sees one expression at a time, so it flags every Worker path that is not a
+literal.
+
+`npm test` also runs `test/semgrep.test.js`. It skips both tests when
+`semgrep.js` cannot find Semgrep.
+
 ## SDK widget
 
 http://127.0.0.1:4173/demo/sdk/permissive
@@ -70,6 +104,13 @@ http://127.0.0.1:4173/demo/sdk/restricted
 
 The widget stays at "Loading sign-in…". The console shows a `TypeError` on the
 `innerHTML` assignment. The SDK code is the same on both pages.
+
+The fixed page sends the same header, but it loads `sdk-safe.js`:
+
+http://127.0.0.1:4173/demo/sdk/fixed
+
+This widget builds its markup with DOM APIs and `textContent`. It has no
+`innerHTML`, so lint passes, and the widget renders under Trusted Types.
 
 ## SDK frame
 
@@ -180,6 +221,54 @@ The setup uses
 to intercept the popup's first request. Both tests open the same permissive route,
 so the test supplies the header that breaks login. The regular application tests
 remain in `test/browser`.
+
+## Popup login with BroadcastChannel
+
+http://127.0.0.1:4173/demo/broadcast/permissive
+
+This is the same popup login, without window references and without a token
+in the browser. It uses the Backend for Frontend (BFF) pattern from
+[RFC 10017](https://www.rfc-editor.org/rfc/rfc10017), section 6.1:
+
+1. The app opens a popup at `/bff/login` on the app origin, with `noopener`
+   and `noreferrer`. `bff.js` makes a `state`
+   value and a PKCE verifier, keeps both on the server, and sends the popup to
+   Orbit ID with the hash of the verifier.
+2. You continue as Elena. `orbit-auth.js`, the fake Orbit ID server, sends the
+   popup back to `/bff/callback` with a one-time code.
+3. The BFF exchanges the code for a token, server to server, with the client
+   secret and the PKCE verifier. It keeps the token and sets an `HttpOnly`,
+   `SameSite=Strict` session cookie.
+4. The popup goes to `/demo/broadcast/callback`. That page posts only
+   `{ type: 'login-complete' }` on a `BroadcastChannel` and closes the popup.
+5. The app page hears "done" and calls `/bff/user` with an `X-CSRF` header.
+   The browser sends the cookie, and the BFF answers with the user name.
+
+A channel reaches every page of the same origin, so the message arrives even
+when COOP cuts the window references:
+
+http://127.0.0.1:4173/demo/broadcast/host-coop
+
+http://127.0.0.1:4173/demo/broadcast/restricted
+
+Because of `noopener`, the popup reports `window.opener: null` in every mode,
+and `window.open()` returns `null`. The page shows that value. No window
+relationship exists, so COOP has nothing to cut, and the login needs none. The
+cost: the app cannot see a blocked popup or a cancel. It asks the user to allow
+popups if no window opened.
+
+The channel carries no secret. Any page of the origin can post "done", but the
+app then asks the BFF, and without a session the app keeps waiting. The session
+cookie is not `Secure` here, because the demo runs over HTTP. In production,
+use HTTPS, `Secure`, and the `__Host-` cookie name prefix.
+
+For an SDK, the BFF and the callback page must be on the customer's origin, so
+the customer must run them. Libraries that do this:
+[Duende BFF](https://docs.duendesoftware.com/bff/architecture/) and the
+[Curity token handler](https://curity.io/resources/learn/the-token-handler-pattern/).
+The OpenStreetMap login library moved its popup to `BroadcastChannel` when its
+provider added COOP:
+[osm-auth pull request 138](https://github.com/osmlab/osm-auth/pull/138).
 
 ## Profile
 

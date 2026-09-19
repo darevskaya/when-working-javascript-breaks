@@ -9,6 +9,8 @@
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
+    "scan": "node semgrep.js scan --config .semgrep.yml --metrics off --error demos",
+    "scan:registry": "node semgrep.js scan --config p/javascript --config p/xss --config p/default --metrics off demos",
     "build": "webpack --config webpack.config.js",
     "start": "npm run build && node server.js",
     "serve": "node server.js",
@@ -27,6 +29,7 @@
     "@playwright/test": "^1.63.0",
     "concurrently": "^10.0.5",
     "eslint": "^9.39.5",
+    "eslint-plugin-no-unsanitized": "^4.1.5",
     "globals": "^17.12.0",
     "prettier": "^3.9.6",
     "webpack": "^5.0.0",

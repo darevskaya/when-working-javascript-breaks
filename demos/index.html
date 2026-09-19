@@ -24,6 +24,11 @@
           <a href="/demo/sdk/restricted" target="_blank">Breaks</a>
           <code>require-trusted-types-for 'script'</code>
         </li>
+        <li>
+          <a href="/demo/sdk/fixed" target="_blank">Fixed SDK works</a>
+          <code>require-trusted-types-for 'script'</code> The widget uses DOM
+          APIs, not <code>innerHTML</code>.
+        </li>
       </ul>
 
       <h2>SDK frame: iframe sandbox</h2>
@@ -98,6 +103,28 @@
         </li>
         <li>
           <a href="/demo/coop/restricted" target="_blank">Breaks</a>
+          The provider sends
+          <code>Cross-Origin-Opener-Policy: same-origin</code>
+        </li>
+      </ul>
+
+      <h2>Popup login: BroadcastChannel</h2>
+      <p>
+        The same modes. The login returns through a callback page on the app
+        origin, not through <code>window.opener</code>.
+      </p>
+      <ul>
+        <li>
+          <a href="/demo/broadcast/permissive" target="_blank">Works</a>
+          Neither page sends COOP.
+        </li>
+        <li>
+          <a href="/demo/broadcast/host-coop" target="_blank">Works</a>
+          The app page sends
+          <code>Cross-Origin-Opener-Policy: same-origin</code>
+        </li>
+        <li>
+          <a href="/demo/broadcast/restricted" target="_blank">Works</a>
           The provider sends
           <code>Cross-Origin-Opener-Policy: same-origin</code>
         </li>

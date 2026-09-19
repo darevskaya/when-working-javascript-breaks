@@ -36,6 +36,7 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
   assert.doesNotMatch(evalBuild, /new Function\(/);
   for (const asset of [
     '/sdk.js',
+    '/sdk-safe.js',
     '/sdk.css',
     '/shop.css',
     '/embed.js',
@@ -65,6 +66,7 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
   assert.deepEqual(links, [
     '/demo/sdk/permissive',
     '/demo/sdk/restricted',
+    '/demo/sdk/fixed',
     '/demo/embed/no-sandbox',
     '/demo/embed/no-top-navigation',
     '/demo/embed/user-activation',
@@ -77,6 +79,9 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
     '/demo/coop/permissive',
     '/demo/coop/host-coop',
     '/demo/coop/restricted',
+    '/demo/broadcast/permissive',
+    '/demo/broadcast/host-coop',
+    '/demo/broadcast/restricted',
     '/demo/reporting',
   ]);
   for (const link of links) {
@@ -176,6 +181,21 @@ test('the shop routes differ only in the Trusted Types policy', async (t) => {
   // The widget writes its markup with innerHTML, the line the policy stops.
   const sdk = await (await fetch(`${origin}/sdk.js`)).text();
   assert.match(sdk, /\.innerHTML = `/);
+  // The fixed page sends the same policy. It differs only in the SDK script.
+  const fixed = await fetch(`${origin}/demo/sdk/fixed`);
+  assert.equal(
+    fixed.headers.get('content-security-policy'),
+    "require-trusted-types-for 'script'",
+  );
+  const fixedHtml = (await fixed.text())
+    .replace(/\n *<!-- The same page as shop\.html[^>]*-->/, '')
+    .replace('/sdk-safe.js', '/sdk.js');
+  assert.equal(
+    fixedHtml,
+    await (await fetch(`${origin}/demo/sdk/permissive`)).text(),
+  );
+  const safe = await (await fetch(`${origin}/sdk-safe.js`)).text();
+  assert.doesNotMatch(safe, /innerHTML =/);
 });
 
 test('fractal routes differ only in permission for Blob workers', async (t) => {
@@ -222,6 +242,10 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
           path: '/demo/sdk/restricted',
           headers: { [csp]: "require-trusted-types-for 'script'" },
         },
+        {
+          path: '/demo/sdk/fixed',
+          headers: { [csp]: "require-trusted-types-for 'script'" },
+        },
         { path: '/demo/embed/no-sandbox' },
         { path: '/demo/embed/no-top-navigation' },
         { path: '/demo/embed/user-activation' },
@@ -256,6 +280,15 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
           headers: { 'cross-origin-opener-policy': 'same-origin' },
         },
         { path: '/demo/coop/restricted' },
+        { path: '/demo/broadcast/permissive' },
+        {
+          path: '/demo/broadcast/host-coop',
+          headers: { 'cross-origin-opener-policy': 'same-origin' },
+        },
+        { path: '/demo/broadcast/restricted' },
+        { path: '/demo/broadcast/callback' },
+        { path: '/broadcast.js' },
+        { path: '/callback.js' },
         { path: '/demo/profile' },
         // Each reporting route names the receiver, then points one policy at
         // that name. The legacy route names no receiver.

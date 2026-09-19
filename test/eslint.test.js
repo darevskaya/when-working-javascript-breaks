@@ -31,3 +31,47 @@ test('lint allows new Worker only in the worker factory', async () => {
   );
   assert.deepEqual(inside.messages, []);
 });
+
+test('both markup rules flag the widget, and neither flags the fixed widget', async () => {
+  const [widget, fixed] = await new ESLint().lintFiles([
+    'demos/sdk/sdk.js',
+    'demos/sdk/sdk-safe.js',
+  ]);
+  assert.deepEqual(
+    widget.messages.map((message) => `${message.line} ${message.ruleId}`),
+    [
+      '8 no-unsanitized/property',
+      '8 no-restricted-syntax',
+      '21 no-unsanitized/property',
+      '21 no-restricted-syntax',
+    ],
+  );
+  assert.deepEqual(fixed.messages, []);
+});
+
+// Trusted Types blocks every string in these sinks. no-unsanitized looks for
+// XSS, so it allows constant strings. The innerHTML rule sees only innerHTML.
+test('each markup rule sees sinks that the other one misses', async () => {
+  const eslint = new ESLint();
+  const cases = {
+    'el.innerHTML = `<h2>${shop}</h2>`;': [
+      'no-restricted-syntax',
+      'no-unsanitized/property',
+    ],
+    "el.innerHTML = '<b>Orbit ID</b>';": ['no-restricted-syntax'],
+    "el['innerHTML'] = markup;": ['no-restricted-syntax'],
+    'el.outerHTML = markup;': ['no-unsanitized/property'],
+    "el.insertAdjacentHTML('beforeend', markup);": ['no-unsanitized/method'],
+    'document.write(markup);': ['no-unsanitized/method'],
+  };
+  for (const [code, expected] of Object.entries(cases)) {
+    const [result] = await eslint.lintText(code, {
+      filePath: 'demos/sdk/example.js',
+    });
+    assert.deepEqual(
+      result.messages.map((message) => message.ruleId).sort(),
+      expected,
+      code,
+    );
+  }
+});

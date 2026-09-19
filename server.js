@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { createReportCollector } from './reporting.js';
+import { createBff } from './bff.js';
+import { createOrbitAuth } from './orbit-auth.js';
 
 const root = import.meta.dirname;
 const contentTypes = {
@@ -30,7 +32,8 @@ function serve(routes) {
       response.end('Not found');
       return;
     }
-    // The /reports row is the collector itself. It writes its own response.
+    // A function row writes its own response: the /reports collector and the
+    // BFF and Orbit ID login endpoints.
     if (typeof route === 'function') return route(request, response);
 
     const { file, body, ...headers } =
@@ -68,6 +71,7 @@ export function createServer({
   collector = createReportCollector(),
   tls,
 } = {}) {
+  const bff = createBff({ providerOrigin, tls });
   return listener(
     tls,
     serve({
@@ -81,6 +85,11 @@ export function createServer({
       '/demo/sdk/permissive': 'demos/sdk/shop.html',
       '/demo/sdk/restricted': {
         file: 'demos/sdk/shop.html',
+        'Content-Security-Policy': "require-trusted-types-for 'script'",
+      },
+      // The same policy, but this page loads the SDK built with DOM APIs.
+      '/demo/sdk/fixed': {
+        file: 'demos/sdk/shop-safe.html',
         'Content-Security-Policy': "require-trusted-types-for 'script'",
       },
       // The shop embeds the Orbit ID frame. These routes send no policy.
@@ -124,6 +133,20 @@ export function createServer({
         'Cross-Origin-Opener-Policy': 'same-origin',
       },
       '/demo/coop/restricted': 'demos/coop/coop.html',
+      // The same three modes with a login that returns through a callback
+      // page and a BroadcastChannel. It needs no window reference.
+      '/demo/broadcast/permissive': 'demos/coop/broadcast.html',
+      '/demo/broadcast/host-coop': {
+        file: 'demos/coop/broadcast.html',
+        'Cross-Origin-Opener-Policy': 'same-origin',
+      },
+      '/demo/broadcast/restricted': 'demos/coop/broadcast.html',
+      '/demo/broadcast/callback': 'demos/coop/callback.html',
+      // The BFF behind the BroadcastChannel login. It keeps the token on the
+      // server and sets an HttpOnly session cookie. See bff.js.
+      '/bff/login': bff.login,
+      '/bff/callback': bff.callback,
+      '/bff/user': bff.user,
       // This row sends no policy. The Playwright test in demos/tests adds
       // one to this document's response, because that is what it teaches.
       '/demo/profile': 'demos/profile/profile.html',
@@ -178,6 +201,7 @@ export function createServer({
       '/shop.css': 'demos/sdk/shop.css',
       '/sdk.css': 'demos/sdk/sdk.css',
       '/sdk.js': 'demos/sdk/sdk.js',
+      '/sdk-safe.js': 'demos/sdk/sdk-safe.js',
       '/embed.css': 'demos/sdk/embed.css',
       '/embed.js': 'demos/sdk/embed.js',
       '/orbit-loader.js': 'demos/sdk/orbit-loader.js',
@@ -190,6 +214,8 @@ export function createServer({
       '/fractal-module-worker.js': 'demos/fractal/fractal-module-worker.js',
       '/coop.css': 'demos/coop/coop.css',
       '/coop.js': 'demos/coop/coop.js',
+      '/broadcast.js': 'demos/coop/broadcast.js',
+      '/callback.js': 'demos/coop/callback.js',
       '/profile.js': 'demos/profile/profile.js',
       '/bundles/dialog.js': 'dist/dialog.js',
       '/bundles/dialog.js.map': 'dist/dialog.js.map',
@@ -209,6 +235,7 @@ export function createProviderServer({
   collector = createReportCollector(),
   tls,
 } = {}) {
+  const auth = createOrbitAuth({ appOrigin });
   return listener(
     tls,
     serve({
@@ -221,6 +248,9 @@ export function createProviderServer({
       // The SDK frame on the embed pages, and the login it redirects to.
       '/embed': 'demos/sdk/frame.html',
       '/login/embed': 'demos/coop/provider.html',
+      // The authorization code endpoints for the BFF login. See orbit-auth.js.
+      '/login/approve': auth.approve,
+      '/token': auth.token,
 
       // The second origin the reporting examples reach for.
       '/reporting-popup': 'demos/reporting/popup.html',

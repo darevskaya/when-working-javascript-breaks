@@ -1,0 +1,67 @@
+# Project rules: the browser policies that this code must work under.
+# The Semgrep registry rules (p/javascript, p/xss, p/default) find nothing in
+# demos/, because they look for untrusted input that reaches a dangerous call.
+# These rules look for code that a policy blocks, whatever its input.
+rules:
+  - id: trusted-types-markup-sink
+    languages: [javascript]
+    severity: ERROR
+    message: >-
+      require-trusted-types-for 'script' blocks every string in this markup
+      sink, also a constant string. Build the markup with DOM APIs and
+      textContent.
+    pattern-either:
+      - pattern: $EL.innerHTML = $X
+      - pattern: $EL.innerHTML += $X
+      - pattern: $EL.outerHTML = $X
+      - pattern: $EL.insertAdjacentHTML(...)
+      - pattern: document.write(...)
+
+  - id: script-src-string-to-code
+    languages: [javascript]
+    severity: ERROR
+    message: >-
+      script-src without 'unsafe-eval' blocks code that is compiled from a
+      string.
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)
+      - pattern: Function(...)
+      - pattern: setTimeout("...", ...)
+      - pattern: setInterval("...", ...)
+
+  # Dataflow: the Blob URL can pass through variables and functions before it
+  # reaches new Worker. An ESLint selector sees one expression at a time.
+  - id: worker-src-blob-worker
+    languages: [javascript]
+    severity: ERROR
+    message: >-
+      worker-src without blob: blocks a Worker from a Blob URL. Start the
+      worker from a script file on the page origin.
+    mode: taint
+    pattern-sources:
+      - pattern: URL.createObjectURL(...)
+    pattern-sinks:
+      - pattern: new Worker($URL, ...)
+        focus-metavariable: $URL
+
+  - id: coop-window-opener
+    languages: [javascript]
+    severity: WARNING
+    message: >-
+      window.opener is null when either page sends
+      Cross-Origin-Opener-Policy: same-origin, and with noopener. Plan a path
+      that does not need it, for example the BroadcastChannel login.
+    pattern: window.opener
+
+  - id: sandbox-top-navigation
+    languages: [javascript]
+    severity: WARNING
+    message: >-
+      In a sandboxed iframe, this needs allow-top-navigation-by-user-activation
+      and a click. Put it in the embedding contract.
+    pattern-either:
+      - pattern: window.top.location.href = $X
+      - pattern: window.top.location = $X
+      - pattern: top.location.href = $X
+      - pattern: window.top.location.assign(...)

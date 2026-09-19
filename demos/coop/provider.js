@@ -29,21 +29,35 @@ function popupLogin() {
   });
 }
 
-// The SDK frame on the embed pages sends the whole page here, with the
-// address to return to. The result goes back in that address.
-function redirectLogin() {
-  const returnTo = new URLSearchParams(location.search).get('return_to');
+// The SDK frame on the embed pages sends the whole page here, and the
+// BroadcastChannel pages open this login in a popup. Both give the address to
+// return to, and the result goes back in that address, not through
+// window.opener.
+function redirectLogin(returnTo) {
   document.querySelector('#provider-intro').textContent =
-    'You are now on Orbit ID. When you continue, Orbit ID sends you back to the shop.';
-  status.textContent = 'Continue to return to the shop.';
-  document.querySelector('#provider-connection').hidden = true;
+    'You are now on Orbit ID. When you continue, Orbit ID sends you back to the site that sent you here.';
+  status.textContent = 'Continue to return to the site.';
+  if (location.pathname === '/login/embed') {
+    document.querySelector('#provider-connection').hidden = true;
+  } else {
+    document.querySelector('#opener-state').value =
+      window.opener === null ? 'null' : 'present';
+    document.querySelector('#connection-description').textContent =
+      'This login does not need window.opener. It sends a one-time code back to the server of the app.';
+  }
 
   button.addEventListener('click', () => {
+    // The BFF login asks for a code with PKCE. The Orbit ID server issues the
+    // code and checks the return address. See orbit-auth.js.
+    if (new URLSearchParams(location.search).has('code_challenge')) {
+      location.assign(`/login/approve${location.search}`);
+      return;
+    }
     // Send the user back only to the app origin, never to any address.
     const back = URL.canParse(returnTo) ? new URL(returnTo) : null;
     if (back?.origin !== appOrigin) {
       status.textContent =
-        'Login could not finish. The return address is not the shop.';
+        'Login could not finish. The return address is not allowed.';
       status.className = 'blocked';
       return;
     }
@@ -52,5 +66,9 @@ function redirectLogin() {
   });
 }
 
-if (location.pathname === '/login/embed') redirectLogin();
-else popupLogin();
+const returnTo = new URLSearchParams(location.search).get('return_to');
+if (location.pathname === '/login/embed' || returnTo !== null) {
+  redirectLogin(returnTo);
+} else {
+  popupLogin();
+}

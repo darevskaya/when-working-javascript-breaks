@@ -60,3 +60,26 @@ test('Trusted Types stops the widget at its innerHTML assignment', async ({
   await expect(page.getByRole('button')).toHaveCount(0);
   await page.screenshot({ path: 'test-results/sdk-restricted.png' });
 });
+
+test('the fixed widget renders and signs in under Trusted Types', async ({
+  page,
+}) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error));
+  const document = page.waitForResponse('**/demo/sdk/fixed');
+  await page.goto('/demo/sdk/fixed');
+  expect((await document).headers()['content-security-policy']).toBe(
+    "require-trusted-types-for 'script'",
+  );
+  const widget = page.getByRole('region', { name: 'Sign in' });
+  await expect(
+    widget.getByRole('heading', { name: 'Sign in to Fern & Co.' }),
+  ).toBeVisible();
+  await widget.getByRole('button', { name: 'Continue with Orbit ID' }).click();
+  await expect(
+    widget.getByRole('heading', { name: 'Signed in as Elena' }),
+  ).toBeVisible();
+  expect(errors).toEqual([]);
+  expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
+  await page.screenshot({ path: 'test-results/sdk-fixed.png' });
+});
