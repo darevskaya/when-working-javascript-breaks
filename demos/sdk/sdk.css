@@ -42,3 +42,16 @@
 .orbit-widget button:focus-visible {
   outline-color: #2355d6;
 }
+
+/* The same card fills the Orbit ID frame on the embed pages. */
+.orbit-frame {
+  background: transparent;
+}
+
+.orbit-frame body {
+  margin: 0;
+}
+
+.orbit-frame #status {
+  margin-top: 8px;
+}

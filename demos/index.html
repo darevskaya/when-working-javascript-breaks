@@ -26,6 +26,30 @@
         </li>
       </ul>
 
+      <h2>SDK frame: iframe sandbox</h2>
+      <p>
+        These pages send no policy. The shop puts a different
+        <code>sandbox</code> attribute on the Orbit ID iframe. The login
+        redirects the whole page.
+      </p>
+      <ul>
+        <li>
+          <a href="/demo/embed/no-sandbox" target="_blank">Works</a>
+          No sandbox.
+        </li>
+        <li>
+          <a href="/demo/embed/no-top-navigation" target="_blank"
+            >Login blocked</a
+          >
+          <code>allow-scripts allow-same-origin</code>
+        </li>
+        <li>
+          <a href="/demo/embed/user-activation" target="_blank">Works</a>
+          The same, plus
+          <code>allow-top-navigation-by-user-activation</code>
+        </li>
+      </ul>
+
       <h2>Calculator: <code>new Function</code></h2>
       <ul>
         <li>

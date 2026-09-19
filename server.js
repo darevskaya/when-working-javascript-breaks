@@ -83,6 +83,12 @@ export function createServer({
         file: 'demos/sdk/shop.html',
         'Content-Security-Policy': "require-trusted-types-for 'script'",
       },
+      // The shop embeds the Orbit ID frame. These routes send no policy.
+      // They differ in the sandbox attribute on the iframe, which embed.js
+      // reads from the path.
+      '/demo/embed/no-sandbox': 'demos/sdk/embed.html',
+      '/demo/embed/no-top-navigation': 'demos/sdk/embed.html',
+      '/demo/embed/user-activation': 'demos/sdk/embed.html',
       '/demo/calculator/permissive': {
         file: 'demos/calculator/calculator.html',
         'Content-Security-Policy': "script-src 'self' 'unsafe-eval'",
@@ -166,6 +172,9 @@ export function createServer({
       '/shop.css': 'demos/sdk/shop.css',
       '/sdk.css': 'demos/sdk/sdk.css',
       '/sdk.js': 'demos/sdk/sdk.js',
+      '/embed.css': 'demos/sdk/embed.css',
+      '/embed.js': 'demos/sdk/embed.js',
+      '/orbit-loader.js': 'demos/sdk/orbit-loader.js',
       '/calculator.css': 'demos/calculator/calculator.css',
       '/calculator.js': 'demos/calculator/calculator.js',
       '/fractal.css': 'demos/fractal/fractal.css',
@@ -180,6 +189,9 @@ export function createServer({
       '/bundles/dialog.js.map': 'dist/dialog.js.map',
       '/bundles/eval/dialog.js': 'dist/eval/dialog.js',
       '/coop-config.js': {
+        body: `export const providerOrigin = '${providerOrigin}';\n`,
+      },
+      '/sdk-config.js': {
         body: `export const providerOrigin = '${providerOrigin}';\n`,
       },
     }),
@@ -200,6 +212,9 @@ export function createProviderServer({
         file: 'demos/coop/provider.html',
         'Cross-Origin-Opener-Policy': 'same-origin',
       },
+      // The SDK frame on the embed pages, and the login it redirects to.
+      '/embed': 'demos/sdk/frame.html',
+      '/login/embed': 'demos/coop/provider.html',
 
       // The second origin the reporting examples reach for.
       '/reporting-popup': 'demos/reporting/popup.html',
@@ -211,6 +226,8 @@ export function createProviderServer({
       '/styles.css': 'demos/common/styles.css',
       '/provider.css': 'demos/coop/provider.css',
       '/provider.js': 'demos/coop/provider.js',
+      '/sdk.css': 'demos/sdk/sdk.css',
+      '/frame.js': 'demos/sdk/frame.js',
       '/provider-config.js': {
         body: `export const appOrigin = '${appOrigin}';\n`,
       },

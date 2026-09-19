@@ -14,7 +14,7 @@ All demo source files live in `demos/`, grouped by feature:
 ```text
 demos/
   index.html   Links to every demo in every mode
-  sdk/         Shop page, SDK widget script, and CSS
+  sdk/         Shop pages, SDK widget, SDK frame and loader, and CSS
   calculator/  HTML, CSS, page script, and dialog source
   fractal/     HTML, CSS, page script, worker, and worker factory
   coop/        HTML, CSS, and scripts for the app and identity provider
@@ -69,6 +69,33 @@ http://127.0.0.1:4173/demo/sdk/restricted
 
 The widget stays at "Loading sign-in…". The console shows a `TypeError` on the
 `innerHTML` assignment. The SDK code is the same on both pages.
+
+## SDK frame
+
+http://127.0.0.1:4173/demo/embed/no-sandbox
+
+The same shop embeds the Orbit ID frame from the provider server on port 4174.
+The login is a redirect. When you select "Continue with Orbit ID", the frame
+sets `window.top.location` to the Orbit ID login. After you continue as Elena,
+Orbit ID sends the whole page back to the shop. The frame and the shop exchange
+no messages.
+
+These pages send no policy. They differ in the `sandbox` attribute that the
+shop puts on the iframe, and the page shows that attribute.
+
+http://127.0.0.1:4173/demo/embed/no-top-navigation
+
+This sandbox is `allow-scripts allow-same-origin`. The frame renders, and its
+button works. The failure waits until the click. The redirect then throws a
+`SecurityError` inside the frame, and the console shows "Unsafe attempt to
+initiate navigation". The shop page sees no error.
+
+http://127.0.0.1:4173/demo/embed/user-activation
+
+This sandbox adds `allow-top-navigation-by-user-activation`, and the login
+works again. This token allows a redirect only in response to a click.
+Chrome also blocks a redirect without a click from a cross-origin frame that
+has no sandbox. Only `allow-top-navigation` allows it.
 
 ## Calculator
 

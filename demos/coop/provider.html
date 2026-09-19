@@ -15,8 +15,8 @@
     </header>
     <main class="provider-content">
       <section aria-labelledby="provider-title">
-        <h1 id="provider-title">Sign in to Popup login</h1>
-        <p class="provider-intro">
+        <h1 id="provider-title">Sign in with Orbit ID</h1>
+        <p id="provider-intro" class="provider-intro">
           You are now on Orbit ID, a separate service from the app that opened
           this window.
         </p>
@@ -30,7 +30,11 @@
         <p id="status" role="status">
           Continue to send your name to the app and close this window.
         </p>
-        <aside class="provider-connection" aria-label="Connection to the app">
+        <aside
+          id="provider-connection"
+          class="provider-connection"
+          aria-label="Connection to the app"
+        >
           <h2>Connection to the app</h2>
           <p>
             <code>window.opener: <output id="opener-state">—</output></code>

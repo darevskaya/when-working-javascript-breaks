@@ -38,6 +38,9 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
     '/sdk.js',
     '/sdk.css',
     '/shop.css',
+    '/embed.js',
+    '/embed.css',
+    '/orbit-loader.js',
     '/calculator.js',
     '/styles.css',
     '/fractal.js',
@@ -62,6 +65,9 @@ test('static assets, demo entry routes, and both dialog bundles', async (t) => {
   assert.deepEqual(links, [
     '/demo/sdk/permissive',
     '/demo/sdk/restricted',
+    '/demo/embed/no-sandbox',
+    '/demo/embed/no-top-navigation',
+    '/demo/embed/user-activation',
     '/demo/calculator/permissive',
     '/demo/calculator/restricted',
     '/demo/calculator/eval-build',
@@ -117,7 +123,25 @@ test('COOP changes only the provider header, with identical documents and script
     await (await fetch(`${providerOrigin}/provider-config.js`)).text(),
     "export const appOrigin = 'http://127.0.0.1:4998';\n",
   );
-  for (const asset of ['/provider.js', '/provider.css', '/styles.css']) {
+  assert.equal(
+    await (await fetch(`${appOrigin}/sdk-config.js`)).text(),
+    "export const providerOrigin = 'http://127.0.0.1:4999';\n",
+  );
+  // The embed login is the same page as the COOP login, with no COOP.
+  const embedLogin = await fetch(`${providerOrigin}/login/embed`);
+  assert.equal(embedLogin.headers.get('cross-origin-opener-policy'), null);
+  assert.equal(
+    await embedLogin.text(),
+    await (await fetch(`${providerOrigin}/login/permissive`)).text(),
+  );
+  for (const asset of [
+    '/provider.js',
+    '/provider.css',
+    '/styles.css',
+    '/embed',
+    '/frame.js',
+    '/sdk.css',
+  ]) {
     assert.equal((await fetch(`${providerOrigin}${asset}`)).status, 200);
   }
   assert.equal((await fetch(`${appOrigin}/coop.js`)).status, 200);
@@ -190,6 +214,10 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
           path: '/demo/sdk/restricted',
           headers: { [csp]: "require-trusted-types-for 'script'" },
         },
+        { path: '/demo/embed/no-sandbox' },
+        { path: '/demo/embed/no-top-navigation' },
+        { path: '/demo/embed/user-activation' },
+        { path: '/sdk-config.js' },
         {
           path: '/demo/calculator/permissive',
           headers: { [csp]: "script-src 'self' 'unsafe-eval'" },
@@ -286,6 +314,8 @@ test('responses contain only the demonstrated policies and ordinary HTTP headers
           path: '/login/restricted',
           headers: { 'cross-origin-opener-policy': 'same-origin' },
         },
+        { path: '/embed' },
+        { path: '/login/embed' },
         { path: '/reporting-popup' },
         { path: '/reporting-resource.js' },
         { path: '/provider.js' },
