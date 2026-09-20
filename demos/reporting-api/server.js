@@ -1,4 +1,6 @@
-import { serve, listener, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, demoPorts } from '../common/serve.js';
+
+const ports = demoPorts(import.meta);
 import { createReportCollector } from './collector.js';
 
 // Reporting-Endpoints gives the receiver a name. The policy then sends its

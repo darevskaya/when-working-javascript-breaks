@@ -12,23 +12,18 @@
       <p>Each link opens one mode of this demo in a new tab.</p>
       <ul>
         <li>
-          <a href="/demo/trusted-types/escaped-string" target="_blank"
-            >Escaped string in innerHTML: blocked</a
+          <a href="/demo/trusted-types/no-policy" target="_blank"
+            >No policy: the widget builds every node</a
           >
-          <code>require-trusted-types-for 'script'</code>
+          <code>require-trusted-types-for 'script'; trusted-types 'none'</code>
         </li>
         <li>
-          <a href="/demo/trusted-types/named-policy" target="_blank"
-            >TrustedHTML from a named policy: renders</a
-          >
-          <code>require-trusted-types-for 'script'</code>
-        </li>
-        <li>
-          <a href="/demo/trusted-types/policy-not-allowed" target="_blank"
-            >Policy name not in the CSP list: blocked</a
+          <a href="/demo/trusted-types/one-policy" target="_blank"
+            >One policy: the widget writes markup through setHTML()</a
           >
           <code
-            >require-trusted-types-for 'script'; trusted-types shop-policy</code
+            >require-trusted-types-for 'script'; trusted-types
+            orbit-widget</code
           >
         </li>
       </ul>

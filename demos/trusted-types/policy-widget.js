@@ -1,8 +1,9 @@
 import { setHTML } from 'trusted-html';
+import { reportPolicy } from './policy-probe.js';
 
-// The Orbit ID widget from innerhtml-string.js. It keeps its templates, but it
-// writes them through setHTML() from the trusted-html package, so this file
-// touches no markup sink.
+// The page sends trusted-types orbit-widget, and setHTML() in the trusted-html
+// package owns that policy. setHTML() escapes each value, so the widget keeps
+// its templates and this file touches no markup sink.
 
 function renderSignIn(container) {
   const shop = container.dataset.shop;
@@ -30,3 +31,6 @@ function renderSignedIn(container) {
 for (const container of document.querySelectorAll('[data-orbit-widget]')) {
   renderSignIn(container);
 }
+
+// The list names orbit-widget and nothing else, so a second name fails.
+reportPolicy('shop-widget');

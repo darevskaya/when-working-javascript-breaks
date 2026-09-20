@@ -49,7 +49,7 @@ test('each file has its own rule', async () => {
   // The configuration: only the contract origins.
   assert.deepEqual(
     await messages(
-      "export const config = { apiOrigin: 'http://127.0.0.1:4174' };",
+      "export const config = { apiOrigin: 'http://127.0.0.1:4308' };",
       'config.js',
     ),
     [],

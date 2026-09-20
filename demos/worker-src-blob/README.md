@@ -12,3 +12,25 @@ The page draws a Mandelbrot set in a Worker. `workerFactory()` in
 
 `npm run lint` flags the Blob worker in `worker-factory.js`. The Semgrep rule
 follows the Blob URL through variables.
+
+## Two Playwright configurations
+
+The tests in `test-csp/` open one page and replace its
+`Content-Security-Policy` header from Playwright. `page.route()` fetches the
+response, puts the policy of the configuration on it, and passes it to the
+browser. The page and the server stay the same, so the header is the only
+difference between the two runs.
+
+The page also records every violation twice: from the
+`securitypolicyviolation` event on the document, and from a
+`ReportingObserver` that watches reports of type `csp-violation`. Each test
+attaches the list as `csp-violations.json` and adds one annotation per
+violation, so the HTML report names the directive and the blocked URL.
+
+- `npm run test:permissive`: `worker-src 'self' blob:`. The worker starts and
+  the test passes.
+- `npm run test:strict`: `worker-src 'self'`. The browser blocks the worker and
+  the test fails. The report holds the violations, a screenshot, and a trace.
+
+Each run writes its own report under `playwright-report/<name>`. To read the
+failing one, run `npx playwright show-report playwright-report/strict`.

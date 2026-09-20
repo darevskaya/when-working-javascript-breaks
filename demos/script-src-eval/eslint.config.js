@@ -1,20 +1,16 @@
 import globals from 'globals';
 
-// Code that turns a string into running code. script-src without
-// 'unsafe-eval' blocks all three forms. One more rule checks the build
-// configuration, because the build can add eval too.
 export default [
   { ignores: ['dist/**', 'test-results/**', 'playwright-report/**'] },
   {
     files: ['**/*.js'],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
     rules: {
-      // eval(code)
       'no-eval': ['error', { allowIndirect: false }],
-      // setTimeout('doSomething()', 100)
       'no-implied-eval': 'error',
-      // new Function(code)
       'no-new-func': 'error',
+
+      
       'no-restricted-syntax': [
         'error',
         {

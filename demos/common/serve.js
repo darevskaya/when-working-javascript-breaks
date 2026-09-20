@@ -2,6 +2,7 @@ import http from 'node:http';
 import https from 'node:https';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { demo } from './demos.js';
 
 const contentTypes = {
   '.html': 'text/html; charset=utf-8',
@@ -61,9 +62,15 @@ export const listener = (tls, handler) =>
 export const isMain = (meta) =>
   meta.filename === path.resolve(process.argv[1] ?? '');
 
-// The ports of a running demo. Every demo uses the same two ports, so run one
-// demo at a time. PORT and PROVIDER_PORT override them.
-export const ports = {
-  app: Number(process.env.PORT || 4173),
-  provider: Number(process.env.PROVIDER_PORT || 4174),
-};
+// The ports of one demo, from demos/common/demos.js. Each demo has its own
+// pair, so every demo can run at the same time. PORT and PROVIDER_PORT
+// override them, which is what the Playwright configuration does.
+export function demoPorts(meta) {
+  const { port, providerPort } = demo(
+    path.basename(path.dirname(meta.filename)),
+  );
+  return {
+    app: Number(process.env.PORT || port),
+    provider: Number(process.env.PROVIDER_PORT || providerPort || port + 100),
+  };
+}

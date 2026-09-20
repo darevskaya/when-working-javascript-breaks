@@ -1,4 +1,6 @@
-import { serve, listener, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, demoPorts } from '../common/serve.js';
+
+const ports = demoPorts(import.meta);
 
 // The first two pages differ in one header. The HTML and the JavaScript are
 // the same, and the page renders its templates with eval. The bundle page

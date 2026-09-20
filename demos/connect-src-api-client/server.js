@@ -1,4 +1,6 @@
-import { serve, listener, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, demoPorts } from '../common/serve.js';
+
+const ports = demoPorts(import.meta);
 import { apiOrigins, apiPort } from './contract.js';
 
 // The page sends connect-src with the origins in contract.js, the same list

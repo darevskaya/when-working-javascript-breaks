@@ -1,7 +1,7 @@
 import { demoConfig } from '../common/playwright.js';
 
 // The stage test fails on purpose, so npm test does not run it. It uses its
-// own ports, so it never collides with a demo that runs on 4173.
+// own ports, so it never collides with a demo that runs by hand.
 export default demoConfig({
   testDir: './stage',
   expect: { timeout: 2000 },

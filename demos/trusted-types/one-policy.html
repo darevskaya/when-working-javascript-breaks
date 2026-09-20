@@ -6,12 +6,11 @@
     <title>Sign-in widget</title>
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/orbit.css" />
-    <!-- Only this script differs between the widget pages. The import map
-         tells the browser where the trusted-html package is. -->
+    <!-- Only these scripts differ between the two widget pages. -->
     <script type="importmap">
       { "imports": { "trusted-html": "/trusted-html.js" } }
     </script>
-    <script type="module" src="/innerhtml-policy.js"></script>
+    <script type="module" src="/policy-widget.js"></script>
   </head>
   <body>
     <main class="lab">
@@ -26,6 +25,7 @@
         >
           <p class="orbit-loading">Loading sign-in…</p>
         </section>
+        <p id="status">Reading the policy list…</p>
       </section>
     </main>
   </body>

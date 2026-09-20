@@ -1,4 +1,6 @@
-import { serve, listener, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, demoPorts } from '../common/serve.js';
+
+const ports = demoPorts(import.meta);
 
 // The profile page sends no policy. The stage test adds one to the document
 // response, because that is what it teaches.

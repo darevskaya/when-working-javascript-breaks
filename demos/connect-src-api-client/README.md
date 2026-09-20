@@ -15,4 +15,4 @@ page `/demo/connect-src-api-client/api-calls` shows what the browser does with
 each call. The hard-coded URL in `api-client.js` works, because its host is in
 the contract. Only lint finds it.
 
-The API server always uses port 4174, because `config.js` names it.
+The API server always uses port 4308, because `config.js` names it.

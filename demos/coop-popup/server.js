@@ -1,4 +1,6 @@
-import { serve, listener, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, demoPorts } from '../common/serve.js';
+
+const ports = demoPorts(import.meta);
 
 // The popup login app. Either side can send COOP: the host-coop page sends it
 // here, and the restricted page opens the Orbit ID login that sends it.

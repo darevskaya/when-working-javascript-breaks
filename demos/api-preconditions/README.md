@@ -61,9 +61,9 @@ differ from a plain reading of the documentation:
 - The screen wake lock request fails in headless Chromium with no policy in
   play. A browser window with a visible tab grants it.
 
-This demo runs on `http://127.0.0.1:4173`, which is a secure context. To watch
+This demo runs on `http://127.0.0.1:4210`, which is a secure context. To watch
 the secure-context rows fail, open the same server through the LAN address of
-your machine, for example `http://192.168.1.10:4173`.
+your machine, for example `http://192.168.1.10:4210`.
 
 ## What lint finds
 

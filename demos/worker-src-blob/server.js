@@ -1,4 +1,6 @@
-import { serve, listener, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, demoPorts } from '../common/serve.js';
+
+const ports = demoPorts(import.meta);
 
 // The pages differ in one header. The module page also starts the worker in
 // another way: from a module file instead of a Blob URL.

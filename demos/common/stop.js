@@ -1,14 +1,14 @@
 import { execFileSync } from 'node:child_process';
+import { allPorts } from './demos.js';
 
-// Stops the demo server that npm start runs. It finds the processes that
-// listen on the two demo ports and stops each one that runs server.js.
+// Stops every demo server and the hub page. It finds the processes that
+// listen on the demo ports and stops each one that runs a demo server.
 // Another program on those ports is left alone.
 // Usage: npm run stop
 
-const ports = [
-  Number(process.env.PORT || 4173),
-  Number(process.env.PROVIDER_PORT || 4174),
-];
+const ports = allPorts;
+const servers = ['server.js', 'hub.js', 'start-all.js', 'launch.js'];
+
 const windows = process.platform === 'win32';
 
 const run = (command, args) => {
@@ -21,7 +21,7 @@ const run = (command, args) => {
 
 function listeners(port) {
   if (windows) {
-    // Lines like: TCP  127.0.0.1:4173  0.0.0.0:0  LISTENING  13812
+    // Lines like: TCP  127.0.0.1:4201  0.0.0.0:0  LISTENING  13812
     return run('netstat', ['-ano', '-p', 'tcp'])
       .split('\n')
       .map((line) => line.trim().split(/\s+/))
@@ -47,16 +47,27 @@ function commandLine(pid) {
     : run('ps', ['-o', 'command=', '-p', String(pid)]);
 }
 
-const pids = new Set(ports.flatMap(listeners));
-if (pids.size === 0) {
-  console.log(`No server listens on port ${ports.join(' or ')}.`);
+// True while the process still exists. A child stops when npm start stops,
+// so the list of listeners can hold processes that are already gone.
+function alive(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
 }
-for (const pid of pids) {
+
+let stopped = 0;
+for (const pid of new Set(ports.flatMap(listeners))) {
+  if (!alive(pid)) continue;
   const command = commandLine(pid).trim();
-  if (!command.includes('server.js')) {
+  if (!servers.some((name) => command.includes(name))) {
     console.log(`Left process ${pid} alone. It runs: ${command || 'unknown'}`);
     continue;
   }
   process.kill(pid);
-  console.log(`Stopped the demo server (process ${pid}).`);
+  stopped += 1;
+  console.log(`Stopped a demo server (process ${pid}).`);
 }
+if (stopped === 0) console.log('No demo server is running.');

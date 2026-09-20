@@ -1,8 +1,7 @@
-// The original Orbit ID sign-in widget. No page loads it. innerhtml-escaped.js
-// and innerhtml-policy.js are changed copies of it, and the lint and Semgrep
-// demos flag its two innerHTML lines. The markup is a template string in
-// innerHTML, which require-trusted-types-for 'script' refuses with a
-// TypeError.
+// The original Orbit ID sign-in widget. No page loads it. It is the code that
+// dom-widget.js and policy-widget.js replace, and lint and Semgrep flag its
+// two innerHTML lines. A page with require-trusted-types-for 'script' answers
+// the same lines with a TypeError.
 (() => {
   function renderSignIn(container) {
     const shop = container.dataset.shop;

@@ -1,4 +1,6 @@
-import { serve, listener, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, demoPorts } from '../common/serve.js';
+
+const ports = demoPorts(import.meta);
 
 // The page embeds the Orbit ID frame. These pages send no policy. They differ
 // in the sandbox attribute on the iframe, which host-page.js reads from the path.
