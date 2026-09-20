@@ -25,8 +25,10 @@ test('escaped values are still a string, so Trusted Types blocks them', async ({
       directive: 'require-trusted-types-for',
       blocked: 'trusted-types-sink',
     });
-  // The shop still renders. Only the widget's part of the page is missing.
-  await expect(page.getByRole('heading', { name: 'Your order' })).toBeVisible();
+  // The page still renders. Only the widget's part of it is missing.
+  await expect(
+    page.getByRole('heading', { name: 'Sign-in widget' }),
+  ).toBeVisible();
   await expect(page.getByText('Loading sign-in…')).toBeVisible();
   await expect(page.getByRole('button')).toHaveCount(0);
   await page.screenshot({ path: 'test-results/widget-escaped.png' });
@@ -39,7 +41,7 @@ test('the policy widget keeps innerHTML and works under Trusted Types', async ({
   page.on('pageerror', (error) => errors.push(error));
   await page.goto('/demo/trusted-types/named-policy');
   const widget = page.getByRole('region', { name: 'Sign in' });
-  // The html tag escaped the & in the shop name, and the page shows it as &.
+  // setHTML escaped the & in the site name, and the page shows it as &.
   await expect(
     widget.getByRole('heading', { name: 'Sign in to Fern & Co.' }),
   ).toBeVisible();

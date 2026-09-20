@@ -34,6 +34,8 @@ channel.addEventListener('message', async ({ data }) => {
   if (typeof user !== 'string') return;
   waiting = false;
   status.textContent = `Logged in as ${user}`;
+  // The login worked, so the page needs no Sign in button.
+  button.hidden = true;
 });
 
 button.addEventListener('click', () => {

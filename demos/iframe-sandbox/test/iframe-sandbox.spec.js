@@ -43,14 +43,14 @@ test('sandbox-without-top-navigation: the frame renders, but the login is blocke
     /\/demo\/iframe-sandbox\/sandbox-without-top-navigation$/,
   );
   await expect(page.locator('#status')).toHaveText(
-    'No user yet. The shop sees no error.',
+    'No user yet. The page sees no error.',
   );
   await page.screenshot({
     path: 'test-results/sandbox-without-top-navigation.png',
   });
 });
 
-test('the login returns only to the shop origin', async ({ page }) => {
+test('the login returns only to the page origin', async ({ page }) => {
   await page.goto('/demo/iframe-sandbox/no-sandbox');
   const src = await page.locator('#orbit-slot iframe').getAttribute('src');
   const login = new URL('/login/redirect', src);

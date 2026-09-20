@@ -1,0 +1,97 @@
+/* The environment panel: what the page got from the server and the browser. */
+.env {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 24px;
+  margin: 0 0 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+
+.env dt {
+  color: var(--muted);
+}
+
+.env dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.apis {
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.api {
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+}
+
+.api h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-family: ui-monospace, monospace;
+  overflow-wrap: anywhere;
+}
+
+.api .needs,
+.api .permission {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.results {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 24px;
+  margin: 12px 0 0;
+  font-size: 0.875rem;
+}
+
+.results dt {
+  color: var(--muted);
+}
+
+.results dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.result {
+  font-weight: 600;
+}
+
+.result.works {
+  color: var(--accent);
+}
+
+.result.blocked {
+  color: #b3261e;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin: 12px 0 0;
+}
+
+.api .actions button {
+  padding: 8px 16px;
+}
+
+@media (max-width: 540px) {
+  .env,
+  .results {
+    grid-template-columns: 1fr;
+  }
+
+  .results dd {
+    margin-bottom: 8px;
+  }
+}

@@ -3,33 +3,20 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Fern &amp; Co. — Checkout</title>
+    <title>Embedded Orbit ID frame</title>
     <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/shop.css" />
     <link rel="stylesheet" href="/host-page.css" />
     <script type="module" src="/host-page.js"></script>
   </head>
-  <body class="shop">
-    <header class="shop-header">
-      <strong>Fern &amp; Co.</strong>
-      <span>Plants and pots</span>
-    </header>
-    <main class="shop-content">
-      <h1>Checkout</h1>
-      <div class="checkout">
-        <section class="order" aria-labelledby="order-title">
-          <h2 id="order-title">Your order</h2>
-          <ul>
-            <li><span>Monstera, medium</span><span>$38.00</span></li>
-            <li><span>Terracotta pot</span><span>$14.00</span></li>
-          </ul>
-          <p class="order-total"><span>Total</span><span>$52.00</span></p>
-        </section>
+  <body>
+    <main class="lab">
+      <section class="demo-panel" aria-labelledby="page-title">
+        <h1 id="page-title">Embedded Orbit ID frame</h1>
         <!-- The Orbit ID frame goes here. -->
         <section id="orbit-slot" aria-label="Sign in"></section>
-      </div>
+      </section>
       <section class="embed-state" aria-labelledby="embed-state-title">
-        <h2 id="embed-state-title">What the shop sees</h2>
+        <h2 id="embed-state-title">What the page sees</h2>
         <pre><code id="embed-code"></code></pre>
         <p id="status" role="status">Loading the Orbit ID frame…</p>
       </section>

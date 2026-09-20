@@ -1,7 +1,8 @@
 # Trusted Types: innerHTML
 
-The customer's shop sends `require-trusted-types-for 'script'`. The Orbit ID
-widget renders a sign-in card into the shop.
+The page sends `require-trusted-types-for 'script'`. It gives the Orbit ID
+widget one element and the site name, and the widget renders a sign-in card
+into it.
 
 - `/demo/trusted-types/escaped-string`: the widget escapes each value, but it
   still assigns a string to `innerHTML`. The widget breaks.

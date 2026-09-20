@@ -31,8 +31,12 @@ The demos:
 - `connect-src-api-client/`: lint keeps every API call inside the `connect-src`
   contract
 - `reporting-api/`: report-only policies and browser reports
+- `api-preconditions/`: what eleven different APIs need before they run
 
-`demos/common/` holds the files that several demos share.
+Each demo folder holds every file that its pages need, its own copy included.
+`demos/common/` holds only the shared helper code: the route table, the
+Playwright configuration, the test helpers, the Semgrep wrapper, and the stop
+script.
 
 From this folder, `npm test`, `npm run lint`, and `npm run scan` run every demo.
 Lint and scan fail on purpose, because they find the lines that break. To stop a

@@ -1,6 +1,6 @@
 // The Orbit ID frame. The login is a redirect: the frame navigates the whole
-// page to Orbit ID, and Orbit ID sends the user back to the shop. The frame
-// and the shop exchange no messages. The shop gives the frame its return
+// page to Orbit ID, and Orbit ID sends the user back to the page. The frame
+// and the page exchange no messages. The page gives the frame its return
 // address and the signed-in user in the frame URL.
 const params = new URLSearchParams(location.search);
 const returnTo = params.get('return_to');
@@ -16,12 +16,12 @@ signIn.addEventListener('click', () => {
   status.textContent = 'Opening Orbit ID…';
   // A sandbox without allow-top-navigation or
   // allow-top-navigation-by-user-activation throws a SecurityError here.
-  // The error stays in this frame. The shop page sees nothing.
+  // The error stays in this frame. The page sees nothing.
   window.top.location.href = login.href;
 });
 
 if (user) {
   title.textContent = `Signed in as ${user}`;
-  status.textContent = 'Orbit ID sent you back to the shop.';
+  status.textContent = 'Orbit ID sent you back to the page.';
   signIn.hidden = true;
 }

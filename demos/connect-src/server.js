@@ -1,4 +1,4 @@
-import { serve, listener, common, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, ports } from '../common/serve.js';
 
 // The profile page sends no policy. The stage test adds one to the document
 // response, because that is what it teaches.
@@ -9,7 +9,7 @@ export function createServer({ tls } = {}) {
       {
         '/': 'index.html',
         '/demo/connect-src': 'api-page.html',
-        '/styles.css': common('styles.css'),
+        '/styles.css': 'styles.css',
         '/api-call.js': 'api-call.js',
       },
       { root: import.meta.dirname },

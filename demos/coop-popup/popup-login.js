@@ -22,6 +22,8 @@ window.addEventListener('message', (event) => {
     return;
   loggedIn = true;
   status.textContent = `Logged in as ${event.data.user}`;
+  // The login worked, so the page needs no Sign in button.
+  button.hidden = true;
 });
 
 button.addEventListener('click', () => {

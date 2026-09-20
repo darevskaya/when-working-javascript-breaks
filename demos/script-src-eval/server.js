@@ -1,4 +1,4 @@
-import { serve, listener, common, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, ports } from '../common/serve.js';
 
 // The first two pages differ in one header. The HTML and the JavaScript are
 // the same, and the page renders its templates with eval. The bundle page
@@ -22,7 +22,7 @@ export function createServer({ tls } = {}) {
           file: 'templates-bundle.html',
           'Content-Security-Policy': "script-src 'self'",
         },
-        '/styles.css': common('styles.css'),
+        '/styles.css': 'styles.css',
         '/templates.css': 'templates.css',
         '/templates-page.js': 'templates-page.js',
         '/eval-renderer.js': 'eval-renderer.js',

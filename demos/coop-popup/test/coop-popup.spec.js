@@ -24,6 +24,10 @@ test('provider COOP severs references; a fresh permissive login recovers', async
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
   await expect.poll(() => popup.isClosed()).toBe(true);
+  // The login worked, so the Sign in button is gone.
+  await expect(
+    page.getByRole('button', { name: 'Sign in', exact: true }),
+  ).toBeHidden();
   await expect(page.locator('#popup-closed')).toHaveText('true');
 
   await page.goto('/demo/coop-popup/coop-on-login');

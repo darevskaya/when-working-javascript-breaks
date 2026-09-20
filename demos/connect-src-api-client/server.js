@@ -1,4 +1,4 @@
-import { serve, listener, common, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, ports } from '../common/serve.js';
 import { apiOrigins, apiPort } from './contract.js';
 
 // The page sends connect-src with the origins in contract.js, the same list
@@ -13,7 +13,7 @@ export function createServer({ tls } = {}) {
           file: 'app.html',
           'Content-Security-Policy': `connect-src 'self' ${apiOrigins.join(' ')}`,
         },
-        '/styles.css': common('styles.css'),
+        '/styles.css': 'styles.css',
         '/app.css': 'app.css',
         '/app.js': 'app.js',
         '/api-client.js': 'api-client.js',

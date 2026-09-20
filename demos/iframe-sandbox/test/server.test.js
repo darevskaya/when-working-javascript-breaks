@@ -30,12 +30,13 @@ test('the pages send no policy and serve the same HTML', async (t) => {
     '/host-page.js': {},
     '/frame-loader.js': {},
   });
-  // The embed login is the same page as the other Orbit ID logins.
-  await assertHeaders(provider, { '/frame': {}, '/login/redirect': {} });
-  assert.equal(
-    await html(`${provider}/login/redirect`),
-    await html(`${provider}/login/no-coop`),
-  );
+  // Orbit ID serves the frame and the login that the frame redirects to.
+  await assertHeaders(provider, {
+    '/frame': {},
+    '/login/redirect': {},
+    '/redirect-frame.js': {},
+    '/orbit.css': {},
+  });
   assert.equal(
     await html(`${app}/frame-config.js`),
     "export const providerOrigin = 'http://127.0.0.1:4999';\n",

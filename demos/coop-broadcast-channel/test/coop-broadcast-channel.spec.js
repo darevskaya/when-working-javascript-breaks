@@ -37,13 +37,16 @@ for (const { mode, loginPath } of modes) {
     await page.goto(`/demo/coop-broadcast-channel/${mode}`);
     const popup = await openLogin(page, context, loginPath);
     // noopener: no window relationship in any mode, so COOP has nothing to
-    // cut, and the page gets no window back.
-    await expect(popup.locator('#opener-state')).toHaveText('null');
+    // cut, and the page gets no window back. The login reads no window
+    // reference either.
     await expect(page.locator('#open-result')).toHaveText('null');
     await expect(page.locator('#status')).toContainText('Waiting for login…');
     await popup.getByRole('button', { name: 'Continue as Elena' }).click();
     await expect(page.locator('#status')).toHaveText('Logged in as Elena');
     await expect.poll(() => popup.isClosed()).toBe(true);
+    await expect(
+      page.getByRole('button', { name: 'Sign in', exact: true }),
+    ).toBeHidden();
 
     // The channel carried no code and no token.
     expect(messages).toEqual([{ type: 'login-complete' }]);

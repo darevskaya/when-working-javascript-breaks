@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>What each API needs</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/app.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <main class="lab">
+      <section class="demo-panel" aria-labelledby="page-title">
+        <h1 id="page-title">What each API needs</h1>
+        <dl class="env">
+          <dt>Mode</dt>
+          <dd id="mode">…</dd>
+          <dt>Response headers</dt>
+          <dd id="headers">…</dd>
+          <dt>Secure context</dt>
+          <dd id="secure">…</dd>
+          <dt>Cross-origin isolated</dt>
+          <dd id="isolated">…</dd>
+          <dt>Sticky activation</dt>
+          <dd id="sticky">…</dd>
+          <dt>Transient activation</dt>
+          <dd id="transient">…</dd>
+        </dl>
+        <p class="actions">
+          <button id="run-all" type="button">
+            Run every API from one click
+          </button>
+        </p>
+        <ul id="apis" class="apis"></ul>
+      </section>
+    </main>
+  </body>
+</html>

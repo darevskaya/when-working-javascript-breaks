@@ -1,7 +1,6 @@
-import { serve, listener, common, isMain, ports } from '../common/serve.js';
-import { createOrbitIdServer } from '../common/orbit-id.js';
+import { serve, listener, isMain, ports } from '../common/serve.js';
 
-// The shop embeds the Orbit ID frame. These pages send no policy. They differ
+// The page embeds the Orbit ID frame. These pages send no policy. They differ
 // in the sandbox attribute on the iframe, which host-page.js reads from the path.
 export function createServer({ providerOrigin, tls } = {}) {
   return listener(
@@ -13,8 +12,7 @@ export function createServer({ providerOrigin, tls } = {}) {
         '/demo/iframe-sandbox/sandbox-without-top-navigation': 'host-page.html',
         '/demo/iframe-sandbox/top-navigation-by-user-activation':
           'host-page.html',
-        '/styles.css': common('styles.css'),
-        '/shop.css': common('shop.css'),
+        '/styles.css': 'styles.css',
         '/host-page.css': 'host-page.css',
         '/host-page.js': 'host-page.js',
         '/frame-loader.js': 'frame-loader.js',
@@ -27,18 +25,28 @@ export function createServer({ providerOrigin, tls } = {}) {
   );
 }
 
-// Orbit ID with the frame and the login that the frame redirects to.
+// Orbit ID, the fake identity provider on the second origin. It serves the
+// frame and the login that the frame redirects to.
 export function createProviderServer({ appOrigin, tls } = {}) {
-  return createOrbitIdServer({
-    appOrigin,
+  return listener(
     tls,
-    routes: {
-      '/frame': `${import.meta.dirname}/redirect-frame.html`,
-      '/redirect-frame.js': `${import.meta.dirname}/redirect-frame.js`,
-      '/orbit.css': common('orbit.css'),
-      '/login/redirect': common('orbit-login.html'),
-    },
-  });
+    serve(
+      {
+        '/frame': 'redirect-frame.html',
+        '/redirect-frame.js': 'redirect-frame.js',
+        '/login/redirect': 'orbit-login.html',
+        '/styles.css': 'styles.css',
+        '/orbit.css': 'orbit.css',
+        '/orbit-login.css': 'orbit-login.css',
+        '/orbit-login.js': 'orbit-login.js',
+        '/orbit-login-config.js': {
+          body: `export const appOrigin = '${appOrigin}';
+`,
+        },
+      },
+      { root: import.meta.dirname },
+    ),
+  );
 }
 
 if (isMain(import.meta)) {

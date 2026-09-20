@@ -1,4 +1,4 @@
-import { serve, listener, common, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, ports } from '../common/serve.js';
 
 // The customer's shop sends Trusted Types. The pages differ in the widget
 // script that they load, and one page also lists the allowed policy names.
@@ -24,9 +24,8 @@ export function createServer({ tls } = {}) {
           file: 'policy-page.html',
           'Content-Security-Policy': `${trustedTypes}; trusted-types shop-policy`,
         },
-        '/styles.css': common('styles.css'),
-        '/shop.css': common('shop.css'),
-        '/orbit.css': common('orbit.css'),
+        '/styles.css': 'styles.css',
+        '/orbit.css': 'orbit.css',
         '/innerhtml-escaped.js': 'innerhtml-escaped.js',
         '/innerhtml-policy.js': 'innerhtml-policy.js',
         '/trusted-html.js': 'trusted-html/index.js',

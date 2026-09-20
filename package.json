@@ -32,6 +32,7 @@
     "demos/iframe-sandbox",
     "demos/connect-src",
     "demos/connect-src-api-client",
+    "demos/api-preconditions",
     "demos/reporting-api"
   ]
 }

@@ -1,4 +1,4 @@
-import { serve, listener, common, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, ports } from '../common/serve.js';
 
 // The pages differ in one header. The module page also starts the worker in
 // another way: from a module file instead of a Blob URL.
@@ -20,7 +20,7 @@ export function createServer({ tls } = {}) {
           file: 'worker-page.html',
           'Content-Security-Policy': "worker-src 'self'",
         },
-        '/styles.css': common('styles.css'),
+        '/styles.css': 'styles.css',
         '/worker-page.css': 'worker-page.css',
         '/worker-page.js': 'worker-page.js',
         '/blob-worker-source.js': 'blob-worker-source.js',

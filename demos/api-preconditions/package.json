@@ -1,0 +1,10 @@
+{
+  "name": "api-preconditions",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "lint": "eslint .",
+    "test": "node --test \"test/*.test.js\" && playwright test"
+  }
+}

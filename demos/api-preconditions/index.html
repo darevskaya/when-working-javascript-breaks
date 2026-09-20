@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>What each API needs</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="lab demo-index">
+      <h1>What each API needs</h1>
+      <p>
+        The same eleven API calls run on each page below. Only the response
+        headers change.
+      </p>
+      <ul>
+        <li>
+          <a href="/demo/api-preconditions/plain" target="_blank"
+            >No extra headers</a
+          >
+          <code>the browser defaults</code>
+        </li>
+        <li>
+          <a href="/demo/api-preconditions/locked-down" target="_blank"
+            >Permissions-Policy blocks four features</a
+          >
+          <code
+            >geolocation=(), fullscreen=(), screen-wake-lock=(),
+            clipboard-write=()</code
+          >
+        </li>
+        <li>
+          <a href="/demo/api-preconditions/isolated" target="_blank"
+            >Cross-origin isolated</a
+          >
+          <code>COOP same-origin, COEP require-corp</code>
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>

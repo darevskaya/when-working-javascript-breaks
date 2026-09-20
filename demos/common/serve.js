@@ -10,9 +10,6 @@ const contentTypes = {
   '.map': 'application/json',
 };
 
-// The absolute path of a file in demos/common, for a route table row.
-export const common = (name) => path.join(import.meta.dirname, name);
-
 // Serves one route table. A row is a file path on its own, an object that adds
 // the policy headers for that route or a generated body, or a function that
 // answers the request. The server adds Content-Type and nothing else, so a row

@@ -1,4 +1,4 @@
-import { serve, listener, common, isMain, ports } from '../common/serve.js';
+import { serve, listener, isMain, ports } from '../common/serve.js';
 import { createReportCollector } from './collector.js';
 
 // Reporting-Endpoints gives the receiver a name. The policy then sends its
@@ -52,7 +52,7 @@ export function createServer({
         '/reporting-config.js': {
           body: `export const secondOrigin = '${secondOrigin}';\n`,
         },
-        '/styles.css': common('styles.css'),
+        '/styles.css': 'styles.css',
         // The receiver that the rows above name. It writes its own response.
         '/reports': collector,
       },
@@ -74,7 +74,7 @@ export function createSecondServer({
         '/reporting-resource.js': {
           body: '// A script served by the second origin.\n',
         },
-        '/styles.css': common('styles.css'),
+        '/styles.css': 'styles.css',
         '/reports': collector,
       },
       { root: import.meta.dirname },

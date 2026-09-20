@@ -3,9 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Fern &amp; Co. — Checkout</title>
+    <title>Sign-in widget</title>
     <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/shop.css" />
     <link rel="stylesheet" href="/orbit.css" />
     <!-- Only this script differs between the widget pages. The import map
          tells the browser where the trusted-html package is. -->
@@ -14,23 +13,11 @@
     </script>
     <script type="module" src="/innerhtml-policy.js"></script>
   </head>
-  <body class="shop">
-    <header class="shop-header">
-      <strong>Fern &amp; Co.</strong>
-      <span>Plants and pots</span>
-    </header>
-    <main class="shop-content">
-      <h1>Checkout</h1>
-      <div class="checkout">
-        <section class="order" aria-labelledby="order-title">
-          <h2 id="order-title">Your order</h2>
-          <ul>
-            <li><span>Monstera, medium</span><span>$38.00</span></li>
-            <li><span>Terracotta pot</span><span>$14.00</span></li>
-          </ul>
-          <p class="order-total"><span>Total</span><span>$52.00</span></p>
-        </section>
-        <!-- The customer's page gives the SDK this element and nothing else. -->
+  <body>
+    <main class="lab">
+      <section class="demo-panel" aria-labelledby="page-title">
+        <h1 id="page-title">Sign-in widget</h1>
+        <p>The page gives the widget this element and the site name.</p>
         <section
           class="orbit-slot"
           aria-label="Sign in"
@@ -39,7 +26,7 @@
         >
           <p class="orbit-loading">Loading sign-in…</p>
         </section>
-      </div>
+      </section>
     </main>
   </body>
 </html>

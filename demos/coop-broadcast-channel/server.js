@@ -1,5 +1,4 @@
-import { serve, listener, common, isMain, ports } from '../common/serve.js';
-import { createOrbitIdServer } from '../common/orbit-id.js';
+import { serve, listener, isMain, ports } from '../common/serve.js';
 import { createBff } from './bff.js';
 import { createOrbitAuth } from './orbit-auth.js';
 
@@ -23,7 +22,7 @@ export function createServer({ providerOrigin, tls } = {}) {
         '/bff/login': bff.login,
         '/bff/callback': bff.callback,
         '/bff/user': bff.user,
-        '/styles.css': common('styles.css'),
+        '/styles.css': 'styles.css',
         '/channel-login.css': 'channel-login.css',
         '/channel-login.js': 'channel-login.js',
         '/callback.js': 'callback.js',
@@ -33,14 +32,32 @@ export function createServer({ providerOrigin, tls } = {}) {
   );
 }
 
-// Orbit ID with the authorization code endpoints for the BFF login.
+// Orbit ID, the fake identity provider on the second origin, with the
+// authorization code endpoints for the BFF login. See orbit-auth.js.
 export function createProviderServer({ appOrigin, tls } = {}) {
   const auth = createOrbitAuth({ appOrigin });
-  return createOrbitIdServer({
-    appOrigin,
+  return listener(
     tls,
-    routes: { '/login/approve': auth.approve, '/token': auth.token },
-  });
+    serve(
+      {
+        '/login/no-coop': 'orbit-login.html',
+        '/login/coop': {
+          file: 'orbit-login.html',
+          'Cross-Origin-Opener-Policy': 'same-origin',
+        },
+        '/login/approve': auth.approve,
+        '/token': auth.token,
+        '/styles.css': 'styles.css',
+        '/orbit-login.css': 'orbit-login.css',
+        '/orbit-login.js': 'orbit-login.js',
+        '/orbit-login-config.js': {
+          body: `export const appOrigin = '${appOrigin}';
+`,
+        },
+      },
+      { root: import.meta.dirname },
+    ),
+  );
 }
 
 if (isMain(import.meta)) {

@@ -27,7 +27,6 @@ test('the pages differ only in the widget script and the policy', async (t) => {
     '/innerhtml-escaped.js': {},
     '/innerhtml-policy.js': {},
     '/trusted-html.js': {},
-    '/shop.css': {},
     '/orbit.css': {},
   });
   // innerhtml-string.js is only the original. The server does not serve it.

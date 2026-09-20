@@ -1,7 +1,7 @@
 import { embedOrbitFrame } from '/frame-loader.js';
 import { providerOrigin } from '/frame-config.js';
 
-// The shop's own embed code. Each route stands for one customer
+// The page's own embed code. Each route stands for one customer
 // configuration, and the configurations differ only in the sandbox attribute.
 const base = 'allow-scripts allow-same-origin';
 const sandboxes = {
@@ -24,5 +24,5 @@ document.querySelector('#embed-code').textContent = sandbox
   : `${tag}>`;
 document.querySelector('#status').textContent = user
   ? `Orbit ID returned the user ${user}.`
-  : 'No user yet. The shop sees no error.';
+  : 'No user yet. The page sees no error.';
 document.querySelector('#orbit-slot').append(iframe);

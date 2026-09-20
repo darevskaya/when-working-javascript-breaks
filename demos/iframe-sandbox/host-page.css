@@ -5,8 +5,7 @@
   border: 0;
 }
 
-/* The demo's view of the shop. It is not part of the shop, so it looks like
-   a panel from the other demos. */
+/* What the page sees, next to the frame. */
 .embed-state {
   margin-top: 32px;
   padding: 24px;
