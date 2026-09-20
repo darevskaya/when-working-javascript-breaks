@@ -7,8 +7,12 @@
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/shop.css" />
     <link rel="stylesheet" href="/orbit.css" />
-    <!-- Only this script differs between the widget pages. -->
-    <script src="/innerhtml-policy.js" defer></script>
+    <!-- Only this script differs between the widget pages. The import map
+         tells the browser where the trusted-html package is. -->
+    <script type="importmap">
+      { "imports": { "trusted-html": "/trusted-html.js" } }
+    </script>
+    <script type="module" src="/innerhtml-policy.js"></script>
   </head>
   <body class="shop">
     <header class="shop-header">

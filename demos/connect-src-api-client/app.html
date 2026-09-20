@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API calls</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/app.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <main class="lab">
+      <section class="demo-panel" aria-labelledby="calls-title">
+        <h1 id="calls-title">API calls</h1>
+        <dl class="calls">
+          <dt>Profile: API client, <code>config.apiOrigin</code></dt>
+          <dd><output id="profile">…</output></dd>
+          <dt>Metrics: API client, <code>config.metricsOrigin</code></dt>
+          <dd><output id="metrics">…</output></dd>
+          <dt>Status: API client, hard-coded URL</dt>
+          <dd><output id="status-check">…</output></dd>
+          <dt>Ping: direct <code>fetch</code></dt>
+          <dd><output id="ping">…</output></dd>
+        </dl>
+      </section>
+    </main>
+  </body>
+</html>

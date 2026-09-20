@@ -28,6 +28,8 @@ The demos:
 - `coop-popup/`: COOP cuts the window relationship of a popup login
 - `coop-broadcast-channel/`: a popup login that COOP does not break
 - `connect-src/`: `connect-src` blocks an API host
+- `connect-src-api-client/`: lint keeps every API call inside the `connect-src`
+  contract
 - `reporting-api/`: report-only policies and browser reports
 
 `demos/common/` holds the files that several demos share.

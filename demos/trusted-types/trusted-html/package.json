@@ -1,0 +1,6 @@
+{
+  "name": "trusted-html",
+  "private": true,
+  "type": "module",
+  "exports": "./index.js"
+}

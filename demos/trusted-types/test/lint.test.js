@@ -6,47 +6,68 @@ import { findings } from '../../common/semgrep.js';
 
 const folder = `${import.meta.dirname}/..`;
 
-// innerhtml-string.js is the original, and no page loads it. Both rules flag its two
-// innerHTML lines. no-unsanitized accepts the escaped values in
-// innerhtml-escaped.js, but Trusted Types does not, so only the innerHTML rule
-// flags them. html`…` returns TrustedHTML, so both rules accept
-// innerhtml-policy.js.
+// innerhtml-string.js is the original, and no page loads it. The escaped copy
+// still assigns a string, so the rule flags it too. innerhtml-policy.js writes
+// through setHTML() from the trusted-html package, the one function that may
+// write markup.
 test('lint flags the original and the escaped widget', async () => {
   assert.deepEqual(await lintFindings(folder), [
     'innerhtml-escaped.js:23 no-restricted-syntax',
     'innerhtml-escaped.js:36 no-restricted-syntax',
     'innerhtml-string.js:22 no-restricted-syntax',
-    'innerhtml-string.js:22 no-unsanitized/property',
     'innerhtml-string.js:9 no-restricted-syntax',
-    'innerhtml-string.js:9 no-unsanitized/property',
   ]);
 });
 
-// Trusted Types blocks every string in these sinks. no-unsanitized looks for
-// XSS, so it allows constant strings. The innerHTML rule sees only innerHTML.
-test('each markup rule sees sinks that the other one misses', async () => {
+// Trusted Types blocks every string in these sinks, so the rule has no
+// exception for a constant, an escaped string, or a tag name.
+test('the rule flags every markup sink outside setHTML()', async () => {
   const eslint = new ESLint({ cwd: folder });
-  const cases = {
-    'el.innerHTML = `<h2>${shop}</h2>`;': [
-      'no-restricted-syntax',
-      'no-unsanitized/property',
-    ],
-    "el.innerHTML = '<b>Orbit ID</b>';": ['no-restricted-syntax'],
-    "el['innerHTML'] = markup;": ['no-restricted-syntax'],
-    'el.innerHTML = escapeHTML`<h2>${shop}</h2>`;': ['no-restricted-syntax'],
-    'el.innerHTML = html`<h2>${shop}</h2>`;': [],
-    'el.outerHTML = markup;': ['no-unsanitized/property'],
-    "el.insertAdjacentHTML('beforeend', markup);": ['no-unsanitized/method'],
-    'document.write(markup);': ['no-unsanitized/method'],
-  };
-  for (const [code, expected] of Object.entries(cases)) {
-    const [result] = await eslint.lintText(code, { filePath: 'example.js' });
+  const sinks = [
+    'el.innerHTML = `<h2>${shop}</h2>`;',
+    "el.innerHTML = '<b>Orbit ID</b>';",
+    'el.innerHTML = escapeHTML`<h2>${shop}</h2>`;',
+    "el['innerHTML'] = markup;",
+    'el.innerHTML += markup;',
+    'el.outerHTML = markup;',
+    "el.insertAdjacentHTML('beforeend', markup);",
+    'document.write(markup);',
+  ];
+  for (const code of sinks) {
+    const [outside] = await eslint.lintText(code, { filePath: 'widget.js' });
     assert.deepEqual(
-      result.messages.map((message) => message.ruleId).sort(),
-      expected,
+      outside.messages.map((message) => message.ruleId),
+      ['no-restricted-syntax'],
+      code,
+    );
+    // In the trusted-html package, only the setHTML function may write markup.
+    const [inside] = await eslint.lintText(
+      `export function setHTML(el) { return () => { ${code} }; }`,
+      { filePath: 'trusted-html/index.js' },
+    );
+    assert.deepEqual(inside.messages, [], code);
+    const [other] = await eslint.lintText(`function render(el) { ${code} }`, {
+      filePath: 'trusted-html/index.js',
+    });
+    assert.deepEqual(
+      other.messages.map((message) => message.ruleId),
+      ['no-restricted-syntax'],
       code,
     );
   }
+});
+
+test('code imports setHTML from the package, not by path', async () => {
+  const eslint = new ESLint({ cwd: folder });
+  const rules = async (code) =>
+    (await eslint.lintText(code, { filePath: 'widget.js' }))[0].messages.map(
+      (message) => message.ruleId,
+    );
+  assert.deepEqual(await rules("import { setHTML } from 'trusted-html';"), []);
+  assert.deepEqual(
+    await rules("import { setHTML } from './trusted-html/index.js';"),
+    ['no-restricted-imports'],
+  );
 });
 
 const semgrep = findings(`${folder}/.semgrep.yml`, folder);

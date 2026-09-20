@@ -6,7 +6,7 @@ rules:
     message: >-
       require-trusted-types-for 'script' blocks every string in this markup
       sink, also a constant or escaped string. Build the markup with DOM APIs
-      and textContent, or pass it through a Trusted Types policy.
+      and textContent, or write it through setHTML() from trusted-html.
     patterns:
       - pattern-either:
           - pattern: $EL.innerHTML = $X
@@ -14,5 +14,6 @@ rules:
           - pattern: $EL.outerHTML = $X
           - pattern: $EL.insertAdjacentHTML(...)
           - pattern: document.write(...)
-      # The html tag returns TrustedHTML from a Trusted Types policy.
-      - pattern-not: $EL.innerHTML = html`...`
+      # Only the setHTML function in the trusted-html package may write markup.
+      - pattern-not-inside: |
+          export function setHTML(...) { ... }

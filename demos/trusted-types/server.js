@@ -29,6 +29,7 @@ export function createServer({ tls } = {}) {
         '/orbit.css': common('orbit.css'),
         '/innerhtml-escaped.js': 'innerhtml-escaped.js',
         '/innerhtml-policy.js': 'innerhtml-policy.js',
+        '/trusted-html.js': 'trusted-html/index.js',
       },
       { root: import.meta.dirname },
     ),

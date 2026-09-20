@@ -1,0 +1,31 @@
+.calls {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  gap: 12px 32px;
+  margin: 0;
+}
+
+.calls dt {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.calls dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.calls .blocked {
+  color: #b3261e;
+}
+
+@media (max-width: 540px) {
+  .calls {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .calls dd {
+    margin-bottom: 12px;
+  }
+}

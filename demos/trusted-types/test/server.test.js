@@ -8,12 +8,12 @@ test('the pages differ only in the widget script and the policy', async (t) => {
   const html = async (path) => (await fetch(`${origin}${path}`)).text();
   const policy = await html('/demo/trusted-types/named-policy');
   assert.equal(policy, await html('/demo/trusted-types/policy-not-allowed'));
+  // The pages differ only in the scripts at the end of <head>.
+  const withoutScripts = (page) =>
+    page.replace(/<!-- Only this script differs[\s\S]*?<\/head>/, '</head>');
   assert.equal(
-    (await html('/demo/trusted-types/escaped-string')).replace(
-      '/innerhtml-escaped.js',
-      '/innerhtml-policy.js',
-    ),
-    policy,
+    withoutScripts(await html('/demo/trusted-types/escaped-string')),
+    withoutScripts(policy),
   );
   const csp = 'content-security-policy';
   const trustedTypes = "require-trusted-types-for 'script'";
@@ -26,6 +26,7 @@ test('the pages differ only in the widget script and the policy', async (t) => {
     },
     '/innerhtml-escaped.js': {},
     '/innerhtml-policy.js': {},
+    '/trusted-html.js': {},
     '/shop.css': {},
     '/orbit.css': {},
   });
