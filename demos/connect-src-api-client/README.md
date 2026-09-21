@@ -16,3 +16,17 @@ each call. The hard-coded URL in `api-client.js` works, because its host is in
 the contract. Only lint finds it.
 
 The API server always uses port 4308, because `config.js` names it.
+
+## The stage test
+
+The customer sends `connect-src`, not this server. `npm run stage` runs a
+Playwright test that replaces the policy on the document response with
+`connect-src 'self'`, the policy of a customer who never listed the API
+origin. The profile call then fails, although `contract.js` allows its
+origin, so the test fails on purpose.
+
+A policy must arrive on the document response. `extraHTTPHeaders` sets
+request headers and does not work.
+
+The stage test needs port 4308 free, because `config.js` names it. Stop a
+demo that runs by hand before you run it.

@@ -1,7 +1,6 @@
 import globals from 'globals';
 import { apiOrigins } from './contract.js';
 
-
 export default [
   { ignores: ['test-results/**', 'playwright-report/**'] },
   {
@@ -12,7 +11,7 @@ export default [
   // Page code: no fetch, and no origin.
   {
     files: ['**/*.js'],
-    ignores: ['server.js', 'contract.js', '*.config.js', 'test/**'],
+    ignores: ['server.js', 'contract.js', '*.config.js', 'test/**', 'stage/**'],
     rules: {
       'no-restricted-syntax': [
         'error',

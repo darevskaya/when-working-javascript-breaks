@@ -9,11 +9,11 @@ const folder = `${import.meta.dirname}/..`;
 // URL in api-client.js, and an origin in config.js that the contract lacks.
 test('lint flags each call that skips the contract', async () => {
   assert.deepEqual(await lintFindings(folder), [
-    'api-client.js:18 no-restricted-syntax',
-    'api-client.js:18 no-restricted-syntax',
+    'api-client.js:13 no-restricted-syntax',
+    'api-client.js:13 no-restricted-syntax',
     'app.js:22 no-restricted-syntax',
     'app.js:22 no-restricted-syntax',
-    'config.js:6 no-restricted-syntax',
+    'config.js:3 no-restricted-syntax',
   ]);
 });
 

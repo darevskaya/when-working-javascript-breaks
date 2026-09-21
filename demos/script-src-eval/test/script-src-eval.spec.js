@@ -1,16 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { recordViolations } from '../../common/test-helpers.js';
 
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    window.cspViolations = [];
-    document.addEventListener('securitypolicyviolation', (event) => {
-      window.cspViolations.push({
-        directive: event.effectiveDirective,
-        blocked: event.blockedURI,
-      });
-    });
-  });
-});
+test.beforeEach(({ page }) => recordViolations(page));
 
 const values = (page) => page.locator('.summary dd').allTextContents();
 
@@ -51,7 +42,7 @@ test('the webpack bundle has a clean source, but the build adds eval', async ({
   page,
 }) => {
   const error = page.waitForEvent('pageerror');
-  await page.goto('/demo/script-src-eval/eval-source-map-bundle');
+  await page.goto('/demo/script-src-eval/bundle/eval-source-map');
   expect((await error).name).toBe('EvalError');
   await expect
     .poll(() => page.evaluate(() => window.cspViolations))

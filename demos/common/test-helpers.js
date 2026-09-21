@@ -53,10 +53,15 @@ export function recordViolations(page) {
   });
 }
 
-// The lint errors in one demo folder, with that folder's eslint.config.js, as
-// "file:line rule" strings, sorted.
-export async function lintFindings(folder) {
-  const results = await new ESLint({ cwd: folder }).lintFiles(['.']);
+// The lint errors in one demo folder, as "file:line rule" strings, sorted.
+// The default is that folder's eslint.config.js over the whole folder. A demo
+// that keeps one lint per concern passes its own config file and paths.
+export async function lintFindings(folder, { config, files = ['.'] } = {}) {
+  const eslint = new ESLint({
+    cwd: folder,
+    ...(config ? { overrideConfigFile: path.resolve(folder, config) } : {}),
+  });
+  const results = await eslint.lintFiles(files);
   return results
     .flatMap((result) =>
       result.messages.map(

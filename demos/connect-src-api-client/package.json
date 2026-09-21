@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "lint": "eslint .",
-    "test": "node --test \"test/*.test.js\" && playwright test"
+    "test": "node --test \"test/*.test.js\" && playwright test",
+    "stage": "playwright test --config stage.config.js"
   }
 }

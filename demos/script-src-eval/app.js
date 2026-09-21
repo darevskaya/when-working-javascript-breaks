@@ -1,4 +1,4 @@
-import { render } from './eval-renderer.js';
+import { render } from './renderer.js';
 
 // The order, and the values that the templates read.
 const data = {

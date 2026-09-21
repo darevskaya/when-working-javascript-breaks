@@ -5,7 +5,10 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "start": "npm run build && node server.js",
-    "lint": "eslint .",
+    "lint:source": "eslint --config eslint.source.config.js .",
+    "lint:build": "npm run build && eslint --config eslint.build.config.js dist",
+    "lint:webpack": "eslint --config eslint.webpack.config.js webpack.config.js",
+    "lint": "npm run lint:source && npm run lint:build && npm run lint:webpack",
     "test": "npm run build && node --test \"test/*.test.js\" && playwright test"
   },
   "devDependencies": {

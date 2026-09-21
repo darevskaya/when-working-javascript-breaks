@@ -38,11 +38,9 @@ The demos:
 - `worker-src-blob/` on 4204: `worker-src` blocks a Worker from a Blob URL
 - `coop-popup/` on 4205: COOP cuts the window relationship of a popup login
 - `coop-broadcast-channel/` on 4206: a popup login that COOP does not break
-- `connect-src/` on 4207: `connect-src` blocks an API host
 - `connect-src-api-client/` on 4208: lint keeps every API call inside the
   `connect-src` contract
 - `reporting-api/` on 4209: report-only policies and browser reports
-- `api-preconditions/` on 4210: what eleven different APIs need before they run
 
 The reporting demo needs HTTPS, because Chromium sends no reports over plain
 HTTP. `npm start` in `demos/reporting-api` runs that launcher. The hub page

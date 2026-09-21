@@ -45,11 +45,6 @@ export const demos = [
     summary: 'A popup login that COOP does not break.',
   },
   {
-    id: 'connect-src',
-    port: 4207,
-    summary: 'connect-src blocks an API host.',
-  },
-  {
     id: 'connect-src-api-client',
     port: 4208,
     providerPort: 4308,
@@ -61,11 +56,6 @@ export const demos = [
     providerPort: 4309,
     summary: 'Report-only policies and browser reports.',
     note: 'Chromium sends reports over HTTPS only. Run "npm start" in demos/reporting-api for the HTTPS launcher.',
-  },
-  {
-    id: 'api-preconditions',
-    port: 4210,
-    summary: 'What eleven different APIs need before they run.',
   },
 ];
 
