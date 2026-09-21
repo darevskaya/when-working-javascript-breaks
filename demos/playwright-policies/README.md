@@ -24,9 +24,14 @@ both routes. Only the headers differ.
 
 - `/demo/playwright-policies/allowed`: `script-src 'self'; worker-src 'self'
 blob:`. The worker replies, and geolocation is on.
-- `/demo/playwright-policies/blocked`: `script-src 'self'` and
-  `Permissions-Policy: geolocation=()`. Both features stop, and two reports
-  appear on the page.
+- `/demo/playwright-policies/blocked`: `script-src 'self'; frame-ancestors
+'none'` and `Permissions-Policy: geolocation=()`. Both features stop, and two
+  reports appear on the page. `frame-ancestors 'none'` names who may embed the
+  page: nobody. The page opens on its own, and the browser refuses it inside an
+  iframe, on this origin too. `test/demo.spec.js` embeds both routes and reads
+  the title of each frame. The allowed route gives its title, and the blocked
+  route gives `null`, because a refused frame holds an error page from another
+  origin.
 
 ## The three Playwright projects
 

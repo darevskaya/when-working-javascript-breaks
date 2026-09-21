@@ -20,7 +20,10 @@ export function createServer({ tls } = {}) {
           file: 'app.html',
           // No worker directive. worker-src falls back to child-src, then to
           // script-src, so script-src 'self' alone blocks the Blob worker.
-          'Content-Security-Policy': "script-src 'self'",
+          // frame-ancestors 'none' names who may embed this page: nobody. The
+          // browser refuses the load inside an iframe, on this origin too.
+          'Content-Security-Policy':
+            "script-src 'self'; frame-ancestors 'none'",
           'Permissions-Policy': 'geolocation=()',
         },
         '/styles.css': 'styles.css',

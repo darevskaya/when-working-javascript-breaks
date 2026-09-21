@@ -15,12 +15,6 @@ export const demos = [
     summary: 'Trusted Types blocks strings in innerHTML.',
   },
   {
-    id: 'iframe-sandbox',
-    port: 4202,
-    providerPort: 4302,
-    summary: 'A sandboxed frame needs a token to redirect the page.',
-  },
-  {
     id: 'script-src-eval',
     port: 4203,
     command: ['npm', 'start'],
@@ -31,7 +25,7 @@ export const demos = [
     id: 'playwright-policies',
     port: 4204,
     summary:
-      'Playwright runs the same page under two sets of security headers.',
+      'Playwright runs the same page under two sets of security headers, and frame-ancestors keeps one route out of an iframe.',
     note: 'npm run test:strict fails on purpose. The HTML report holds the violation reports.',
   },
   {

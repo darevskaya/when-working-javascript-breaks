@@ -16,7 +16,7 @@ test('both routes serve the same page, and the headers differ', async (t) => {
       'content-security-policy': "script-src 'self'; worker-src 'self' blob:",
     },
     '/demo/playwright-policies/blocked': {
-      'content-security-policy': "script-src 'self'",
+      'content-security-policy': "script-src 'self'; frame-ancestors 'none'",
       'permissions-policy': 'geolocation=()',
     },
     '/app.js': {},

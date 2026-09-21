@@ -31,12 +31,11 @@ page reads it.
 The demos:
 
 - `trusted-types/` on 4201: Trusted Types blocks strings in `innerHTML`
-- `iframe-sandbox/` on 4202: a sandboxed frame needs a token to redirect the
-  page
 - `script-src-eval/` on 4203: `script-src` blocks `eval`, also in a webpack
   build
 - `playwright-policies/` on 4204: one Playwright suite under two sets of
-  security headers, and the reports the failure carries
+  security headers, the reports the failure carries, and a page that
+  `frame-ancestors` keeps out of an iframe
 - `coop-popup/` on 4205: COOP cuts the window relationship of a popup login
 - `coop-broadcast-channel/` on 4206: a popup login that COOP does not break
 - `restrict-architecture-eslint/` on 4208: two lint rules keep every API call

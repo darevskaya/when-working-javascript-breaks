@@ -27,7 +27,6 @@
     "demos/playwright-policies",
     "demos/coop-popup",
     "demos/coop-broadcast-channel",
-    "demos/iframe-sandbox",
     "demos/restrict-architecture-eslint",
     "demos/reporting-api"
   ]

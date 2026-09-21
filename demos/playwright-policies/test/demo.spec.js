@@ -56,3 +56,36 @@ test('the page lists one report of each kind', async ({ page }) => {
     new Set(['csp-violation', 'permissions-policy-violation']),
   );
 });
+
+// The blocked route also carries frame-ancestors 'none'. The page itself opens
+// as before, and the browser refuses the same page inside an iframe. A refused
+// frame holds an error page from another origin, so contentDocument is null,
+// and the allowed route, which names no frame-ancestors, reads its own title.
+test('frame-ancestors keeps the page out of an iframe', async ({ page }) => {
+  await page.goto('/');
+  const titleInFrame = (source) =>
+    page.evaluate(
+      (src) =>
+        new Promise((resolve) => {
+          const frame = document.createElement('iframe');
+          frame.src = src;
+          // The load event fires for a refused frame too, because the browser
+          // puts its own error page in it.
+          frame.addEventListener('load', () => {
+            try {
+              resolve(frame.contentDocument?.title ?? null);
+            } catch {
+              resolve(null);
+            }
+          });
+          document.body.append(frame);
+        }),
+      source,
+    );
+
+  expect(await titleInFrame('/demo/playwright-policies/allowed')).toBe(
+    'Two features under policy',
+  );
+  expect(await titleInFrame('/demo/playwright-policies/blocked')).toBe(null);
+  await page.screenshot({ path: 'test-results/policies-embedded.png' });
+});

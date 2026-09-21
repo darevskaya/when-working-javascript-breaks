@@ -19,7 +19,7 @@ const contentTypes = {
 export function serve(routes, { root }) {
   return async (request, response) => {
     const url = new URL(request.url, 'http://localhost');
-    // Treat /demo/iframe-sandbox/ the same as /demo/iframe-sandbox.
+    // Treat /demo/playwright-policies/ the same as /demo/playwright-policies.
     const pathname = url.pathname.replace(/(.)\/$/, '$1');
     const route = routes[pathname];
 
