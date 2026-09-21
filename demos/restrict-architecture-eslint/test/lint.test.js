@@ -50,13 +50,27 @@ test('the API client may call fetch, and may not name an origin', async () => {
   );
 });
 
-test('the configuration may name an origin, and may not call fetch', async () => {
+test('the configuration may name an allowed origin, and may not call fetch', async () => {
   assert.deepEqual(
     await messages(
-      "export const config = { apiOrigin: 'https://api.example.com' };",
+      "export const config = { apiOrigin: 'http://127.0.0.1:4308' };",
       'config.js',
     ),
     [],
+  );
+  assert.deepEqual(
+    await messages(
+      "export const config = { newsApiOrigin: 'http://forbidden.com' };",
+      'config.js',
+    ),
+    ['Name only an allowed origin: http://127.0.0.1:4308.'],
+  );
+  assert.deepEqual(
+    await messages(
+      'export const config = { newsApiOrigin: `http://forbidden.com` };',
+      'config.js',
+    ),
+    ['Name only an allowed origin: http://127.0.0.1:4308.'],
   );
   assert.deepEqual(await messages("fetch('/profile');", 'config.js'), [
     'Call the API through api-client.js.',

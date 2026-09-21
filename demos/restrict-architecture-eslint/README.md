@@ -3,7 +3,8 @@
 Two lint rules hold one contract up.
 
 1. `api-client.js` is the only file that calls `fetch`.
-2. `config.js` is the only file that names an origin.
+2. `config.js` is the only file that names an origin, and it names only the
+   allowed origin that `eslint.config.js` lists.
 
 Together they mean that every network call starts from an origin in
 `config.js`. `server.js` builds the `connect-src` header from the same
@@ -12,11 +13,11 @@ cannot drift apart.
 
 ## The files
 
-| File            | Rule it lives under                       |
-| --------------- | ----------------------------------------- |
-| `config.js`     | May name an origin. May not call `fetch`. |
-| `api-client.js` | May call `fetch`. May not name an origin. |
-| `app.js`        | May do neither. It calls the API client.  |
+| File            | Rule it lives under                               |
+| --------------- | ------------------------------------------------- |
+| `config.js`     | May name an allowed origin. May not call `fetch`. |
+| `api-client.js` | May call `fetch`. May not name an origin.         |
+| `app.js`        | May do neither. It calls the API client.          |
 
 `npm run lint` passes. This demo is the one that holds, so `app.js` has no
 finding. To watch a rule fire, add one of these lines to `app.js`:
@@ -24,6 +25,13 @@ finding. To watch a rule fire, add one of these lines to `app.js`:
 ```js
 fetch('/profile'); // Call the API through api-client.js.
 const host = 'https://api.example.com'; // Put each API origin in config.js.
+```
+
+To watch the allowlist fire, add this line to the `config` object in
+`config.js`:
+
+```js
+newsApiOrigin: 'http://forbidden.com', // Name only an allowed origin: http://127.0.0.1:4308.
 ```
 
 ## The two routes
