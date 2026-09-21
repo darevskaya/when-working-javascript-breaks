@@ -80,22 +80,3 @@
 .auth-provider button:hover {
   background: #183795;
 }
-
-.provider-connection {
-  margin-top: 24px;
-  padding: 16px;
-  border-left: 3px solid #234bc2;
-  background: #eaf0ff;
-  font-size: 0.875rem;
-  overflow-wrap: anywhere;
-}
-
-.provider-connection h2 {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.provider-connection p {
-  margin: 8px 0 0;
-}

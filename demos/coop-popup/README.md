@@ -10,8 +10,8 @@ through `window.opener`.
 
 In both COOP modes, the app sees `popup.closed: true` at once, and it reports
 "Login canceled by the user", while the popup is still open. The login window
-has no `window.opener`, so Continue sends the result nowhere. The window
-closes, and the app never learns that the person signed in.
+has no `window.opener`, so Continue does nothing. The window stays open, and
+the app never learns that the person signed in.
 
 `npm run lint` flags each read of `popup.closed`. `npm run stage` runs a
 Playwright test that fails on purpose.

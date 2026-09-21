@@ -40,7 +40,7 @@ const examples = {
       setTimeout(() => {
         show(
           popup.closed,
-          `popup.closed: ${popup.closed}. Close the popup after this example.`,
+          `${popup.closed ? 'The app lost the popup.' : 'The app still reaches the popup.'} Close the popup after this example.`,
         );
       }, 1000);
     },

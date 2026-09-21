@@ -6,7 +6,7 @@ async function signIn(page, context) {
   const opened = context.waitForEvent('page');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   const popup = await opened;
-  // Continue closes the popup, so read its opener first.
+  // A login that works closes the popup, so read its opener first.
   const opener = await popup.evaluate(() => window.opener);
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   return { popup, opener };

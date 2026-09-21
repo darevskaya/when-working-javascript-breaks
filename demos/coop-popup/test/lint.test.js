@@ -6,12 +6,8 @@ const folder = `${import.meta.dirname}/..`;
 
 test('lint flags each read of popup.closed and window.opener', async () => {
   assert.deepEqual(await lintFindings(folder), [
-    'orbit-login.js:14 no-restricted-syntax',
-    'orbit-login.js:6 no-restricted-syntax',
-    'orbit-login.js:8 no-restricted-syntax',
-    'popup-login.js:29 no-restricted-syntax',
+    'orbit-login.js:7 no-restricted-syntax',
+    'popup-login.js:28 no-restricted-syntax',
     'popup-login.js:44 no-restricted-syntax',
-    'popup-login.js:47 no-restricted-syntax',
-    'popup-login.js:48 no-restricted-syntax',
   ]);
 });

@@ -2,7 +2,6 @@ import { providerOrigin } from '/login-config.js';
 
 const button = document.querySelector('#sign-in');
 const status = document.querySelector('#status');
-const closed = document.querySelector('#popup-closed');
 let popup;
 let poll;
 let loggedIn = false;
@@ -34,17 +33,14 @@ button.addEventListener('click', () => {
   );
   status.className = '';
   if (!popup) {
-    closed.value = '—';
     status.textContent = 'Popup blocked. Allow popups and try again.';
     status.className = 'blocked';
     return;
   }
   loggedIn = false;
   status.textContent = 'Waiting for login…';
-  closed.value = String(popup.closed);
   // COOP reports closed before closure, causing a false cancellation.
   poll = setInterval(() => {
-    closed.value = String(popup.closed);
     if (!popup.closed) return;
     clearInterval(poll);
     if (!loggedIn) status.textContent = 'Login canceled by the user.';

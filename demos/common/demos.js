@@ -10,7 +10,6 @@ export const demos = [
   {
     id: 'script-src-eval',
     port: 4203,
-    command: ['npm', 'start'],
     summary: 'script-src blocks eval, also in a webpack build.',
     note: 'The start script builds the webpack bundle first.',
   },

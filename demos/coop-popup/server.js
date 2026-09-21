@@ -15,7 +15,6 @@ export function createServer({ providerOrigin, tls } = {}) {
         },
         '/demo/coop-popup/coop-on-login': 'popup-login.html',
         '/styles.css': 'styles.css',
-        '/popup-login.css': 'popup-login.css',
         '/popup-login.js': 'popup-login.js',
         '/login-config.js': {
           body: `export const providerOrigin = '${providerOrigin}';\n`,

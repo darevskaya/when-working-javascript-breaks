@@ -100,7 +100,7 @@ test('reporting examples enforce or report each policy', async ({
     await page.getByRole('button', { name: 'Trigger violation' }).click();
     const popup = await popupPromise;
     await expect(page.getByRole('status')).toContainText(
-      `popup.closed: ${mode === 'enforce'}`,
+      mode === 'enforce' ? 'lost the popup' : 'still reaches the popup',
     );
     await popup.close();
   }

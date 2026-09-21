@@ -8,6 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "prestart": "npm run build --workspaces --if-present",
     "start": "node demos/common/start-all.js",
     "test": "npm test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
