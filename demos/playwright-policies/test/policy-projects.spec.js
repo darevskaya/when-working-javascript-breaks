@@ -64,3 +64,31 @@ test('the worker runs under the policy of this project', async ({ page }) => {
     'The worker replied: Hello, Playwright.',
   );
 });
+
+// A refused frame holds an error page from another origin, so its title is null.
+test('the page loads inside an iframe under the policy of this project', async ({
+  page,
+}, testInfo) => {
+  test.fail(
+    testInfo.project.name === 'strict',
+    "frame-ancestors 'none' refuses the page inside an iframe.",
+  );
+  await page.goto('/');
+  const title = await page.evaluate(
+    (src) =>
+      new Promise((resolve) => {
+        const frame = document.createElement('iframe');
+        frame.src = src;
+        frame.addEventListener('load', () => {
+          try {
+            resolve(frame.contentDocument?.title ?? null);
+          } catch {
+            resolve(null);
+          }
+        });
+        document.body.append(frame);
+      }),
+    pagePath,
+  );
+  expect(title).toBe('A Blob worker under policy');
+});

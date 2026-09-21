@@ -24,7 +24,7 @@
   },
   "workspaces": [
     "demos/script-src-eval",
-    "demos/trusted-types",
+    "demos/restrict-inner-html",
     "demos/playwright-policies",
     "demos/coop-popup",
     "demos/coop-broadcast-channel",

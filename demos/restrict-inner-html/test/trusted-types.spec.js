@@ -10,7 +10,7 @@ const status = (page) => page.locator('#status');
 const shopTag = (page) => page.locator('.orbit-widget h2 em');
 
 test('string, no header: the shop name becomes a tag', async ({ page }) => {
-  await page.goto('/demo/trusted-types/no-header');
+  await page.goto('/demo/restrict-inner-html/no-header');
   await expect(status(page)).toHaveText('The widget rendered.');
   await expect(shopTag(page)).toHaveText('SALE');
   expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
@@ -18,7 +18,7 @@ test('string, no header: the shop name becomes a tag', async ({ page }) => {
 });
 
 test('string, header on: the browser refuses the write', async ({ page }) => {
-  await page.goto('/demo/trusted-types/string');
+  await page.goto('/demo/restrict-inner-html/string');
   await expect(status(page)).toContainText('The browser refused the write.');
   await expect(status(page)).toContainText('TypeError');
   await expect(page.locator('.orbit-loading')).toBeVisible();
@@ -30,18 +30,10 @@ test('string, header on: the browser refuses the write', async ({ page }) => {
   await page.screenshot({ path: 'test-results/widget-string.png' });
 });
 
-test('escapeHtml, header on: the browser refuses it too', async ({ page }) => {
-  await page.goto('/demo/trusted-types/escape');
-  await expect(status(page)).toContainText('The browser refused the write.');
-  await expect(status(page)).toContainText('TypeError');
-  await expect(page.locator('.orbit-loading')).toBeVisible();
-  await page.screenshot({ path: 'test-results/widget-escape.png' });
-});
-
 test('policyHtml, header on: the widget renders, and the name is text', async ({
   page,
 }) => {
-  await page.goto('/demo/trusted-types/policy');
+  await page.goto('/demo/restrict-inner-html/policy');
   await expect(status(page)).toHaveText('The widget rendered.');
   await expect(heading(page)).toHaveText('Sign in to Fern & Co. <em>SALE</em>');
   await expect(shopTag(page)).toHaveCount(0);
@@ -59,7 +51,7 @@ test('policyHtml, header on: the widget renders, and the name is text', async ({
 test('DOM nodes, header on: the widget renders with no policy', async ({
   page,
 }) => {
-  await page.goto('/demo/trusted-types/dom');
+  await page.goto('/demo/restrict-inner-html/dom');
   await expect(status(page)).toHaveText('The widget rendered.');
   await expect(heading(page)).toHaveText('Sign in to Fern & Co. <em>SALE</em>');
   await expect(shopTag(page)).toHaveCount(0);

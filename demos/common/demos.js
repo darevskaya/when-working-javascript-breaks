@@ -3,7 +3,7 @@ export const hub = { port: 4173 };
 
 export const demos = [
   {
-    id: 'trusted-types',
+    id: 'restrict-inner-html',
     port: 4201,
     summary: 'Trusted Types blocks strings in innerHTML.',
   },

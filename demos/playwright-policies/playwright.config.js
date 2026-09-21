@@ -3,7 +3,6 @@ import { demoConfig } from '../common/playwright.js';
 export default demoConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   projects: [
-    { name: 'demo', testMatch: 'demo.spec.js' },
     {
       name: 'permissive',
       testMatch: 'policy-projects.spec.js',
@@ -16,7 +15,7 @@ export default demoConfig({
       name: 'strict',
       testMatch: 'policy-projects.spec.js',
       use: {
-        csp: "script-src 'self'",
+        csp: "script-src 'self'; frame-ancestors 'none'",
         screenshot: 'only-on-failure',
       },
     },

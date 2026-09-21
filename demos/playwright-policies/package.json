@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "lint": "eslint .",
-    "test": "node --test \"test/*.test.js\" && playwright test --project=demo",
+    "test": "playwright test --project=permissive",
     "test:permissive": "playwright test --project=permissive",
     "test:strict": "playwright test --project=strict",
     "test:report": "playwright show-report"

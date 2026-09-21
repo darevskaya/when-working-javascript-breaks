@@ -6,7 +6,6 @@ const expressions = {
   'data.total().toFixed(2)': (data) => data.total().toFixed(2),
 };
 
-// Webpack substitutes this renderer to isolate devtool-generated eval.
 export function render(template, data) {
   return template.replace(/\{\{([\s\S]+?)\}\}/g, (_, expression) =>
     String(expressions[expression.trim()](data)),

@@ -1,12 +1,10 @@
 import { render as renderString } from './render-with-string.js';
-import { render as renderEscape } from './render-with-escape.js';
 import { render as renderPolicy } from './render-with-policy.js';
 import { render as renderDom } from './render-with-dom.js';
 
 const renderers = {
   'no-header': renderString,
   string: renderString,
-  escape: renderEscape,
   policy: renderPolicy,
   dom: renderDom,
 };

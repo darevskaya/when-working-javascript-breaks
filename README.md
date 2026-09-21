@@ -18,7 +18,7 @@ Each folder in `demos/` is one demo, with its own server, lint rules, tests,
 and README. Run one demo on its own like this:
 
 ```sh
-cd demos/trusted-types
+cd demos/restrict-inner-html
 npm start
 npm run lint
 npm test
@@ -30,7 +30,7 @@ page reads it.
 
 The demos:
 
-- `trusted-types/` on 4201: Trusted Types blocks strings in `innerHTML`
+- `restrict-inner-html/` on 4201: Trusted Types blocks strings in `innerHTML`
 - `script-src-eval/` on 4203: `script-src` blocks `eval`, also in a webpack
   build
 - `playwright-policies/` on 4204: one Playwright suite under two sets of

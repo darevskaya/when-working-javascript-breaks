@@ -23,36 +23,44 @@ blob:`. The worker replies.
 - `/demo/playwright-policies/blocked`: `script-src 'self'; frame-ancestors
 'none'`. The browser refuses the worker. `frame-ancestors 'none'` names who
   may embed the page: nobody. The page opens on its own, and the browser
-  refuses it inside an iframe, on this origin too. `test/demo.spec.js` embeds
-  both routes and reads the title of each frame. The allowed route gives its title, and the blocked
-  route gives `null`, because a refused frame holds an error page from another
-  origin.
+  refuses it inside an iframe, on this origin too.
 
-## The three Playwright projects
+## The two Playwright projects
 
-`playwright.config.js` holds three projects.
+`playwright.config.js` holds two projects. `npm test` runs the permissive
+project.
 
 | Command                   | Project      | Policy                                       | Result           |
 | ------------------------- | ------------ | -------------------------------------------- | ---------------- |
-| `npm test`                | `demo`       | the headers the server sends                 | Passes           |
 | `npm run test:permissive` | `permissive` | `script-src 'self'; worker-src 'self' blob:` | Passes           |
-| `npm run test:strict`     | `strict`     | `script-src 'self'`                          | Fails on purpose |
+| `npm run test:strict`     | `strict`     | `script-src 'self'; frame-ancestors 'none'`  | Fails on purpose |
 
-`test/policy-projects.spec.js` runs in both policy projects. `page.route()`
-fetches the response, puts the `csp` of the project on it, and gives it to the
-browser. The page, the script, the server and the test stay the same, so the headers are the only difference between the
-two runs.
+`test/policy-projects.spec.js` is the only spec. It runs in both projects. One
+test starts the worker, and one test embeds the page in an iframe.
+
+`page.route()` fetches the response, puts the `csp` of the project on it, and gives it to the
+browser. The page, the script, the server and the test stay the same, so the headers are the only
+difference between the two runs.
 
 `test/policy-projects.spec.js` adds a `ReportingObserver` to the page with
 `page.addInitScript()`, before `app.js` runs. The observer takes no `types`
-option, so it collects every kind of report the browser makes. This is the report the browser would send to a reporting
-endpoint, so the test reads what production monitoring reads.
+option, so it collects every kind of report the browser makes. This is the
+report that the browser sends to a reporting endpoint, so the test reads what production monitoring reads.
 
 Each run attaches the list as `reports.json` and adds one annotation per
-report. The strict run fails with a screenshot, a trace, and one annotation:
+report. In the strict run, the worker test fails with a screenshot, a trace,
+and this annotation:
 
 ```
 report  csp-violation: worker-src blocked blob
+```
+
+The iframe test is an expected failure in the strict run. `test.fail()` marks
+it, so the run counts it as passed when the browser refuses the frame. The
+report still carries its annotation:
+
+```
+report  csp-violation: frame-ancestors blocked http://127.0.0.1:4175/
 ```
 
 Run `npm run test:report` to open the report of the last run.

@@ -28,18 +28,16 @@
           <code>script-src 'self'; frame-ancestors 'none'</code>
         </li>
       </ul>
-      <h2>The three Playwright projects</h2>
+      <h2>The two Playwright projects</h2>
       <ul>
-        <li>
-          <code>npm test</code>: the two routes above, as the server sends them
-        </li>
         <li>
           <code>npm run test:permissive</code>: Playwright puts a permissive
           policy on the response, and the test passes
         </li>
         <li>
           <code>npm run test:strict</code>: Playwright puts a strict policy on
-          the same response, and the test fails on purpose
+          the same response: the worker fails on purpose, and the iframe fails
+          as the test expects
         </li>
       </ul>
     </main>

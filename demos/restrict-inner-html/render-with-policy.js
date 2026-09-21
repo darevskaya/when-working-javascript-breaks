@@ -1,14 +1,30 @@
-import { escapeHtml } from './render-with-escape.js';
+const entities = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
+
+const escapeValue = (value) =>
+  String(value).replace(/[&<>"']/g, (character) => entities[character]);
 
 let policy;
-
 function policyHtml(strings, ...values) {
   if (!policy) {
     policy = trustedTypes.createPolicy('my-widget', {
       createHTML: (markup) => markup,
     });
   }
-  return policy.createHTML(escapeHtml(strings, ...values));
+  return policy.createHTML(
+    strings.reduce(
+      (markup, text, index) =>
+        markup +
+        text +
+        (index < values.length ? escapeValue(values[index]) : ''),
+      '',
+    ),
+  );
 }
 
 export function render(container) {

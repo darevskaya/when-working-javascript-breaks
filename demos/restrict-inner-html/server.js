@@ -15,16 +15,14 @@ export function createServer({ tls } = {}) {
     serve(
       {
         '/': 'index.html',
-        '/demo/trusted-types/no-header': page(),
-        '/demo/trusted-types/string': page(noPolicy),
-        '/demo/trusted-types/escape': page(noPolicy),
-        '/demo/trusted-types/policy': page(onePolicy),
-        '/demo/trusted-types/dom': page(noPolicy),
+        '/demo/restrict-inner-html/no-header': page(),
+        '/demo/restrict-inner-html/string': page(noPolicy),
+        '/demo/restrict-inner-html/policy': page(onePolicy),
+        '/demo/restrict-inner-html/dom': page(noPolicy),
         '/styles.css': 'styles.css',
         '/app.css': 'app.css',
         '/app.js': 'app.js',
         '/render-with-string.js': 'render-with-string.js',
-        '/render-with-escape.js': 'render-with-escape.js',
         '/render-with-policy.js': 'render-with-policy.js',
         '/render-with-dom.js': 'render-with-dom.js',
       },
@@ -35,6 +33,6 @@ export function createServer({ tls } = {}) {
 
 if (isMain(import.meta)) {
   createServer().listen(ports.app, '127.0.0.1', () =>
-    console.log(`trusted-types: http://127.0.0.1:${ports.app}`),
+    console.log(`restrict-inner-html: http://127.0.0.1:${ports.app}`),
   );
 }

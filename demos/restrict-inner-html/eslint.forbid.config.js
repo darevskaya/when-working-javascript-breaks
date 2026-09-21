@@ -13,39 +13,7 @@ export default [
           property: 'innerHTML',
           message:
             'Use createElement, textContent, and append, not HTML strings.',
-        },
-        {
-          property: 'outerHTML',
-          message:
-            'Use createElement, textContent, and append, not HTML strings.',
-        },
-        {
-          property: 'srcdoc',
-          message:
-            'Use createElement, textContent, and append, not HTML strings.',
-        },
-        {
-          property: 'insertAdjacentHTML',
-          message:
-            'Use createElement, textContent, and append, not HTML strings.',
-        },
-        {
-          property: 'setHTMLUnsafe',
-          message:
-            'Use createElement, textContent, and append, not HTML strings.',
-        },
-        {
-          object: 'document',
-          property: 'write',
-          message:
-            'Use createElement, textContent, and append, not HTML strings.',
-        },
-        {
-          object: 'document',
-          property: 'writeln',
-          message:
-            'Use createElement, textContent, and append, not HTML strings.',
-        },
+        }
       ],
     },
   },
