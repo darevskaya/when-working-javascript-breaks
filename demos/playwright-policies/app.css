@@ -1,0 +1,48 @@
+.checks {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 12px 32px;
+  margin: 0 0 32px;
+}
+
+.checks dt {
+  color: var(--muted);
+}
+
+.checks dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.checks dd.allowed {
+  color: #1d6b3f;
+}
+
+/* The status line of a feature that a header turned off. */
+.checks dd.blocked {
+  color: #a3301f;
+}
+
+#reports {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+#reports li {
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+#reports-empty {
+  margin: 0;
+  color: var(--muted);
+}

@@ -24,8 +24,7 @@
   "workspaces": [
     "demos/script-src-eval",
     "demos/trusted-types",
-    "demos/trusted-types/trusted-html",
-    "demos/worker-src-blob",
+    "demos/playwright-policies",
     "demos/coop-popup",
     "demos/coop-broadcast-channel",
     "demos/iframe-sandbox",

@@ -4,7 +4,10 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "lint": "eslint .",
+    "lint:forbid": "eslint --config eslint.forbid.config.js .",
+    "lint:escape": "eslint --config eslint.escape.config.js .",
+    "lint:trusted-types": "eslint --config eslint.trusted-types.config.js .",
+    "lint": "npm run lint:forbid && npm run lint:escape && npm run lint:trusted-types",
     "test": "node --test \"test/*.test.js\" && playwright test"
   }
 }

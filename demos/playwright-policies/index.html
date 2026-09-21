@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Playwright under security policies</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="lab demo-index">
+      <h1>Playwright under security policies</h1>
+      <p>
+        The same page, the same script, two sets of headers. Open a link to see
+        the page, or run the Playwright projects to see the same difference in a
+        test report.
+      </p>
+      <ul>
+        <li>
+          <a href="/demo/playwright-policies/allowed" target="_blank"
+            >Both features allowed: the worker replies, geolocation is on</a
+          >
+          <code>worker-src 'self' blob:</code>
+        </li>
+        <li>
+          <a href="/demo/playwright-policies/blocked" target="_blank"
+            >Both features blocked: two reports appear</a
+          >
+          <code>script-src 'self' and Permissions-Policy: geolocation=()</code>
+        </li>
+      </ul>
+      <h2>The three Playwright projects</h2>
+      <ul>
+        <li>
+          <code>npm test</code>: the two routes above, as the server sends them
+        </li>
+        <li>
+          <code>npm run test:permissive</code>: Playwright puts a permissive
+          policy on the response, and the test passes
+        </li>
+        <li>
+          <code>npm run test:strict</code>: Playwright puts a strict policy on
+          the same response, and the test fails on purpose
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>

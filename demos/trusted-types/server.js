@@ -2,31 +2,31 @@ import { serve, listener, isMain, demoPorts } from '../common/serve.js';
 
 const ports = demoPorts(import.meta);
 
-// Both pages require Trusted Types. They differ in the policy list, and in the
-// widget script that the list allows.
+const requireTrustedTypes = "require-trusted-types-for 'script'";
+// No policy name, so the page allows no policy at all.
+const noPolicy = `${requireTrustedTypes}; trusted-types 'none'`;
+// One policy name. policyHtml() in app.js creates that policy.
+const onePolicy = `${requireTrustedTypes}; trusted-types orbit-widget`;
+
+const page = (csp) =>
+  csp ? { file: 'app.html', 'Content-Security-Policy': csp } : 'app.html';
+
+// One page, app.html, and one script, app.js, on every route. The route picks
+// the widget style, and the row below picks the header.
 export function createServer({ tls } = {}) {
-  const trustedTypes = "require-trusted-types-for 'script'";
   return listener(
     tls,
     serve(
       {
         '/': 'index.html',
-        // No policy at all, so no string becomes markup on this page.
-        '/demo/trusted-types/no-policy': {
-          file: 'no-policy.html',
-          'Content-Security-Policy': `${trustedTypes}; trusted-types 'none'`,
-        },
-        // One policy name. setHTML() in the trusted-html package owns it.
-        '/demo/trusted-types/one-policy': {
-          file: 'one-policy.html',
-          'Content-Security-Policy': `${trustedTypes}; trusted-types orbit-widget`,
-        },
+        '/demo/trusted-types/no-header': page(),
+        '/demo/trusted-types/string': page(noPolicy),
+        '/demo/trusted-types/escape': page(noPolicy),
+        '/demo/trusted-types/policy': page(onePolicy),
+        '/demo/trusted-types/dom': page(noPolicy),
         '/styles.css': 'styles.css',
-        '/orbit.css': 'orbit.css',
-        '/dom-widget.js': 'dom-widget.js',
-        '/policy-widget.js': 'policy-widget.js',
-        '/policy-probe.js': 'policy-probe.js',
-        '/trusted-html.js': 'trusted-html/index.js',
+        '/app.css': 'app.css',
+        '/app.js': 'app.js',
       },
       { root: import.meta.dirname },
     ),

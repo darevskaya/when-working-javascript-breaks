@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign-in widget</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/app.css" />
+    <!-- One page for every route. app.js reads the route and picks a style. -->
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <main class="lab">
+      <section class="demo-panel" aria-labelledby="page-title">
+        <h1 id="page-title">Sign-in widget</h1>
+        <p>
+          The page gives the widget this element and the shop name. The shop
+          name holds a tag, so you can see what each style does with it.
+        </p>
+        <section
+          class="orbit-slot"
+          aria-label="Sign in"
+          data-orbit-widget
+          data-shop="Fern &amp; Co. &lt;em&gt;SALE&lt;/em&gt;"
+        >
+          <p class="orbit-loading">Loading sign-in…</p>
+        </section>
+        <p>Style: <code id="style">…</code></p>
+        <p id="status">Rendering…</p>
+      </section>
+    </main>
+  </body>
+</html>

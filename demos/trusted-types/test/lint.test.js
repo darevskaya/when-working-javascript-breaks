@@ -2,67 +2,77 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ESLint } from 'eslint';
 import { lintFindings } from '../../common/test-helpers.js';
-import { noMarkupAnywhere } from '../eslint.config.js';
 
 const folder = `${import.meta.dirname}/..`;
 
-// string-widget.js is the original widget, and no page loads it. The two
-// widgets that the pages load write no markup from a string, so lint passes
-// on both of them.
-test('lint flags the original widget and nothing else', async () => {
-  assert.deepEqual(await lintFindings(folder), [
-    'string-widget.js:21 no-restricted-properties',
-    'string-widget.js:8 no-restricted-properties',
-  ]);
+// app.js writes the same widget in four styles, on purpose. Each lint allows
+// one style and flags the others, so each one fails here with a known list.
+// The line numbers are the innerHTML lines of renderString, renderEscape and
+// renderPolicy, in that order.
+test('lint:forbid flags every markup sink', async () => {
+  assert.deepEqual(
+    await lintFindings(folder, { config: 'eslint.forbid.config.js' }),
+    [
+      'app.js:55 no-restricted-properties',
+      'app.js:69 no-restricted-properties',
+      'app.js:83 no-restricted-properties',
+    ],
+  );
 });
 
-const sinks = [
-  'el.innerHTML = `<h2>${shop}</h2>`;',
-  "el.innerHTML = '<b>Orbit ID</b>';",
-  'el.innerHTML = escapeHTML`<h2>${shop}</h2>`;',
-  "el['innerHTML'] = markup;",
-  'el.innerHTML += markup;',
-  'el.outerHTML = markup;',
-  'frame.srcdoc = page;',
-  "el.insertAdjacentHTML('beforeend', markup);",
-  'el.setHTMLUnsafe(markup);',
-  'document.write(markup);',
-];
-
-// Trusted Types refuses every string in these sinks, so the rule has no
-// exception for a constant, an escaped string, or a tag name.
-test('option B flags every sink outside the trusted-html package', async () => {
-  const eslint = new ESLint({ cwd: folder });
-  for (const code of sinks) {
-    const [widget] = await eslint.lintText(code, { filePath: 'widget.js' });
-    assert.deepEqual(
-      widget.messages.map((message) => message.ruleId),
-      ['no-restricted-properties'],
-      code,
-    );
-    // setHTML() lives here, owns the policy, and escapes each value.
-    const [inside] = await eslint.lintText(code, {
-      filePath: 'trusted-html/index.js',
-    });
-    assert.deepEqual(inside.messages, [], code);
-  }
+test('lint:escape allows escapeHtml and flags the rest', async () => {
+  assert.deepEqual(
+    await lintFindings(folder, { config: 'eslint.escape.config.js' }),
+    ['app.js:55 no-restricted-syntax', 'app.js:83 no-restricted-syntax'],
+  );
 });
 
-// Option A bans the sinks in every file, the trusted-html package included.
-test('option A flags every sink in every file', async () => {
+test('lint:trusted-types allows policyHtml and flags the rest', async () => {
+  assert.deepEqual(
+    await lintFindings(folder, { config: 'eslint.trusted-types.config.js' }),
+    ['app.js:55 no-restricted-syntax', 'app.js:69 no-restricted-syntax'],
+  );
+});
+
+// One line of code through the three configurations.
+const lines = {
+  string: 'element.innerHTML = markup;',
+  escape: 'element.innerHTML = escapeHtml`<p>${value}</p>`;',
+  policy: 'element.innerHTML = policyHtml`<p>${value}</p>`;',
+  dom: 'element.replaceChildren(node);',
+  call: 'element.insertAdjacentHTML("beforeend", markup);',
+};
+
+const flagged = async (config) => {
   const eslint = new ESLint({
     cwd: folder,
-    overrideConfigFile: true,
-    overrideConfig: noMarkupAnywhere,
+    overrideConfigFile: `${folder}/${config}`,
   });
-  for (const code of sinks) {
-    const [inside] = await eslint.lintText(code, {
-      filePath: 'trusted-html/index.js',
-    });
-    assert.deepEqual(
-      inside.messages.map((message) => message.ruleId),
-      ['no-restricted-properties'],
-      code,
-    );
+  const names = [];
+  for (const [name, code] of Object.entries(lines)) {
+    const [result] = await eslint.lintText(code, { filePath: 'feature.js' });
+    if (result.messages.length > 0) names.push(name);
   }
+  return names;
+};
+
+test('each configuration allows exactly one way to write markup', async () => {
+  // Nothing writes markup. Only the DOM line passes.
+  assert.deepEqual(await flagged('eslint.forbid.config.js'), [
+    'string',
+    'escape',
+    'policy',
+    'call',
+  ]);
+  // escapeHtml passes. The DOM line writes no markup, so it passes too.
+  assert.deepEqual(await flagged('eslint.escape.config.js'), [
+    'string',
+    'policy',
+    'call',
+  ]);
+  assert.deepEqual(await flagged('eslint.trusted-types.config.js'), [
+    'string',
+    'escape',
+    'call',
+  ]);
 });

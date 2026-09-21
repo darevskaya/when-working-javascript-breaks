@@ -28,9 +28,11 @@ export const demos = [
     note: 'The start script builds the webpack bundle first.',
   },
   {
-    id: 'worker-src-blob',
+    id: 'playwright-policies',
     port: 4204,
-    summary: 'worker-src blocks a Worker that starts from a Blob URL.',
+    summary:
+      'Playwright runs the same page under two sets of security headers.',
+    note: 'npm run test:strict fails on purpose. The HTML report holds the violation reports.',
   },
   {
     id: 'coop-popup',

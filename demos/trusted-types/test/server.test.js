@@ -3,32 +3,39 @@ import assert from 'node:assert/strict';
 import { createServer } from '../server.js';
 import { listen, assertHeaders } from '../../common/test-helpers.js';
 
-test('the pages differ only in the scripts and the policy list', async (t) => {
+const routes = ['no-header', 'string', 'escape', 'policy', 'dom'];
+
+test('every route serves the same page, and the header differs', async (t) => {
   const origin = await listen(createServer(), t);
-  const html = async (path) => (await fetch(`${origin}${path}`)).text();
-  // The pages differ only in the scripts at the end of <head>.
-  const withoutScripts = (page) =>
-    page.replace(/<!-- Only these scripts differ[\s\S]*?<\/head>/, '</head>');
-  assert.equal(
-    withoutScripts(await html('/demo/trusted-types/no-policy')),
-    withoutScripts(await html('/demo/trusted-types/one-policy')),
-  );
+  const page = async (route) =>
+    (await fetch(`${origin}/demo/trusted-types/${route}`)).text();
+
+  const first = await page(routes[0]);
+  for (const route of routes.slice(1)) {
+    assert.equal(await page(route), first, route);
+  }
+  assert.match(first, /<script type="module" src="\/app\.js"><\/script>/);
+
   const csp = 'content-security-policy';
-  const trustedTypes = "require-trusted-types-for 'script'";
+  const none = "require-trusted-types-for 'script'; trusted-types 'none'";
+  const one = "require-trusted-types-for 'script'; trusted-types orbit-widget";
   await assertHeaders(origin, {
     '/': {},
-    '/demo/trusted-types/no-policy': {
-      [csp]: `${trustedTypes}; trusted-types 'none'`,
-    },
-    '/demo/trusted-types/one-policy': {
-      [csp]: `${trustedTypes}; trusted-types orbit-widget`,
-    },
-    '/dom-widget.js': {},
-    '/policy-widget.js': {},
-    '/policy-probe.js': {},
-    '/trusted-html.js': {},
-    '/orbit.css': {},
+    '/demo/trusted-types/no-header': {},
+    '/demo/trusted-types/string': { [csp]: none },
+    '/demo/trusted-types/escape': { [csp]: none },
+    '/demo/trusted-types/policy': { [csp]: one },
+    '/demo/trusted-types/dom': { [csp]: none },
+    '/app.js': {},
+    '/app.css': {},
+    '/styles.css': {},
   });
-  // string-widget.js is only the original. The server does not serve it.
-  assert.equal((await fetch(`${origin}/string-widget.js`)).status, 404);
+  // The no-header route sends no Content-Security-Policy at all.
+  const bare = await fetch(`${origin}/demo/trusted-types/no-header`);
+  await bare.arrayBuffer();
+  assert.equal(bare.headers.get(csp), null);
+
+  for (const route of ['/demo/trusted-types/unknown', '/server.js']) {
+    assert.equal((await fetch(`${origin}${route}`)).status, 404);
+  }
 });

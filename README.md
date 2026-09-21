@@ -35,7 +35,8 @@ The demos:
   page
 - `script-src-eval/` on 4203: `script-src` blocks `eval`, also in a webpack
   build
-- `worker-src-blob/` on 4204: `worker-src` blocks a Worker from a Blob URL
+- `playwright-policies/` on 4204: one Playwright suite under two sets of
+  security headers, and the reports the failure carries
 - `coop-popup/` on 4205: COOP cuts the window relationship of a popup login
 - `coop-broadcast-channel/` on 4206: a popup login that COOP does not break
 - `connect-src-api-client/` on 4208: lint keeps every API call inside the

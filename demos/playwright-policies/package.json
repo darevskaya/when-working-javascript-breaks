@@ -1,0 +1,13 @@
+{
+  "name": "playwright-policies",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "lint": "eslint .",
+    "test": "node --test \"test/*.test.js\" && playwright test --project=demo",
+    "test:permissive": "playwright test --project=permissive",
+    "test:strict": "playwright test --project=strict",
+    "test:report": "playwright show-report"
+  }
+}

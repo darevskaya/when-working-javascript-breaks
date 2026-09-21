@@ -9,22 +9,43 @@
   <body>
     <main class="lab demo-index">
       <h1>Trusted Types: innerHTML</h1>
-      <p>Each link opens one mode of this demo in a new tab.</p>
+      <p>
+        Every route serves the same page and the same script. The route picks
+        the widget style, and the header the server sends.
+      </p>
       <ul>
         <li>
-          <a href="/demo/trusted-types/no-policy" target="_blank"
-            >No policy: the widget builds every node</a
+          <a href="/demo/trusted-types/no-header" target="_blank"
+            >string, no header: the shop name becomes a tag</a
+          >
+          <code>no Trusted Types header</code>
+        </li>
+        <li>
+          <a href="/demo/trusted-types/string" target="_blank"
+            >string, header on: the browser refuses the write</a
           >
           <code>require-trusted-types-for 'script'; trusted-types 'none'</code>
         </li>
         <li>
-          <a href="/demo/trusted-types/one-policy" target="_blank"
-            >One policy: the widget writes markup through setHTML()</a
+          <a href="/demo/trusted-types/escape" target="_blank"
+            >escapeHtml, header on: the browser refuses it too</a
+          >
+          <code>require-trusted-types-for 'script'; trusted-types 'none'</code>
+        </li>
+        <li>
+          <a href="/demo/trusted-types/policy" target="_blank"
+            >policyHtml, header on: the widget renders</a
           >
           <code
             >require-trusted-types-for 'script'; trusted-types
             orbit-widget</code
           >
+        </li>
+        <li>
+          <a href="/demo/trusted-types/dom" target="_blank"
+            >DOM nodes, header on: the widget renders</a
+          >
+          <code>require-trusted-types-for 'script'; trusted-types 'none'</code>
         </li>
       </ul>
     </main>
