@@ -4,7 +4,7 @@ const ports = demoPorts(import.meta);
 
 const requireTrustedTypes = "require-trusted-types-for 'script'";
 const noPolicy = `${requireTrustedTypes}; trusted-types 'none'`;
-const onePolicy = `${requireTrustedTypes}; trusted-types orbit-widget`;
+const onePolicy = `${requireTrustedTypes}; trusted-types my-widget`;
 
 const page = (csp) =>
   csp ? { file: 'app.html', 'Content-Security-Policy': csp } : 'app.html';
@@ -23,6 +23,10 @@ export function createServer({ tls } = {}) {
         '/styles.css': 'styles.css',
         '/app.css': 'app.css',
         '/app.js': 'app.js',
+        '/render-with-string.js': 'render-with-string.js',
+        '/render-with-escape.js': 'render-with-escape.js',
+        '/render-with-policy.js': 'render-with-policy.js',
+        '/render-with-dom.js': 'render-with-dom.js',
       },
       { root: import.meta.dirname },
     ),

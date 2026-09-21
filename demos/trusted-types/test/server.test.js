@@ -18,7 +18,7 @@ test('every route serves the same page, and the header differs', async (t) => {
 
   const csp = 'content-security-policy';
   const none = "require-trusted-types-for 'script'; trusted-types 'none'";
-  const one = "require-trusted-types-for 'script'; trusted-types orbit-widget";
+  const one = "require-trusted-types-for 'script'; trusted-types my-widget";
   await assertHeaders(origin, {
     '/': {},
     '/demo/trusted-types/no-header': {},
@@ -27,6 +27,10 @@ test('every route serves the same page, and the header differs', async (t) => {
     '/demo/trusted-types/policy': { [csp]: one },
     '/demo/trusted-types/dom': { [csp]: none },
     '/app.js': {},
+    '/render-with-string.js': {},
+    '/render-with-escape.js': {},
+    '/render-with-policy.js': {},
+    '/render-with-dom.js': {},
     '/app.css': {},
     '/styles.css': {},
   });

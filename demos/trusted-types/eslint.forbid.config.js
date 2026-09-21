@@ -1,19 +1,51 @@
 import globals from 'globals';
-import { assignmentSinks, callSinks } from './eslint.sinks.js';
 
 // DOM-only rendering needs no Trusted Types policy.
-const message = 'Build the nodes with DOM APIs and textContent.';
-
 export default [
   { ignores: ['test-results/**', 'playwright-report/**'] },
   {
-    files: ['**/*.js'],
+    files: ['render-with-*.js'],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
     rules: {
       'no-restricted-properties': [
         'error',
-        ...assignmentSinks.map((property) => ({ property, message })),
-        ...callSinks.map((sink) => ({ ...sink, message })),
+        {
+          property: 'innerHTML',
+          message:
+            'Use createElement, textContent, and append, not HTML strings.',
+        },
+        {
+          property: 'outerHTML',
+          message:
+            'Use createElement, textContent, and append, not HTML strings.',
+        },
+        {
+          property: 'srcdoc',
+          message:
+            'Use createElement, textContent, and append, not HTML strings.',
+        },
+        {
+          property: 'insertAdjacentHTML',
+          message:
+            'Use createElement, textContent, and append, not HTML strings.',
+        },
+        {
+          property: 'setHTMLUnsafe',
+          message:
+            'Use createElement, textContent, and append, not HTML strings.',
+        },
+        {
+          object: 'document',
+          property: 'write',
+          message:
+            'Use createElement, textContent, and append, not HTML strings.',
+        },
+        {
+          object: 'document',
+          property: 'writeln',
+          message:
+            'Use createElement, textContent, and append, not HTML strings.',
+        },
       ],
     },
   },

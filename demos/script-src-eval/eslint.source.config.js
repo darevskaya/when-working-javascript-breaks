@@ -14,7 +14,7 @@ export default [
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
     rules: {
       'no-eval': ['error', { allowIndirect: false }],
-      'no-implied-eval': 'error',
+      'no-implied-eval': 'error', 
       'no-new-func': 'error',
     },
   },
