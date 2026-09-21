@@ -26,6 +26,12 @@ const describe = ({ type, body }) =>
 
 window.reports = [];
 
+// The reports also drive the status lines, so the page reads one source and
+// not two. The securitypolicyviolation event carries the same fact, and a
+// report arrives for every kind of policy, not for the Content Security
+// Policy alone.
+let refused = false;
+
 new ReportingObserver(
   (reports) => {
     for (const report of reports) {
@@ -33,6 +39,18 @@ new ReportingObserver(
       const item = document.createElement('li');
       item.textContent = describe(report);
       list.append(item);
+      if (
+        report.type === 'csp-violation' &&
+        report.body.effectiveDirective === 'worker-src'
+      ) {
+        refused = true;
+        const { effectiveDirective, blockedURL } = report.body;
+        say(
+          '#worker-status',
+          `The browser refused the worker: ${effectiveDirective} blocked ${blockedURL}`,
+          true,
+        );
+      }
     }
     document.querySelector('#reports-empty').hidden = window.reports.length > 0;
   },
@@ -49,20 +67,8 @@ const source = 'onmessage = (event) => postMessage(`Hello, ${event.data}.`);';
 
 // The Worker constructor does not throw on a blocked URL. The browser creates
 // the object and then fires an error event, and an error event alone does not
-// say why. The violation event does, so the page listens for it and tells a
-// blocked worker from a broken one.
-let blocked = false;
-
-document.addEventListener('securitypolicyviolation', (event) => {
-  if (event.effectiveDirective !== 'worker-src') return;
-  blocked = true;
-  say(
-    '#worker-status',
-    `The browser refused the worker: ${event.effectiveDirective} blocked ${event.blockedURI}:`,
-    true,
-  );
-});
-
+// say why. The report above does, so the observer sets the status when the
+// browser refuses the worker, and onerror covers every other failure.
 function startWorker() {
   const blob = new Blob([source], { type: 'text/javascript' });
   const url = URL.createObjectURL(blob);
@@ -73,7 +79,7 @@ function startWorker() {
     worker.terminate();
   };
   worker.onerror = () => {
-    if (!blocked) say('#worker-status', 'The worker failed.', true);
+    if (!refused) say('#worker-status', 'The worker failed.', true);
   };
   worker.postMessage('Playwright');
 }

@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { recordViolations } from '../../common/test-helpers.js';
 
-test.beforeEach(({ page }) => recordViolations(page));
+// The page collects every report in window.reports through a
+// ReportingObserver, so the tests read that one list and not the
+// securitypolicyviolation event as well.
+const reported = (page) =>
+  page.evaluate(() => window.reports.map((report) => report.type));
 
 const worker = (page) => page.locator('#worker-status');
 const geolocation = (page) => page.locator('#geolocation-status');
@@ -16,7 +19,7 @@ test('both features work when the headers allow them', async ({ page }) => {
     'The permissions policy allows geolocation.',
   );
   await expect(page.locator('#reports-empty')).toBeVisible();
-  expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
+  expect(await reported(page)).toEqual([]);
   await page.screenshot({ path: 'test-results/policies-allowed.png' });
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -30,15 +33,13 @@ test('both features work when the headers allow them', async ({ page }) => {
 test('both features stop when the headers block them', async ({ page }) => {
   await page.goto('/demo/playwright-policies/blocked');
   await expect(worker(page)).toContainText(
-    'The browser refused the worker: worker-src blocked blob:',
+    'The browser refused the worker: worker-src blocked blob',
   );
   await expect(worker(page)).toHaveClass('blocked');
   await expect(geolocation(page)).toHaveText(
     'The permissions policy blocks geolocation.',
   );
-  await expect
-    .poll(() => page.evaluate(() => window.cspViolations))
-    .toContainEqual({ directive: 'worker-src', blocked: 'blob' });
+  await expect.poll(() => reported(page)).toContain('csp-violation');
   await page.screenshot({ path: 'test-results/policies-blocked.png' });
 });
 
@@ -51,10 +52,7 @@ test('the page lists one report of each kind', async ({ page }) => {
     /permissions-policy-violation: geolocation/,
   ]);
   await expect(page.locator('#reports-empty')).toBeHidden();
-  const kinds = await page.evaluate(() =>
-    window.reports.map((report) => report.type),
-  );
-  expect(new Set(kinds)).toEqual(
+  expect(new Set(await reported(page))).toEqual(
     new Set(['csp-violation', 'permissions-policy-violation']),
   );
 });

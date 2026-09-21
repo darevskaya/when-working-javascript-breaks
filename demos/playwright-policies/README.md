@@ -11,8 +11,11 @@ The page has two small features, one per kind of header.
   then to `script-src`, so a plain `script-src 'self'` blocks it.
 - Geolocation. `Permissions-Policy: geolocation=()` turns it off for the page.
 
-`app.js` also runs a `ReportingObserver` and prints every report it receives
-on the page, so you see in the browser what the test reads in the report.
+`app.js` reads one source for both jobs: a `ReportingObserver`. It prints
+every report it receives on the page, and it sets the status line of the
+worker from the `csp-violation` report. The `securitypolicyviolation` event
+carries the same fact for the Content Security Policy, and a report arrives
+for every kind of policy, so the page and the test read the reports alone.
 
 ## The files
 

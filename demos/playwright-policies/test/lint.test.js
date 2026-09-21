@@ -8,7 +8,7 @@ const folder = `${import.meta.dirname}/..`;
 // app.js starts its Worker from a Blob URL on purpose, so lint fails here.
 test('lint flags the Blob worker in app.js', async () => {
   assert.deepEqual(await lintFindings(folder), [
-    'app.js:69 no-restricted-syntax',
+    'app.js:75 no-restricted-syntax',
   ]);
 });
 
