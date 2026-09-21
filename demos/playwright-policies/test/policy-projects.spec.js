@@ -4,7 +4,19 @@ import { test, expect } from '@playwright/test';
 const pagePath = '/demo/playwright-policies/allowed';
 
 test.beforeEach(async ({ page }, testInfo) => {
-  const { csp, permissionsPolicy } = testInfo.project.use;
+  const { csp } = testInfo.project.use;
+
+  // The test observes the reports, so the page code stays unchanged.
+  // With no types option, the observer collects every kind of report.
+  await page.addInitScript(() => {
+    window.reports = [];
+    new ReportingObserver(
+      (reports) => {
+        for (const report of reports) window.reports.push(report.toJSON());
+      },
+      { buffered: true },
+    ).observe();
+  });
 
   await page.route(pagePath, async (route) => {
     const response = await route.fetch();
@@ -13,7 +25,6 @@ test.beforeEach(async ({ page }, testInfo) => {
       headers: {
         ...response.headers(),
         'content-security-policy': csp,
-        'permissions-policy': permissionsPolicy,
       },
     });
   });
@@ -29,7 +40,6 @@ test.afterEach(async ({ page }, testInfo) => {
     body: JSON.stringify(
       {
         csp: testInfo.project.use.csp,
-        permissionsPolicy: testInfo.project.use.permissionsPolicy,
         reports,
       },
       null,
@@ -37,22 +47,20 @@ test.afterEach(async ({ page }, testInfo) => {
     ),
     contentType: 'application/json',
   });
-  for (const report of reports) {
+  for (const { type, body } of reports) {
     testInfo.annotations.push({
       type: 'report',
-      description: `${report.type}: ${report.body.effectiveDirective ?? report.body.featureId ?? ''}`,
+      description:
+        type === 'csp-violation'
+          ? `${type}: ${body.effectiveDirective} blocked ${body.blockedURL}`
+          : `${type}: ${body.featureId ?? body.message}`,
     });
   }
 });
 
-test('both features work under the policy of this project', async ({
-  page,
-}) => {
+test('the worker runs under the policy of this project', async ({ page }) => {
   await page.goto(pagePath);
   await expect(page.locator('#worker-status')).toContainText(
     'The worker replied: Hello, Playwright.',
-  );
-  await expect(page.locator('#geolocation-status')).toHaveText(
-    'The permissions policy allows geolocation.',
   );
 });

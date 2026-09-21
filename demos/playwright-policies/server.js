@@ -18,7 +18,6 @@ export function createServer({ tls } = {}) {
           // worker-src falls back to child-src, then script-src.
           'Content-Security-Policy':
             "script-src 'self'; frame-ancestors 'none'",
-          'Permissions-Policy': 'geolocation=()',
         },
         '/styles.css': 'styles.css',
         '/app.css': 'app.css',

@@ -9,7 +9,6 @@ export default demoConfig({
       testMatch: 'policy-projects.spec.js',
       use: {
         csp: "script-src 'self'; worker-src 'self' blob:",
-        permissionsPolicy: 'geolocation=(self)',
         screenshot: 'only-on-failure',
       },
     },
@@ -18,7 +17,6 @@ export default demoConfig({
       testMatch: 'policy-projects.spec.js',
       use: {
         csp: "script-src 'self'",
-        permissionsPolicy: 'geolocation=()',
         screenshot: 'only-on-failure',
       },
     },

@@ -17,18 +17,15 @@
       <ul>
         <li>
           <a href="/demo/playwright-policies/allowed" target="_blank"
-            >Both features allowed: the worker replies, geolocation is on</a
+            >Worker allowed: the worker replies</a
           >
           <code>worker-src 'self' blob:</code>
         </li>
         <li>
           <a href="/demo/playwright-policies/blocked" target="_blank"
-            >Both features blocked: two reports appear</a
+            >Worker blocked: the browser refuses the worker</a
           >
-          <code
-            >script-src 'self'; frame-ancestors 'none' and Permissions-Policy:
-            geolocation=()</code
-          >
+          <code>script-src 'self'; frame-ancestors 'none'</code>
         </li>
       </ul>
       <h2>The three Playwright projects</h2>

@@ -4,18 +4,14 @@ This demo is about the test run, not about the feature. It shows how to run
 one Playwright suite under two sets of security headers, watch the strict run
 fail, and read the violation reports that the failure carries.
 
-The page has two small features, one per kind of header.
+The page has one small feature: a Worker that carries its code in a Blob
+URL. The page needs `blob:` in `worker-src`. A policy with no worker directive
+falls back to `child-src`, then to `script-src`, so a plain
+`script-src 'self'` blocks it.
 
-- A Worker that carries its code in a Blob URL. The page needs `blob:` in
-  `worker-src`. A policy with no worker directive falls back to `child-src`,
-  then to `script-src`, so a plain `script-src 'self'` blocks it.
-- Geolocation. `Permissions-Policy: geolocation=()` turns it off for the page.
-
-`app.js` reads one source for both jobs: a `ReportingObserver`. It prints
-every report it receives on the page, and it sets the status line of the
-worker from the `csp-violation` report. The `securitypolicyviolation` event
-carries the same fact for the Content Security Policy, and a report arrives
-for every kind of policy, so the page and the test read the reports alone.
+`app.js` shows one status line for the worker. It does not observe reports.
+The test adds the `ReportingObserver`, so the page code stays the same code
+that ships.
 
 ## The files
 
@@ -23,13 +19,12 @@ One page, `app.html`, one script, `app.js`, and one stylesheet, `app.css`, on
 both routes. Only the headers differ.
 
 - `/demo/playwright-policies/allowed`: `script-src 'self'; worker-src 'self'
-blob:`. The worker replies, and geolocation is on.
+blob:`. The worker replies.
 - `/demo/playwright-policies/blocked`: `script-src 'self'; frame-ancestors
-'none'` and `Permissions-Policy: geolocation=()`. Both features stop, and two
-  reports appear on the page. `frame-ancestors 'none'` names who may embed the
-  page: nobody. The page opens on its own, and the browser refuses it inside an
-  iframe, on this origin too. `test/demo.spec.js` embeds both routes and reads
-  the title of each frame. The allowed route gives its title, and the blocked
+'none'`. The browser refuses the worker. `frame-ancestors 'none'` names who
+  may embed the page: nobody. The page opens on its own, and the browser
+  refuses it inside an iframe, on this origin too. `test/demo.spec.js` embeds
+  both routes and reads the title of each frame. The allowed route gives its title, and the blocked
   route gives `null`, because a refused frame holds an error page from another
   origin.
 
@@ -44,22 +39,20 @@ blob:`. The worker replies, and geolocation is on.
 | `npm run test:strict`     | `strict`     | `script-src 'self'`                          | Fails on purpose |
 
 `test/policy-projects.spec.js` runs in both policy projects. `page.route()`
-fetches the response, puts the `csp` and the `permissionsPolicy` of the
-project on it, and gives it to the browser. The page, the script, the server
-and the test stay the same, so the headers are the only difference between the
+fetches the response, puts the `csp` of the project on it, and gives it to the
+browser. The page, the script, the server and the test stay the same, so the headers are the only difference between the
 two runs.
 
-The test reads the reports through a `ReportingObserver`. The observer takes
-no `types` option, so it collects every kind the browser makes, not only
-`csp-violation`. This is the report the browser would send to a reporting
+`test/policy-projects.spec.js` adds a `ReportingObserver` to the page with
+`page.addInitScript()`, before `app.js` runs. The observer takes no `types`
+option, so it collects every kind of report the browser makes. This is the report the browser would send to a reporting
 endpoint, so the test reads what production monitoring reads.
 
 Each run attaches the list as `reports.json` and adds one annotation per
-report. The strict run fails with a screenshot, a trace, and two annotations:
+report. The strict run fails with a screenshot, a trace, and one annotation:
 
 ```
-report  csp-violation: worker-src
-report  permissions-policy-violation: geolocation
+report  csp-violation: worker-src blocked blob
 ```
 
 Run `npm run test:report` to open the report of the last run.
