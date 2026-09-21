@@ -47,10 +47,11 @@ export const demos = [
     summary: 'A popup login that COOP does not break.',
   },
   {
-    id: 'connect-src-api-client',
+    id: 'restrict-architecture-eslint',
     port: 4208,
     providerPort: 4308,
-    summary: 'Lint keeps every API call inside the connect-src contract.',
+    summary:
+      'Two lint rules keep every API call inside the connect-src contract.',
   },
   {
     id: 'reporting-api',

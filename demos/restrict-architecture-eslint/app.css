@@ -13,8 +13,10 @@
 .calls dd {
   margin: 0;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
+/* A call that the customer policy refused. */
 .calls .blocked {
   color: #b3261e;
 }

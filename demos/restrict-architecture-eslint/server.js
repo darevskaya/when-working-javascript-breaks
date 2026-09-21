@@ -1,20 +1,29 @@
 import { serve, listener, isMain, demoPorts } from '../common/serve.js';
+import { config } from './config.js';
 
 const ports = demoPorts(import.meta);
-import { apiOrigins, apiPort } from './contract.js';
 
-// The page sends connect-src with the origins in contract.js, the same list
-// that lint checks.
+// The policy comes from config.js, the same file that the API client reads
+// and the only file that lint lets name an origin. The two cannot drift.
+const origins = Object.values(config);
+const fromConfig = `connect-src 'self' ${origins.join(' ')}`;
+
+// A customer who allows the page origin and nothing else.
+const narrow = "connect-src 'self'";
+
+const page = (csp) => ({
+  file: 'app.html',
+  'Content-Security-Policy': csp,
+});
+
 export function createServer({ tls } = {}) {
   return listener(
     tls,
     serve(
       {
         '/': 'index.html',
-        '/demo/connect-src-api-client/api-calls': {
-          file: 'app.html',
-          'Content-Security-Policy': `connect-src 'self' ${apiOrigins.join(' ')}`,
-        },
+        '/demo/restrict-architecture-eslint/from-config': page(fromConfig),
+        '/demo/restrict-architecture-eslint/narrow-policy': page(narrow),
         '/styles.css': 'styles.css',
         '/app.css': 'app.css',
         '/app.js': 'app.js',
@@ -26,13 +35,13 @@ export function createServer({ tls } = {}) {
   );
 }
 
-// The API on the contract origin. It lets the app origin read its answers.
+// The API on the origin that config.js names. It lets the app origin read its
+// answers.
 export function createApiServer({ appOrigin, tls } = {}) {
-  const cors = { 'Access-Control-Allow-Origin': appOrigin };
   const json = (value) => ({
     body: JSON.stringify(value),
     'Content-Type': 'application/json',
-    ...cors,
+    'Access-Control-Allow-Origin': appOrigin,
   });
   return listener(
     tls,
@@ -46,12 +55,15 @@ export function createApiServer({ appOrigin, tls } = {}) {
   );
 }
 
+// The API always listens on the port inside config.apiOrigin.
+export const apiPort = Number(new URL(config.apiOrigin).port);
+
 if (isMain(import.meta)) {
   const app = `http://127.0.0.1:${ports.app}`;
   createServer().listen(ports.app, '127.0.0.1', () =>
-    console.log(`connect-src-api-client: ${app}`),
+    console.log(`restrict-architecture-eslint: ${app}`),
   );
   createApiServer({ appOrigin: app }).listen(apiPort, '127.0.0.1', () =>
-    console.log(`API: ${apiOrigins[0]}`),
+    console.log(`API: ${config.apiOrigin}`),
   );
 }

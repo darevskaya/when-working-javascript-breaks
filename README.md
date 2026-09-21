@@ -39,8 +39,8 @@ The demos:
   security headers, and the reports the failure carries
 - `coop-popup/` on 4205: COOP cuts the window relationship of a popup login
 - `coop-broadcast-channel/` on 4206: a popup login that COOP does not break
-- `connect-src-api-client/` on 4208: lint keeps every API call inside the
-  `connect-src` contract
+- `restrict-architecture-eslint/` on 4208: two lint rules keep every API call
+  inside the `connect-src` contract
 - `reporting-api/` on 4209: report-only policies and browser reports
 
 The reporting demo needs HTTPS, because Chromium sends no reports over plain

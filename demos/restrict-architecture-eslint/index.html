@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Restrict the architecture with ESLint</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="lab demo-index">
+      <h1>Restrict the architecture with ESLint</h1>
+      <p>
+        Two lint rules keep every API call inside one contract:
+        <code>api-client.js</code> is the only file that calls
+        <code>fetch</code>, and <code>config.js</code> is the only file that
+        names an origin. The server builds <code>connect-src</code> from the
+        same <code>config.js</code>.
+      </p>
+      <ul>
+        <li>
+          <a
+            href="/demo/restrict-architecture-eslint/from-config"
+            target="_blank"
+            >The policy comes from config.js: both calls load</a
+          >
+          <code>connect-src 'self' http://127.0.0.1:4308</code>
+        </li>
+        <li>
+          <a
+            href="/demo/restrict-architecture-eslint/narrow-policy"
+            target="_blank"
+            >A customer who never listed the API origin: both calls fail</a
+          >
+          <code>connect-src 'self'</code>
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>

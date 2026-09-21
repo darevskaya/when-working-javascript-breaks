@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API calls under the contract</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/app.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <main class="lab">
+      <section class="demo-panel" aria-labelledby="calls-title">
+        <h1 id="calls-title">API calls under the contract</h1>
+        <p>
+          The page code calls no <code>fetch</code> and names no origin. Both
+          calls below go through <code>api-client.js</code>, which builds every
+          URL from <code>config.js</code>.
+        </p>
+        <dl class="calls">
+          <dt>Origins in <code>config.js</code></dt>
+          <dd><output id="origins">…</output></dd>
+          <dt>Profile</dt>
+          <dd><output id="profile">…</output></dd>
+          <dt>Status</dt>
+          <dd><output id="status">…</output></dd>
+        </dl>
+      </section>
+    </main>
+  </body>
+</html>

@@ -28,7 +28,7 @@
     "demos/coop-popup",
     "demos/coop-broadcast-channel",
     "demos/iframe-sandbox",
-    "demos/connect-src-api-client",
+    "demos/restrict-architecture-eslint",
     "demos/reporting-api"
   ]
 }
