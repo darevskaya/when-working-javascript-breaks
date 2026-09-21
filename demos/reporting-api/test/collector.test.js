@@ -6,7 +6,6 @@ import path from 'node:path';
 import { createServer, createSecondServer } from '../server.js';
 import { createReportCollector } from '../collector.js';
 
-// A terminal escape, of the kind a browser can put in a blocked URL.
 const terminalEscape = String.fromCharCode(27);
 
 test('both servers collect modern batches and legacy CSP reports', async (t) => {
@@ -35,14 +34,12 @@ test('both servers collect modern batches and legacy CSP reports', async (t) => 
       body,
     });
 
-  // A modern browser sends an array of reports.
   const modern = ['csp-violation', 'coop', 'coep'].map((type) => ({
     type,
     age: 10,
     url: 'https://example.test/page',
     body: { disposition: 'enforce', type: 'corp' },
   }));
-  // The legacy report-uri route sends one object.
   const legacy = {
     'csp-report': {
       'document-uri': 'https://example.test/legacy',
@@ -77,10 +74,8 @@ test('both servers collect modern batches and legacy CSP reports', async (t) => 
   assert.equal(saved[3].format, 'legacy-csp');
   assert.deepEqual(saved[3].report.body, legacy['csp-report']);
   assert.match(output[3], /script-src/);
-  // The saved report keeps every field. The printed line stays readable.
   assert.ok(!output.join('').includes(terminalEscape));
 
-  // A body that is not a report is answered, not crashed on.
   assert.equal(
     (await send(origins[0], 'application/reports+json', '{')).status,
     400,

@@ -9,7 +9,6 @@
   color: var(--muted);
 }
 
-/* The rendered values, or the raw {{ … }} templates when eval is blocked. */
 .summary dd {
   margin: 0;
   font-weight: 600;

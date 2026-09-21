@@ -1,6 +1,4 @@
-// The BFF sends the popup here after it exchanged the code on the server.
-// This page has no code and no token. It only tells the app page, which
-// needs no window reference to hear it, that the login ended.
+// The channel carries no credentials; the BFF holds the session.
 const failed = new URLSearchParams(location.search).has('error');
 const channel = new BroadcastChannel('orbit-login');
 channel.postMessage({ type: failed ? 'login-failed' : 'login-complete' });

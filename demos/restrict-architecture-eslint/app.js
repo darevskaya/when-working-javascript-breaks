@@ -1,10 +1,6 @@
 import { config } from './config.js';
 import { getProfile, getStatus } from './api-client.js';
 
-// The page code. It calls no fetch and it names no origin, so it stays inside
-// the contract without knowing what the contract is. Lint keeps it that way,
-// and this file has no lint finding.
-
 document.querySelector('#origins').textContent =
   Object.values(config).join(' ');
 

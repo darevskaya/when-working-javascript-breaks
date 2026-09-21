@@ -1,8 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-// The page collects every report in window.reports through a
-// ReportingObserver, so the tests read that one list and not the
-// securitypolicyviolation event as well.
 const reported = (page) =>
   page.evaluate(() => window.reports.map((report) => report.type));
 
@@ -45,8 +42,6 @@ test('both features stop when the headers block them', async ({ page }) => {
 
 test('the page lists one report of each kind', async ({ page }) => {
   await page.goto('/demo/playwright-policies/blocked');
-  // The browser writes one csp-violation report and one
-  // permissions-policy-violation report, and the page shows both.
   await expect(reports(page)).toContainText([
     /csp-violation: worker-src blocked blob/,
     /permissions-policy-violation: geolocation/,
@@ -57,10 +52,6 @@ test('the page lists one report of each kind', async ({ page }) => {
   );
 });
 
-// The blocked route also carries frame-ancestors 'none'. The page itself opens
-// as before, and the browser refuses the same page inside an iframe. A refused
-// frame holds an error page from another origin, so contentDocument is null,
-// and the allowed route, which names no frame-ancestors, reads its own title.
 test('frame-ancestors keeps the page out of an iframe', async ({ page }) => {
   await page.goto('/');
   const titleInFrame = (source) =>
@@ -69,8 +60,7 @@ test('frame-ancestors keeps the page out of an iframe', async ({ page }) => {
         new Promise((resolve) => {
           const frame = document.createElement('iframe');
           frame.src = src;
-          // The load event fires for a refused frame too, because the browser
-          // puts its own error page in it.
+          // Blocked frames load an error page with no accessible document.
           frame.addEventListener('load', () => {
             try {
               resolve(frame.contentDocument?.title ?? null);

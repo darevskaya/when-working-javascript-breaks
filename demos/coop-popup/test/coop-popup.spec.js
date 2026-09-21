@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 async function openLogin(page, context, policy) {
-  // A COOP-separated window may not retain Playwright's opener association.
+  // COOP can sever Playwright's opener association.
   const opened = context.waitForEvent('page');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   const popup = await opened;
@@ -24,7 +24,6 @@ test('provider COOP severs references; a fresh permissive login recovers', async
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
   await expect.poll(() => popup.isClosed()).toBe(true);
-  // The login worked, so the Sign in button is gone.
   await expect(
     page.getByRole('button', { name: 'Sign in', exact: true }),
   ).toBeHidden();
@@ -40,8 +39,6 @@ test('provider COOP severs references; a fresh permissive login recovers', async
     path: 'test-results/coop-provider-restricted.png',
     fullPage: true,
   });
-  // The login looks finished: the popup closes on Continue. The result went
-  // nowhere, so the app still reports a cancel by the user.
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect.poll(() => popup.isClosed()).toBe(true);
   await expect(page.locator('#status')).toHaveText(
@@ -63,7 +60,6 @@ test('host COOP cuts the popup, and the app blames the user', async ({
   expect((await document).headers()['cross-origin-opener-policy']).toBe(
     'same-origin',
   );
-  // The provider sends no COOP here. The host page alone cuts the popup.
   const popup = await openLogin(page, context, 'no-coop');
   await expect(popup.locator('#opener-state')).toHaveText('null');
   await expect(page.locator('#popup-closed')).toHaveText('true');

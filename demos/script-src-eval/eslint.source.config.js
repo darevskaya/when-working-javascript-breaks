@@ -1,10 +1,5 @@
 import globals from 'globals';
 
-// Lint 1 of 3: eval in the source you write.
-// Run it with: npm run lint:source
-//
-// It flags the eval in renderer.js. script-src without 'unsafe-eval' blocks
-// that call in the browser, so the page keeps its raw {{ … }} text.
 export default [
   {
     ignores: [

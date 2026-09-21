@@ -30,7 +30,6 @@ test('every route serves the same page, and the header differs', async (t) => {
     '/app.css': {},
     '/styles.css': {},
   });
-  // The no-header route sends no Content-Security-Policy at all.
   const bare = await fetch(`${origin}/demo/trusted-types/no-header`);
   await bare.arrayBuffer();
   assert.equal(bare.headers.get(csp), null);

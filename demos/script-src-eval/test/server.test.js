@@ -7,7 +7,6 @@ test('one page on three routes, and the route picks the script', async (t) => {
   const origin = await listen(createServer(), t);
   const page = async (route) => (await fetch(`${origin}${route}`)).text();
   const permissive = await page('/demo/script-src-eval/unsafe-eval-allowed');
-  // The same file, byte for byte. Only the header and the URL differ.
   assert.equal(permissive, await page('/demo/script-src-eval/eval-blocked'));
   assert.equal(
     permissive,
@@ -15,8 +14,6 @@ test('one page on three routes, and the route picks the script', async (t) => {
   );
   assert.match(permissive, /<script type="module" src="app\.js"><\/script>/);
 
-  // The relative URL above resolves to the source next to the plain routes,
-  // and to the build next to the bundle route.
   const source = await page('/demo/script-src-eval/app.js');
   const bundle = await page('/demo/script-src-eval/bundle/app.js');
   assert.match(source, /renderer\.js/);

@@ -2,15 +2,13 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import { ESLint } from 'eslint';
 
-// Starts a server on a free port for one test, and stops it after the test.
 export async function listen(server, t) {
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise((resolve) => server.close(resolve)));
   return `http://127.0.0.1:${server.address().port}`;
 }
 
-// Headers every HTTP response may carry. A route sends its policy headers on
-// top of these, or none at all.
+// Non-policy headers allowed on every response.
 const ordinary = new Set([
   'content-type',
   'content-length',
@@ -21,8 +19,6 @@ const ordinary = new Set([
   'transfer-encoding',
 ]);
 
-// Makes sure that each route sends exactly the headers it lists, and no other
-// header apart from the ordinary ones.
 export async function assertHeaders(origin, routes) {
   for (const [path, headers] of Object.entries(routes)) {
     const response = await fetch(`${origin}${path}`, { redirect: 'manual' });
@@ -39,8 +35,7 @@ export async function assertHeaders(origin, routes) {
   }
 }
 
-// Collects securitypolicyviolation events into window.cspViolations. Run it
-// in a Playwright test before the page loads.
+// Call before navigation to capture CSP violations.
 export function recordViolations(page) {
   return page.addInitScript(() => {
     window.cspViolations = [];
@@ -53,9 +48,6 @@ export function recordViolations(page) {
   });
 }
 
-// The lint errors in one demo folder, as "file:line rule" strings, sorted.
-// The default is that folder's eslint.config.js over the whole folder. A demo
-// that keeps one lint per concern passes its own config file and paths.
 export async function lintFindings(folder, { config, files = ['.'] } = {}) {
   const eslint = new ESLint({
     cwd: folder,

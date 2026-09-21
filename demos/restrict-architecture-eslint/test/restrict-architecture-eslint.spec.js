@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 import { recordViolations } from '../../common/test-helpers.js';
 import { config } from '../config.js';
 
-// The page shows what config.js names, so the test reads the same file.
 const origins = Object.values(config).join(' ');
 
 test.beforeEach(({ page }) => recordViolations(page));
@@ -27,8 +26,6 @@ test('the policy from config.js allows every call the client makes', async ({
 
 test('a narrower customer policy blocks the same calls', async ({ page }) => {
   await page.goto('/demo/restrict-architecture-eslint/narrow-policy');
-  // config.js still names the origin. The customer never listed it, so the
-  // browser refuses the call that the contract allows.
   await expect(page.locator('#origins')).toHaveText(origins);
   await expect(page.locator('#profile')).toHaveText('Blocked (TypeError)');
   await expect(page.locator('#status')).toHaveText('Blocked (TypeError)');

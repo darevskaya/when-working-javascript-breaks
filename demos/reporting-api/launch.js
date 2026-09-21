@@ -9,10 +9,7 @@ import { chromium } from '@playwright/test';
 import { createServer, createSecondServer } from './server.js';
 import { createReportCollector, reportsFile } from './collector.js';
 
-// Chromium delivers no reports over plain HTTP, not even to 127.0.0.1, so this
-// launcher serves the reporting examples over HTTPS. It creates a throwaway
-// certificate and tells this one browser to trust that single public key.
-// Keep the certificate work here. The demo servers stay plain HTTP.
+// Chromium reporting needs HTTPS, even on localhost.
 export async function startReportingDemo({
   headless = false,
   port = 4185,
@@ -68,7 +65,7 @@ export async function startReportingDemo({
       });
       return server.address().port;
     };
-    // Start the second origin first so an ephemeral port can be used in tests.
+    // Resolve the ephemeral port before configuring the app.
     const actualSecondPort = await listen(
       createSecondServer({ tls, collector }),
       secondPort,

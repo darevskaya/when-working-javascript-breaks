@@ -1,8 +1,5 @@
 import globals from 'globals';
 
-// The same rules as the coop-popup demo: COOP cuts the window relationship.
-// Then popup.closed is true while the popup is still open, and window.opener
-// is null in the popup. This login reads neither, so lint passes.
 export default [
   { ignores: ['test-results/**', 'playwright-report/**'] },
   {
@@ -12,13 +9,11 @@ export default [
       'no-restricted-syntax': [
         'error',
         {
-          // popup.closed
           selector: "MemberExpression[property.name='closed']",
           message:
             'popup.closed is true when COOP separates the popup, even while it is open. Do not read it as a cancel.',
         },
         {
-          // window.opener
           selector:
             "MemberExpression[object.name='window'][property.name='opener']",
           message:
@@ -27,6 +22,6 @@ export default [
       ],
     },
   },
-  // The tests read popup state on purpose.
+  // Tests intentionally read popup state.
   { files: ['test/**'], rules: { 'no-restricted-syntax': 'off' } },
 ];

@@ -1,3 +1,2 @@
-# Normalize every text file to LF in the repository and on checkout, so
-# Prettier's "endOfLine": "lf" check passes on Windows as well.
+# Keep LF on Windows for Prettier.
 * text=auto eol=lf

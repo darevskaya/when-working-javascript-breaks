@@ -1,14 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import { client, challengeFor } from './orbit-auth.js';
 
-// A minimal Backend for Frontend (BFF) for the BroadcastChannel login. The
-// BFF is the OAuth client. It runs the authorization code flow with PKCE,
-// keeps the token on the server, and gives the browser only an HttpOnly
-// session cookie. The popup's channel message then carries no secret.
-// RFC 10017, OAuth 2.0 for Browser-Based Applications, section 6.1:
-// https://www.rfc-editor.org/rfc/rfc10017
-// Duende BFF, one production implementation:
-// https://docs.duendesoftware.com/bff/architecture/
+// The BFF keeps tokens server-side; the browser gets an HttpOnly session.
+// https://www.rfc-editor.org/rfc/rfc10017#section-6.1
 
 const random = () => randomBytes(32).toString('base64url');
 
@@ -22,14 +16,11 @@ function cookies(request) {
 }
 
 export function createBff({ providerOrigin, tls }) {
-  // RFC 10017 section 6.1.3.2 also asks for Secure and a __Host- name prefix.
-  // Both need HTTPS, and most demos here run over HTTP.
+  // HTTP demo cookies omit Secure and the __Host- prefix.
   const secure = tls ? '; Secure' : '';
-  const logins = new Map(); // state → { verifier, expires }
-  const sessions = new Map(); // session id → { user, accessToken }
+  const logins = new Map();
+  const sessions = new Map();
 
-  // GET /bff/login?login=coop. The popup starts here, on the app
-  // origin. A new login ends the old session.
   function login(request, response) {
     const params = new URL(request.url, 'http://localhost').searchParams;
     sessions.delete(cookies(request).bff_session);
@@ -46,8 +37,7 @@ export function createBff({ providerOrigin, tls }) {
     authorize.searchParams.set('code_challenge_method', 'S256');
     response.writeHead(302, {
       Location: authorize.href,
-      // Binds the callback to the browser that started the login. Lax,
-      // because Orbit ID sends the browser back with a top-level navigation.
+      // Lax allows the provider redirect while binding login to this browser.
       'Set-Cookie': [
         `bff_login=${state}; HttpOnly; SameSite=Lax; Path=/bff; Max-Age=300${secure}`,
         `bff_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secure}`,
@@ -56,9 +46,6 @@ export function createBff({ providerOrigin, tls }) {
     response.end();
   }
 
-  // GET /bff/callback?code=…&state=…. Orbit ID sends the popup here. The BFF
-  // exchanges the code on the server, then sends the popup to a page that
-  // only says "done".
   async function callback(request, response) {
     const url = new URL(request.url, 'http://localhost');
     const state = url.searchParams.get('state');
@@ -103,10 +90,7 @@ export function createBff({ providerOrigin, tls }) {
     response.end();
   }
 
-  // GET /bff/user. The app page asks who is signed in. The browser sends the
-  // session cookie. The token stays here. The X-CSRF header makes a
-  // cross-origin request need a CORS preflight, which this server never
-  // allows (RFC 10017 section 6.1.3.3.2).
+  // X-CSRF forces cross-origin preflights, which this server rejects.
   function user(request, response) {
     const session = sessions.get(cookies(request).bff_session);
     const status =

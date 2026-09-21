@@ -9,7 +9,6 @@ function element(tag, className, text) {
   return node;
 }
 
-// One request per demo tells the page which servers are up.
 async function isUp(origin) {
   try {
     await fetch(`${origin}/`, { mode: 'no-cors', cache: 'no-store' });

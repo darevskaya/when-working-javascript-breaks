@@ -3,12 +3,10 @@ import { config } from './config.js';
 
 const ports = demoPorts(import.meta);
 
-// The policy comes from config.js, the same file that the API client reads
-// and the only file that lint lets name an origin. The two cannot drift.
+// Share origins with the client to prevent policy drift.
 const origins = Object.values(config);
 const fromConfig = `connect-src 'self' ${origins.join(' ')}`;
 
-// A customer who allows the page origin and nothing else.
 const narrow = "connect-src 'self'";
 
 const page = (csp) => ({
@@ -35,8 +33,6 @@ export function createServer({ tls } = {}) {
   );
 }
 
-// The API on the origin that config.js names. It lets the app origin read its
-// answers.
 export function createApiServer({ appOrigin, tls } = {}) {
   const json = (value) => ({
     body: JSON.stringify(value),
@@ -55,7 +51,6 @@ export function createApiServer({ appOrigin, tls } = {}) {
   );
 }
 
-// The API always listens on the port inside config.apiOrigin.
 export const apiPort = Number(new URL(config.apiOrigin).port);
 
 if (isMain(import.meta)) {

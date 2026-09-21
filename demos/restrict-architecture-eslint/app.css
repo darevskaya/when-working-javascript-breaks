@@ -16,7 +16,6 @@
   overflow-wrap: anywhere;
 }
 
-/* A call that the customer policy refused. */
 .calls .blocked {
   color: #b3261e;
 }

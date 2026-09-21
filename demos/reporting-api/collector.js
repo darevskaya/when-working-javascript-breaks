@@ -6,12 +6,10 @@ export const reportsFile = path.join(
   'logs/browser-reports.jsonl',
 );
 
-// Browsers put page and blocked URLs in a report. Control characters in those
-// URLs would reach the terminal, so replace them before printing.
+// Strip control characters from untrusted URLs before printing.
 const readable = (line) => line.replace(/\p{Cc}/gu, ' ');
 
-// Receives POST /reports. A modern browser sends an array of reports.
-// The legacy report-uri route sends one { "csp-report": {...} } object.
+// Accept modern report arrays and legacy csp-report objects.
 export function createReportCollector({
   file = reportsFile,
   log = console.log,

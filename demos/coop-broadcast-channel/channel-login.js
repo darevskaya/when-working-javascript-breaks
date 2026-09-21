@@ -1,19 +1,10 @@
-// The same popup login as popup-login.js, without window references. The popup
-// starts at the BFF on this origin, and the BFF runs the login with Orbit ID.
-// At the end, Orbit ID sends the popup back to this origin, and a callback
-// page posts "done" on a BroadcastChannel. A channel reaches every page of
-// the same origin, so the message arrives with no window relationship.
-// The message carries no secret. The token stays on the BFF server, and this
-// page asks the BFF who signed in. See bff.js.
-// The same fix in a real library, after OpenStreetMap added COOP:
-// https://github.com/osmlab/osm-auth/pull/138
+// Same-origin channels survive COOP; tokens stay in bff.js.
 const button = document.querySelector('#sign-in');
 const status = document.querySelector('#status');
 const openResult = document.querySelector('#open-result');
 const channel = new BroadcastChannel('orbit-login');
 let waiting = false;
 
-// The restricted page asks for the provider login that sends COOP.
 const login = location.pathname.endsWith('/coop-on-login') ? 'coop' : 'no-coop';
 
 channel.addEventListener('message', async ({ data }) => {
@@ -25,25 +16,17 @@ channel.addEventListener('message', async ({ data }) => {
     return;
   }
   if (data?.type !== 'login-complete') return;
-  // Any page of this origin can post "done". Only the BFF knows if a session
-  // exists, so ask it, and keep waiting if it has none.
-  // The browser sends the HttpOnly session cookie. The X-CSRF header is the
-  // BFF's defense against requests from other sites.
+  // Any same-origin page can signal completion; verify the BFF session.
   const answer = await fetch('/bff/user', { headers: { 'X-CSRF': '1' } });
   const { user } = answer.ok ? await answer.json() : {};
   if (typeof user !== 'string') return;
   waiting = false;
   status.textContent = `Logged in as ${user}`;
-  // The login worked, so the page needs no Sign in button.
   button.hidden = true;
 });
 
 button.addEventListener('click', () => {
-  // noopener: the popup gets no window.opener, and this page gets no window
-  // back. COOP then has no relationship left to cut. noreferrer: the popup's
-  // first request carries no Referer header.
-  // The cost: window.open() returns null even when the popup opens, so this
-  // page cannot tell that a popup blocker stopped it.
+  // noopener returns null even when the popup opens.
   const popup = window.open(
     `/bff/login?login=${login}`,
     '_blank',

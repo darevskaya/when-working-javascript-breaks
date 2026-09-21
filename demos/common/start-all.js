@@ -3,10 +3,6 @@ import path from 'node:path';
 import { demos, hub } from './demos.js';
 import { createHub } from './hub.js';
 
-// Starts every demo on its own port, and the hub page that links to them all.
-// Press Ctrl+C to stop everything. From another terminal, run npm run stop.
-// Usage: npm start
-
 const folder = path.resolve(import.meta.dirname, '..');
 const windows = process.platform === 'win32';
 
@@ -15,7 +11,7 @@ function startDemo(entry) {
   const child = spawn(command, args, {
     cwd: path.join(folder, entry.id),
     stdio: 'inherit',
-    // npm is a batch file on Windows, and a batch file needs a shell.
+    // Windows npm.cmd needs a shell.
     shell: windows && command === 'npm',
   });
   child.on('error', (error) =>

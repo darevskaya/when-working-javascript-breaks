@@ -1,17 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 async function openLogin(page, context, loginPath) {
-  // A noopener window has no opener, so listen on the context.
+  // noopener requires listening on the context.
   const opened = context.waitForEvent('page');
   const start = context.waitForEvent('request', (request) =>
     request.url().includes('/bff/login'),
   );
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  // noreferrer: the popup's first request names no page.
   expect((await start).headers().referer).toBeUndefined();
   const popup = await opened;
-  // The popup starts at the BFF, which sends it on to Orbit ID with a PKCE
-  // challenge.
   await popup.waitForURL(`**${loginPath}?return_to=**code_challenge=**`);
   return popup;
 }
@@ -36,9 +33,6 @@ for (const { mode, loginPath } of modes) {
     );
     await page.goto(`/demo/coop-broadcast-channel/${mode}`);
     const popup = await openLogin(page, context, loginPath);
-    // noopener: no window relationship in any mode, so COOP has nothing to
-    // cut, and the page gets no window back. The login reads no window
-    // reference either.
     await expect(page.locator('#open-result')).toHaveText('null');
     await expect(page.locator('#status')).toContainText('Waiting for login…');
     await popup.getByRole('button', { name: 'Continue as Elena' }).click();
@@ -48,9 +42,8 @@ for (const { mode, loginPath } of modes) {
       page.getByRole('button', { name: 'Sign in', exact: true }),
     ).toBeHidden();
 
-    // The channel carried no code and no token.
     expect(messages).toEqual([{ type: 'login-complete' }]);
-    // The session cookie is HttpOnly, so page scripts cannot read it.
+    // HttpOnly hides the session from scripts.
     expect(await page.evaluate(() => document.cookie)).toBe('');
     const session = (await context.cookies()).find(
       (cookie) => cookie.name === 'bff_session',
@@ -65,7 +58,6 @@ test('a "done" message without a session does not sign in', async ({
 }) => {
   await page.goto('/demo/coop-broadcast-channel/no-coop');
   const popup = await openLogin(page, context, '/login/no-coop');
-  // Another page of the same origin posts "done" before the login ends.
   const other = await context.newPage();
   await other.goto('/demo/coop-broadcast-channel/no-coop');
   await other.evaluate(() =>
@@ -73,7 +65,6 @@ test('a "done" message without a session does not sign in', async ({
   );
   await page.waitForTimeout(500);
   await expect(page.locator('#status')).toContainText('Waiting for login…');
-  // The real login still completes.
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
 });

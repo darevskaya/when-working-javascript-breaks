@@ -1,17 +1,3 @@
-// The Orbit ID sign-in widget, in four styles. The last part of the URL picks
-// one, so this one file holds every version that the demo shows.
-//
-//   string  container.innerHTML = `…`             a plain string
-//   escape  container.innerHTML = escapeHtml`…`   every value escaped
-//   policy  container.innerHTML = policyHtml`…`   through a Trusted Types policy
-//   dom     createElement() and textContent       no markup at all
-//
-// Each lint configuration in this folder allows one of them. See README.md.
-
-// ---------------------------------------------------------------------------
-// The two helpers that the lint rules look for.
-// ---------------------------------------------------------------------------
-
 const entities = {
   '&': '&amp;',
   '<': '&lt;',
@@ -20,13 +6,10 @@ const entities = {
   "'": '&#39;',
 };
 
-// Turns the five markup characters of one value into entities.
 const escapeValue = (value) =>
   String(value).replace(/[&<>"']/g, (character) => entities[character]);
 
-// A tagged template. The text around the values is the page's own, and each
-// value is escaped, so a value can never open a tag. This stops injection.
-// It does not satisfy Trusted Types, because the result is still a string.
+// Escaped values are still strings; Trusted Types rejects them.
 function escapeHtml(strings, ...values) {
   return strings.reduce(
     (markup, text, index) =>
@@ -35,9 +18,7 @@ function escapeHtml(strings, ...values) {
   );
 }
 
-// The same template through the policy named orbit-widget. The page must name
-// that policy in its trusted-types list, or createPolicy throws. The result is
-// a TrustedHTML object, and a markup sink accepts it.
+// CSP must allow the orbit-widget policy.
 let policy;
 function policyHtml(strings, ...values) {
   policy ??= globalThis.trustedTypes.createPolicy('orbit-widget', {
@@ -45,11 +26,6 @@ function policyHtml(strings, ...values) {
   });
   return policy.createHTML(escapeHtml(strings, ...values));
 }
-
-// ---------------------------------------------------------------------------
-// Style 1, string: the original widget. The shop name goes into the markup as
-// it is, so a shop name that holds a tag becomes a tag.
-// ---------------------------------------------------------------------------
 
 function renderString(container) {
   container.innerHTML = `
@@ -61,10 +37,6 @@ function renderString(container) {
     </div>`;
 }
 
-// ---------------------------------------------------------------------------
-// Style 2, escape: the same markup, with every value escaped.
-// ---------------------------------------------------------------------------
-
 function renderEscape(container) {
   container.innerHTML = escapeHtml`
     <div class="orbit-widget">
@@ -75,10 +47,6 @@ function renderEscape(container) {
     </div>`;
 }
 
-// ---------------------------------------------------------------------------
-// Style 3, policy: the same markup again, through the Trusted Types policy.
-// ---------------------------------------------------------------------------
-
 function renderPolicy(container) {
   container.innerHTML = policyHtml`
     <div class="orbit-widget">
@@ -88,11 +56,6 @@ function renderPolicy(container) {
       <button type="button">Continue with Orbit ID</button>
     </div>`;
 }
-
-// ---------------------------------------------------------------------------
-// Style 4, dom: no markup at all. Each node comes from createElement(), and
-// each value goes in with textContent.
-// ---------------------------------------------------------------------------
 
 function node(tag, text, className) {
   const element = document.createElement(tag);
@@ -113,10 +76,6 @@ function renderDom(container) {
   );
   container.replaceChildren(card);
 }
-
-// ---------------------------------------------------------------------------
-// The route picks the style, and the page reports what happened.
-// ---------------------------------------------------------------------------
 
 const renderers = {
   'no-header': renderString,

@@ -1,17 +1,14 @@
 import { secondOrigin } from '/reporting-config.js';
 
-// The route is /demo/reporting-api/<policy>/<mode>.
+// Route: /demo/reporting-api/<policy>/<mode>.
 const [policy, mode] = location.pathname.split('/').slice(-2);
 const status = document.querySelector('#status');
 
-// The blocked state is the point of the demo, so it gets the large red style.
 function show(blocked, message) {
   status.classList.toggle('blocked', blocked);
   status.textContent = `${message} Waiting for the report in the terminal.`;
 }
 
-// Says what the action is, then does it. One row per policy, the same shape as
-// the route table in server.js.
 const examples = {
   csp: {
     description:
@@ -39,8 +36,7 @@ const examples = {
         status.textContent = 'Allow popups, then try again.';
         return;
       }
-      // An opener keeps a handle to a connected popup, and loses it to an
-      // isolated one. Read the handle after the popup loads.
+      // COOP severs the handle after the popup loads.
       setTimeout(() => {
         show(
           popup.closed,

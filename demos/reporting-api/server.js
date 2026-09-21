@@ -3,9 +3,6 @@ import { serve, listener, isMain, demoPorts } from '../common/serve.js';
 const ports = demoPorts(import.meta);
 import { createReportCollector } from './collector.js';
 
-// Reporting-Endpoints gives the receiver a name. The policy then sends its
-// reports to that name with report-to. The browser delivers reports only over
-// HTTPS, so npm start runs launch.js, which serves these pages over HTTPS.
 export function createServer({
   secondOrigin = `http://127.0.0.1:${ports.provider}`,
   collector = createReportCollector(),
@@ -28,7 +25,6 @@ export function createServer({
           'Content-Security-Policy-Report-Only':
             "script-src 'self'; report-to demo",
         }),
-        // The legacy route names no receiver. report-uri holds the URL.
         '/demo/reporting-api/csp/legacy': example({
           'Content-Security-Policy': "script-src 'self'; report-uri /reports",
         }),
@@ -55,7 +51,6 @@ export function createServer({
           body: `export const secondOrigin = '${secondOrigin}';\n`,
         },
         '/styles.css': 'styles.css',
-        // The receiver that the rows above name. It writes its own response.
         '/reports': collector,
       },
       { root: import.meta.dirname },
@@ -63,7 +58,6 @@ export function createServer({
   );
 }
 
-// The second origin that the COOP and COEP examples reach for.
 export function createSecondServer({
   collector = createReportCollector(),
   tls,
@@ -84,8 +78,7 @@ export function createSecondServer({
   );
 }
 
-// Plain HTTP, for the Playwright tests. The pages work, but the browser
-// delivers no reports.
+// HTTP tests cannot verify report delivery.
 if (isMain(import.meta)) {
   const collector = createReportCollector();
   createServer({ collector }).listen(ports.app, '127.0.0.1', () =>

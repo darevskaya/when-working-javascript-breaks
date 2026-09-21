@@ -7,7 +7,6 @@ let popup;
 let poll;
 let loggedIn = false;
 
-// The restricted page opens the provider login that sends COOP.
 const loginPath = location.pathname.endsWith('/coop-on-login')
   ? '/login/coop'
   : '/login/no-coop';
@@ -22,7 +21,6 @@ window.addEventListener('message', (event) => {
     return;
   loggedIn = true;
   status.textContent = `Logged in as ${event.data.user}`;
-  // The login worked, so the page needs no Sign in button.
   button.hidden = true;
 });
 
@@ -44,9 +42,7 @@ button.addEventListener('click', () => {
   loggedIn = false;
   status.textContent = 'Waiting for login…';
   closed.value = String(popup.closed);
-  // A closed popup with no result looks like a cancel. Under COOP, the popup
-  // is detached and reports closed while it is still open, so the SDK blames
-  // the user.
+  // COOP reports closed before closure, causing a false cancellation.
   poll = setInterval(() => {
     closed.value = String(popup.closed);
     if (!popup.closed) return;

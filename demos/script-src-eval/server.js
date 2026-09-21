@@ -2,10 +2,6 @@ import { serve, listener, isMain, demoPorts } from '../common/serve.js';
 
 const ports = demoPorts(import.meta);
 
-// One page, app.html, on three routes. The first two differ in one header.
-// The third sits under /bundle/, so the relative script URL in app.html
-// resolves to the webpack build instead of the source. Run npm run build
-// first.
 export function createServer({ tls } = {}) {
   return listener(
     tls,

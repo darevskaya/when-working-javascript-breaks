@@ -2,8 +2,6 @@ import { serve, listener, isMain, demoPorts } from '../common/serve.js';
 
 const ports = demoPorts(import.meta);
 
-// The popup login app. Either side can send COOP: the host-coop page sends it
-// here, and the restricted page opens the Orbit ID login that sends it.
 export function createServer({ providerOrigin, tls } = {}) {
   return listener(
     tls,
@@ -28,8 +26,6 @@ export function createServer({ providerOrigin, tls } = {}) {
   );
 }
 
-// Orbit ID, the fake identity provider on the second origin. Both logins
-// serve the same HTML. One extra header breaks the popup.
 export function createProviderServer({ appOrigin, tls } = {}) {
   return listener(
     tls,

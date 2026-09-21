@@ -37,7 +37,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Environment files, never commit secrets
+# Keep secrets out of Git.
 .env
 .env.*
 !.env.example

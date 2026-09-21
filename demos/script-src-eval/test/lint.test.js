@@ -4,15 +4,14 @@ import { lintFindings } from '../../common/test-helpers.js';
 
 const folder = `${import.meta.dirname}/..`;
 
-// Three lints, one concern each. Each one finds exactly one line.
 test('lint:source flags the eval in the renderer', async () => {
   assert.deepEqual(
     await lintFindings(folder, { config: 'eslint.source.config.js' }),
-    ['renderer.js:6 no-eval'],
+    ['renderer.js:4 no-eval'],
   );
 });
 
-// npm test runs npm run build first.
+// npm test builds the bundle first.
 test('lint:build flags the eval that the devtool put in the bundle', async () => {
   assert.deepEqual(
     await lintFindings(folder, {
@@ -29,12 +28,10 @@ test('lint:webpack flags the devtool that adds the eval', async () => {
       config: 'eslint.webpack.config.js',
       files: ['webpack.config.js'],
     }),
-    ['webpack.config.js:10 no-restricted-syntax'],
+    ['webpack.config.js:8 no-restricted-syntax'],
   );
 });
 
-// The source lint reads the page code only, and the build lint reads dist
-// only, so neither one reports the other's file.
 test('each lint reads its own files', async () => {
   const source = await lintFindings(folder, {
     config: 'eslint.source.config.js',

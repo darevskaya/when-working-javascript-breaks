@@ -34,7 +34,6 @@ test('Orbit ID exchanges a code once, and only with the right PKCE verifier', as
       }),
     });
 
-  // The code goes only to the app origin.
   assert.equal((await approve('https://attacker.example/cb')).status, 400);
   const approved = await approve();
   assert.equal(approved.status, 302);
@@ -43,7 +42,7 @@ test('Orbit ID exchanges a code once, and only with the right PKCE verifier', as
   assert.equal(back.searchParams.get('state'), 'state-1');
   const code = back.searchParams.get('code');
 
-  // A stolen code is useless without the verifier, and the attempt burns it.
+  // A failed exchange also consumes the code.
   assert.equal((await token(code, 'a-guess')).status, 400);
   assert.equal((await token(code)).status, 400);
 
@@ -51,7 +50,6 @@ test('Orbit ID exchanges a code once, and only with the right PKCE verifier', as
   const answer = await token(second.searchParams.get('code'));
   assert.equal(answer.status, 200);
   assert.equal((await answer.json()).user, 'Elena');
-  // Each code works once.
   assert.equal((await token(second.searchParams.get('code'))).status, 400);
 });
 
@@ -69,12 +67,11 @@ test('the BFF starts a login and rejects a callback it did not start', async (t)
   assert.equal(authorize.pathname, '/login/coop');
   assert.equal(authorize.searchParams.get('code_challenge_method'), 'S256');
   assert.equal(authorize.searchParams.get('return_to'), `${app}/bff/callback`);
-  // The verifier stays on the server. Only its hash leaves.
   assert.ok(!login.headers.get('location').includes('verifier'));
   const cookies = login.headers.getSetCookie();
   assert.ok(cookies.some((cookie) => /^bff_login=.+HttpOnly/.test(cookie)));
 
-  // A callback without the login cookie is not this browser's login.
+  // Even valid state requires the initiating browser's cookie.
   const state = authorize.searchParams.get('state');
   const callback = await fetch(
     `${app}/bff/callback?code=x&state=${encodeURIComponent(state)}`,

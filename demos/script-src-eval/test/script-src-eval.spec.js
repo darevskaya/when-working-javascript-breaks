@@ -33,7 +33,6 @@ test('script-src self blocks eval, and the raw templates stay', async ({
   await expect
     .poll(() => page.evaluate(() => window.cspViolations))
     .toContainEqual({ directive: 'script-src', blocked: 'eval' });
-  // The first template throws, so no value renders.
   for (const value of await values(page)) expect(value).toMatch(/\{\{.+\}\}/);
   await page.screenshot({ path: 'test-results/summary-restricted.png' });
 });

@@ -7,8 +7,7 @@ import { createReportCollector } from '../collector.js';
 
 test('Chromium delivers CSP, COOP, COEP and legacy CSP to the collector', async () => {
   test.setTimeout(60000);
-  // Collect into this run's own file, so the poll below reads only these
-  // reports and the demo log stays untouched.
+  // Isolate reports so polling cannot match an earlier run.
   const directory = await mkdtemp(path.join(os.tmpdir(), 'browser-reports-'));
   const file = path.join(directory, 'reports.jsonl');
   const demo = await startReportingDemo({

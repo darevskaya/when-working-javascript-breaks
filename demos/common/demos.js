@@ -1,11 +1,4 @@
-// Every demo in this repository, with the ports it uses. The hub page, the
-// start script, the stop script, and each demo server read this one list, so
-// two demos can run at the same time without a port collision.
-//
-// An app port is 42xx. The provider port of the same demo is that port plus
-// 100. A provider is a second origin: Orbit ID, an API, or a report receiver.
-
-// The hub page that links to every demo.
+// Shared port registry; second origins use app port + 100.
 export const hub = { port: 4173 };
 
 export const demos = [
@@ -56,14 +49,12 @@ export const demos = [
   },
 ];
 
-// The registry entry of one demo, by folder name.
 export function demo(id) {
   const found = demos.find((entry) => entry.id === id);
   if (!found) throw new Error(`No demo named ${id} in demos/common/demos.js.`);
   return found;
 }
 
-// Every port that a demo or the hub can listen on.
 export const allPorts = [
   hub.port,
   ...demos.flatMap(({ port, providerPort }) =>

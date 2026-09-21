@@ -2,9 +2,6 @@ import { serve, listener, isMain, demoPorts } from '../common/serve.js';
 
 const ports = demoPorts(import.meta);
 
-// One page and one script on both routes. Only the headers differ, which is
-// the point of the demo: the Playwright projects change the same two headers
-// from the test, without a second page and without a second server.
 export function createServer({ tls } = {}) {
   return listener(
     tls,
@@ -18,10 +15,7 @@ export function createServer({ tls } = {}) {
         },
         '/demo/playwright-policies/blocked': {
           file: 'app.html',
-          // No worker directive. worker-src falls back to child-src, then to
-          // script-src, so script-src 'self' alone blocks the Blob worker.
-          // frame-ancestors 'none' names who may embed this page: nobody. The
-          // browser refuses the load inside an iframe, on this origin too.
+          // worker-src falls back to child-src, then script-src.
           'Content-Security-Policy':
             "script-src 'self'; frame-ancestors 'none'",
           'Permissions-Policy': 'geolocation=()',

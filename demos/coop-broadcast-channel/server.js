@@ -4,9 +4,6 @@ const ports = demoPorts(import.meta);
 import { createBff } from './bff.js';
 import { createOrbitAuth } from './orbit-auth.js';
 
-// The same three COOP modes as the COOP demo, with a login that returns
-// through a callback page and a BroadcastChannel. It needs no window
-// reference, and the BFF keeps the token on the server.
 export function createServer({ providerOrigin, tls } = {}) {
   const bff = createBff({ providerOrigin, tls });
   return listener(
@@ -34,8 +31,6 @@ export function createServer({ providerOrigin, tls } = {}) {
   );
 }
 
-// Orbit ID, the fake identity provider on the second origin, with the
-// authorization code endpoints for the BFF login. See orbit-auth.js.
 export function createProviderServer({ appOrigin, tls } = {}) {
   const auth = createOrbitAuth({ appOrigin });
   return listener(

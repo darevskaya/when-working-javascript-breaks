@@ -6,11 +6,7 @@
     <title>Order summary</title>
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/app.css" />
-    <!--
-      One page for all three routes. The script URL is relative, so the two
-      plain routes load the source app.js, and the route under /bundle/ loads
-      the webpack build. See the route table in server.js.
-    -->
+    <!-- Relative URL selects source or bundle by route. -->
     <script type="module" src="app.js"></script>
   </head>
   <body>

@@ -1,12 +1,8 @@
 import { createHash, randomBytes } from 'node:crypto';
 
-// The fake Orbit ID authorization server for the BFF login. It issues a
-// one-time code that is bound to a PKCE challenge, and it exchanges that code
-// for a token only for a caller that knows the client secret and the PKCE
-// verifier. That caller is the BFF in bff.js, never the browser.
+// Only the BFF exchanges codes: client secret plus PKCE verifier.
 // PKCE: https://www.rfc-editor.org/rfc/rfc7636
 
-// The one client that Orbit ID knows: the shop's BFF.
 export const client = {
   id: 'fern-shop',
   secret: 'demo-secret-not-for-production',
@@ -28,11 +24,8 @@ function json(response, status, body) {
 }
 
 export function createOrbitAuth({ appOrigin }) {
-  // code → { challenge, redirectUri, user, expires }
   const codes = new Map();
 
-  // GET /login/approve, from the login page after "Continue as Elena".
-  // The server, not the page, checks where the code may go.
   function approve(request, response) {
     const params = new URL(request.url, 'http://localhost').searchParams;
     const returnTo = params.get('return_to');
@@ -56,7 +49,6 @@ export function createOrbitAuth({ appOrigin }) {
     response.end();
   }
 
-  // POST /token, server to server. Each code works once.
   async function token(request, response) {
     const form = await readForm(request);
     const entry = codes.get(form.get('code'));
@@ -73,7 +65,7 @@ export function createOrbitAuth({ appOrigin }) {
       json(response, 400, { error: 'invalid_grant' });
       return;
     }
-    // A real server returns an ID token. The demo returns the name directly.
+    // Demo shortcut: return the name directly.
     json(response, 200, {
       access_token: base64url(randomBytes(32)),
       token_type: 'Bearer',

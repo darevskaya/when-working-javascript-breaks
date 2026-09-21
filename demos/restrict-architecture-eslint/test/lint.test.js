@@ -5,8 +5,6 @@ import { lintFindings } from '../../common/test-helpers.js';
 
 const folder = `${import.meta.dirname}/..`;
 
-// Unlike the other demos, this one passes. The three files keep the
-// architecture, so there is nothing for lint to say.
 test('the demo has no lint finding', async () => {
   assert.deepEqual(await lintFindings(folder), []);
 });

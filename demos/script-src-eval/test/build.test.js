@@ -8,18 +8,15 @@ import config from '../webpack.config.js';
 
 const folder = path.join(import.meta.dirname, '..');
 
-// npm test runs npm run build first.
+// npm test builds the bundle first.
 test('the eval-source-map bundle contains eval, and its source does not', async () => {
   const bundle = await readFile(path.join(folder, 'dist/app.js'), 'utf8');
   assert.match(bundle, /\beval\(/);
-  // webpack swapped clean-renderer.js in, so the eval renderer is not here.
   assert.doesNotMatch(bundle, /String\(eval\(/);
   const source = await readFile(path.join(folder, 'clean-renderer.js'), 'utf8');
-  // The comments explain eval. The code does not call it.
   assert.doesNotMatch(source.replace(/\/\/.*$/gm, ''), /\beval\(/);
 });
 
-// The configuration that webpack.config.js holds in a comment.
 test('with devtool source-map, the bundle has no eval', async (t) => {
   const output = await mkdtemp(path.join(tmpdir(), 'summary-build-'));
   t.after(() => rm(output, { recursive: true, force: true }));

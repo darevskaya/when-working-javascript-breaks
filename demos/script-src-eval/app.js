@@ -1,6 +1,5 @@
 import { render } from './renderer.js';
 
-// The order, and the values that the templates read.
 const data = {
   lines: [
     { name: 'Monstera, medium', price: 38, quantity: 1 },
@@ -20,8 +19,7 @@ const data = {
   },
 };
 
-// Each marked element holds its own template. If a template fails, its
-// {{ … }} text stays on the page.
+// Failed templates retain their raw {{ ... }} text.
 for (const element of document.querySelectorAll('[data-template]')) {
   element.textContent = render(element.textContent, data);
 }

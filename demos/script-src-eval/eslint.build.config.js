@@ -1,9 +1,4 @@
-// Lint 2 of 3: eval in the bundle that webpack writes.
-// Run it with: npm run lint:build
-//
-// The bundled source has no eval, because webpack swaps clean-renderer.js in
-// for renderer.js. The devtool puts eval back, one call per module, and this
-// lint finds it in dist/app.js. Build the bundle first.
+// Build first; this catches eval added by webpack.
 export default [
   {
     files: ['**/*.js'],

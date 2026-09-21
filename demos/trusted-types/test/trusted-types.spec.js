@@ -6,8 +6,7 @@ test.beforeEach(({ page }) => recordViolations(page));
 const heading = (page) => page.locator('.orbit-widget h2');
 const status = (page) => page.locator('#status');
 
-// The shop name in app.html holds a tag. A style that writes the name as
-// markup turns it into an element. A style that escapes it shows the text.
+// The shop name deliberately contains markup.
 const shopTag = (page) => page.locator('.orbit-widget h2 em');
 
 test('string, no header: the shop name becomes a tag', async ({ page }) => {
@@ -22,7 +21,6 @@ test('string, header on: the browser refuses the write', async ({ page }) => {
   await page.goto('/demo/trusted-types/string');
   await expect(status(page)).toContainText('The browser refused the write.');
   await expect(status(page)).toContainText('TypeError');
-  // The widget never rendered, so the loading text stays.
   await expect(page.locator('.orbit-loading')).toBeVisible();
   await expect
     .poll(() => page.evaluate(() => window.cspViolations))

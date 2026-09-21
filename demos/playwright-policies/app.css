@@ -19,7 +19,6 @@
   color: #1d6b3f;
 }
 
-/* The status line of a feature that a header turned off. */
 .checks dd.blocked {
   color: #a3301f;
 }

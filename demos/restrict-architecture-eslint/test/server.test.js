@@ -23,7 +23,6 @@ test('the page policy names exactly the origins in config.js', async (t) => {
     '/app.css': {},
     '/styles.css': {},
   });
-  // Both routes serve the same page and the same script.
   const page = async (route) =>
     (await fetch(`${app}/demo/restrict-architecture-eslint/${route}`)).text();
   assert.equal(await page('from-config'), await page('narrow-policy'));

@@ -1,19 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-// One page, two policies. playwright.config.js gives each project its own csp
-// and permissionsPolicy, and this file puts them on the response. The page,
-// the script, the server and the test stay the same in both runs, so the
-// headers are the only difference.
-//
-// The permissive project passes. The strict project fails on purpose, and the
-// HTML report holds the violation reports, a screenshot and a trace.
+// The strict project intentionally fails.
 const pagePath = '/demo/playwright-policies/allowed';
 
 test.beforeEach(async ({ page }, testInfo) => {
   const { csp, permissionsPolicy } = testInfo.project.use;
 
-  // Replace the headers the server sent: fetch the response, put the policy
-  // of this project on it, and give it to the browser.
   await page.route(pagePath, async (route) => {
     const response = await route.fetch();
     await route.fulfill({
@@ -27,8 +19,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   });
 });
 
-// The JSON attachment holds the detail. The annotations show the reports on
-// the test, so the HTML report names the cause without a click.
+// Annotations expose causes without opening the attachment.
 test.afterEach(async ({ page }, testInfo) => {
   const reports = await page
     .evaluate(() => window.reports ?? [])

@@ -1,7 +1,6 @@
 import { defineConfig } from '@playwright/test';
 
-// The Playwright configuration of one demo. It starts the demo's server.js on
-// test ports, so a demo that you run by hand on its own port keeps working.
+// Separate test ports let manually started demos keep running.
 export function demoConfig(overrides = {}) {
   return defineConfig({
     testDir: './test',

@@ -1,4 +1,3 @@
-/* Shared colors and spacing keep the example independent of a CSS framework. */
 :root {
   font-family: system-ui, sans-serif;
   color: #232826;
@@ -94,14 +93,12 @@ select:focus-visible {
   letter-spacing: -0.04em;
 }
 
-/* Every demo page, and the provider page, has exactly one status line. */
 #status {
   margin: 20px 0 0;
   color: var(--muted);
   font-size: 0.875rem;
 }
 
-/* The blocked state is the point of the demo, so make it readable from the back row. */
 #status.blocked {
   color: #b3261e;
   font-size: 1.125rem;
@@ -114,7 +111,6 @@ select:focus-visible {
   }
 }
 
-/* The index page: one list of links per demo. */
 .demo-index li {
   margin-block: 8px;
 }
