@@ -6,8 +6,11 @@ async function signIn(page, context) {
   const opened = context.waitForEvent('page');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   const popup = await opened;
+  // Read the popup before the click. Continue closes the window, whether the
+  // result reached the app or not.
+  const opener = await popup.evaluate(() => window.opener);
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
-  return popup;
+  return { popup, opener };
 }
 
 test('login completes with no policy', async ({ page, context }) => {
@@ -29,8 +32,7 @@ test('login completes under COOP', async ({ page, context }) => {
     });
   });
 
-  const popup = await signIn(page, context);
-  console.log('window.opener:', await popup.evaluate(() => window.opener));
-  console.log(await popup.locator('#status').textContent());
+  const { opener } = await signIn(page, context);
+  console.log('window.opener:', opener);
   await expect(page.getByText('Logged in as Elena')).toBeVisible();
 });

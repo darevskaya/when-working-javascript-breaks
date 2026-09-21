@@ -3,7 +3,6 @@ import { appOrigin } from '/orbit-login-config.js';
 // The login sends its result back through window.opener. COOP severs that
 // reference, and with it the only way back to the app.
 const button = document.querySelector('#complete-login');
-const status = document.querySelector('#status');
 
 document.querySelector('#opener-state').value =
   window.opener === null ? 'null' : 'present';
@@ -13,13 +12,9 @@ document.querySelector('#connection-description').textContent =
     : 'This window can send the login result back to the app.';
 
 button.addEventListener('click', () => {
-  if (window.opener === null) {
-    status.textContent =
-      'Login could not finish. The connection to the app is missing, so the app is still waiting. Close this window to try again.';
-    status.className = 'blocked';
-    return;
-  }
-  window.opener.postMessage(
+  // With no opener the message goes nowhere. The window closes either way, so
+  // the person sees a finished login, and the app never learns the result.
+  window.opener?.postMessage(
     { type: 'login-complete', user: 'Elena' },
     appOrigin,
   );

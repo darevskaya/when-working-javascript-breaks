@@ -1,6 +1,6 @@
 // The original Orbit ID sign-in widget. No page loads it. It is the code that
-// dom-widget.js and policy-widget.js replace, and lint and Semgrep flag its
-// two innerHTML lines. A page with require-trusted-types-for 'script' answers
+// dom-widget.js and policy-widget.js replace, and lint flags its two
+// innerHTML lines. A page with require-trusted-types-for 'script' answers
 // the same lines with a TypeError.
 (() => {
   function renderSignIn(container) {

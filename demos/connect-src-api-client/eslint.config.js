@@ -1,9 +1,7 @@
 import globals from 'globals';
 import { apiOrigins } from './contract.js';
 
-// The connect-src contract as lint rules. Each block below names the files it
-// covers and lists all of their rules. The server, the contract, and the tests
-// name origins on purpose, so the rules skip them.
+
 export default [
   { ignores: ['test-results/**', 'playwright-report/**'] },
   {
@@ -34,7 +32,6 @@ export default [
     },
   },
 
-  // api-client.js: fetch, but only with a URL that starts from config.
   {
     files: ['api-client.js'],
     rules: {
@@ -58,7 +55,6 @@ export default [
     },
   },
 
-  // config.js: only the origins in contract.js, and no fetch.
   {
     files: ['config.js'],
     rules: {

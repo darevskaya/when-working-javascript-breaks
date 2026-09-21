@@ -6,7 +6,6 @@
     "build": "webpack --config webpack.config.js",
     "start": "npm run build && node server.js",
     "lint": "eslint .",
-    "scan": "node ../common/semgrep.js scan --config .semgrep.yml --metrics off --error .",
     "test": "npm run build && node --test \"test/*.test.js\" && playwright test"
   },
   "devDependencies": {

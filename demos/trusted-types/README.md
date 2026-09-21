@@ -29,8 +29,7 @@ what the browser answers. `policy-probe.js` does that.
   the one place that writes markup, and the page names its policy.
 
 The last line of `eslint.config.js` picks the option. `onlyThroughSetHTML`
-matches the pages of this demo. `.semgrep.yml` repeats that option as a
-Semgrep rule.
+matches the pages of this demo.
 
-`string-widget.js` is the original widget, and no page loads it. Lint and
-Semgrep flag its two `innerHTML` lines, so `npm run lint` fails on purpose.
+`string-widget.js` is the original widget, and no page loads it. Lint flags
+its two `innerHTML` lines, so `npm run lint` fails on purpose.

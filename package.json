@@ -11,8 +11,6 @@
     "start": "node demos/common/start-all.js",
     "test": "npm test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "scan": "npm run scan --workspaces --if-present",
-    "scan:registry": "node demos/common/semgrep.js scan --config p/javascript --config p/xss --config p/default --metrics off demos",
     "stop": "node demos/common/stop.js",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

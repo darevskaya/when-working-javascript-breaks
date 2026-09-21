@@ -36,19 +36,17 @@ test('provider COOP severs references; a fresh permissive login recovers', async
   expect(popup.isClosed()).toBe(false);
   await expect(popup.locator('#opener-state')).toHaveText('null');
   expect(await popup.evaluate(() => window.opener)).toBe(null);
-  await popup.getByRole('button', { name: 'Continue as Elena' }).click();
-  await expect(popup.locator('#status')).toHaveText(
-    'Login could not finish. The connection to the app is missing, so the app is still waiting. Close this window to try again.',
-  );
   await popup.screenshot({
     path: 'test-results/coop-provider-restricted.png',
     fullPage: true,
   });
-  // The popup is still open, but the app reports a cancel by the user.
+  // The login looks finished: the popup closes on Continue. The result went
+  // nowhere, so the app still reports a cancel by the user.
+  await popup.getByRole('button', { name: 'Continue as Elena' }).click();
+  await expect.poll(() => popup.isClosed()).toBe(true);
   await expect(page.locator('#status')).toHaveText(
     'Login canceled by the user.',
   );
-  await popup.close();
 
   await page.goto('/demo/coop-popup/no-coop');
   popup = await openLogin(page, context, 'no-coop');
@@ -73,13 +71,12 @@ test('host COOP cuts the popup, and the app blames the user', async ({
     'Login canceled by the user.',
   );
   expect(popup.isClosed()).toBe(false);
+  await page.screenshot({ path: 'test-results/coop-host.png' });
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
-  await expect(popup.locator('#status')).toHaveClass('blocked');
+  await expect.poll(() => popup.isClosed()).toBe(true);
   await expect(page.locator('#status')).toHaveText(
     'Login canceled by the user.',
   );
-  await page.screenshot({ path: 'test-results/coop-host.png' });
-  await popup.close();
 });
 
 test('closing the popup without a login reports a cancel', async ({

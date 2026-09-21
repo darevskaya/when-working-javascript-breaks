@@ -2,7 +2,6 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ESLint } from 'eslint';
 import { lintFindings } from '../../common/test-helpers.js';
-import { findings } from '../../common/semgrep.js';
 import { noMarkupAnywhere } from '../eslint.config.js';
 
 const folder = `${import.meta.dirname}/..`;
@@ -67,15 +66,3 @@ test('option A flags every sink in every file', async () => {
     );
   }
 });
-
-const semgrep = findings(`${folder}/.semgrep.yml`, folder);
-test(
-  'Semgrep flags the same lines',
-  { skip: !semgrep && 'Semgrep is not installed' },
-  () => {
-    assert.deepEqual(semgrep, [
-      'string-widget.js:21 trusted-types-markup-sink',
-      'string-widget.js:8 trusted-types-markup-sink',
-    ]);
-  },
-);

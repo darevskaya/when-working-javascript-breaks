@@ -5,9 +5,9 @@
   "scripts": {
     "start": "node server.js",
     "lint": "eslint .",
-    "scan": "node ../common/semgrep.js scan --config .semgrep.yml --metrics off --error .",
-    "test": "node --test \"test/*.test.js\" && playwright test",
-    "test:permissive": "playwright test -c playwright.permissive.config.js",
-    "test:strict": "playwright test -c playwright.strict.config.js"
+    "test": "node --test \"test/*.test.js\" && playwright test --project=demo --headed",
+    "test:permissive": "playwright test --project=permissive --headed",
+    "test:strict": "playwright test --project=strict --headed",
+    "test:report": "playwright show-report"
   }
 }

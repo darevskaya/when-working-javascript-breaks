@@ -14,14 +14,13 @@ npm start
 
 Press Ctrl+C to stop them. From another terminal, run `npm run stop`.
 
-Each folder in `demos/` is one demo, with its own server, lint rules, Semgrep
-rules, tests, and README. Run one demo on its own like this:
+Each folder in `demos/` is one demo, with its own server, lint rules, tests,
+and README. Run one demo on its own like this:
 
 ```sh
 cd demos/trusted-types
 npm start
 npm run lint
-npm run scan
 npm test
 ```
 
@@ -51,11 +50,9 @@ links to the plain HTTP pages of the same demo.
 
 Each demo folder holds every file that its pages need, its own copy included.
 `demos/common/` holds only the shared helper code: the demo list, the route
-table, the hub page, the Playwright configuration, the test helpers, the
-Semgrep wrapper, and the start and stop scripts.
+table, the hub page, the Playwright configuration, the test helpers, and the
+start and stop scripts.
 
-From this folder, `npm test`, `npm run lint`, and `npm run scan` run every demo.
-Lint and scan fail on purpose, because they find the lines that break. The
-tests use ports 4175 and 4176, so they run while the demos are up.
-
-Semgrep is a Python tool. Install it with `pip install semgrep`.
+From this folder, `npm test` and `npm run lint` run every demo. Lint fails on
+purpose, because it finds the lines that break. The tests use ports 4175 and
+4176, so they run while the demos are up.
