@@ -6,8 +6,12 @@
     "start": "node server.js",
     "lint": "eslint .",
     "test": "playwright test --project=permissive",
-    "test:permissive": "playwright test --project=permissive",
-    "test:strict": "playwright test --project=strict",
+    "test:permissive": "playwright test --project=permissive --headed",
+    "test:strict": "playwright test --project=strict --headed",
+    "test:worker:permissive": "playwright test --project=permissive --grep worker --headed",
+    "test:worker:strict": "playwright test --project=strict --grep worker --headed",
+    "test:iframe:permissive": "playwright test --project=permissive --grep iframe --headed",
+    "test:iframe:strict": "playwright test --project=strict --grep iframe --headed",
     "test:report": "playwright show-report"
   }
 }

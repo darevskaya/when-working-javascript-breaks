@@ -6,7 +6,6 @@ const say = (id, text, blocked) => {
 
 const source = 'onmessage = (event) => postMessage(`Hello, ${event.data}.`);';
 
-// A blocked Blob worker fails asynchronously, through the error event.
 function startWorker() {
   const blob = new Blob([source], { type: 'text/javascript' });
   const url = URL.createObjectURL(blob);

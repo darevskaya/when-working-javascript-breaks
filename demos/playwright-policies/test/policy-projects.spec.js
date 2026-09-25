@@ -6,8 +6,6 @@ const pagePath = '/demo/playwright-policies/allowed';
 test.beforeEach(async ({ page }, testInfo) => {
   const { csp } = testInfo.project.use;
 
-  // The test observes the reports, so the page code stays unchanged.
-  // With no types option, the observer collects every kind of report.
   await page.addInitScript(() => {
     window.reports = [];
     new ReportingObserver(
@@ -30,8 +28,9 @@ test.beforeEach(async ({ page }, testInfo) => {
   });
 });
 
-// Annotations expose causes without opening the attachment.
 test.afterEach(async ({ page }, testInfo) => {
+  await page.waitForTimeout(Number(process.env.END_PAUSE ?? 0));
+
   const reports = await page
     .evaluate(() => window.reports ?? [])
     .catch(() => []);
@@ -65,7 +64,6 @@ test('the worker runs under the policy of this project', async ({ page }) => {
   );
 });
 
-// A refused frame holds an error page from another origin, so its title is null.
 test('the page loads inside an iframe under the policy of this project', async ({
   page,
 }, testInfo) => {
