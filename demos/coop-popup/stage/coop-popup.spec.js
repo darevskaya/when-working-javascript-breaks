@@ -19,7 +19,7 @@ test('login completes with no policy', async ({ page, context }) => {
 
 test('login completes under COOP', async ({ page, context }) => {
   // Only context.route catches the popup's first request.
-  await context.route('**/login/no-coop', async (route) => {
+  await context.route('**/provider/login/v1', async (route) => {
     const response = await route.fetch();
     await route.fulfill({
       response,

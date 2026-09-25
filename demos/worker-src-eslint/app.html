@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A worker under the contract</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/app.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <main class="lab">
+      <section class="demo-panel" aria-labelledby="worker-title">
+        <h1 id="worker-title">A worker under the contract</h1>
+        <p>
+          The page code starts no worker and names no script. Both calls below
+          go through <code>createWorker()</code> in
+          <code>worker-client.js</code>, which starts the worker named in
+          <code>config.js</code>.
+        </p>
+        <dl class="calls">
+          <dt>Worker script in <code>config.js</code></dt>
+          <dd><output id="script">…</output></dd>
+          <dt>Total</dt>
+          <dd><output id="total">…</output></dd>
+          <dt>Status</dt>
+          <dd><output id="status">…</output></dd>
+        </dl>
+      </section>
+    </main>
+  </body>
+</html>

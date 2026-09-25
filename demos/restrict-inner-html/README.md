@@ -14,12 +14,12 @@ so you can see what each style does with a value.
 | ----------- | ----------------------- | ----------------------------------- | ------------------------- | ----------------------------------- |
 | `no-header` | `render-with-string.js` | `innerHTML = ` plain string         | none                      | Renders, and the name becomes a tag |
 | `string`    | `render-with-string.js` | `innerHTML = ` plain string         | `trusted-types 'none'`    | `TypeError`, the widget stays empty |
-| `policy`    | `render-with-policy.js` | `innerHTML = policyHtml` …          | `trusted-types my-widget` | Renders, and the name stays text    |
+| `policy`    | `render-with-policy.js` | `innerHTML = policyHtml(…)`         | `trusted-types my-widget` | Renders, and the name stays text    |
 | `dom`       | `render-with-dom.js`    | `createElement()` and `textContent` | `trusted-types 'none'`    | Renders, and the name stays text    |
 
 The first two rows are the cold open: the same code, one header apart.
-`policyHtml` escapes each value and passes the result through the `my-widget`
-policy, so the sink accepts it.
+`escapeHtml()` escapes the shop name. `policyHtml()` passes the markup through
+the `my-widget` policy, so the sink accepts it.
 
 ## The two lints
 
@@ -30,12 +30,13 @@ codebase, not two.
 | Command                    | Configuration                  | Passes                  | What it allows                                       |
 | -------------------------- | ------------------------------ | ----------------------- | ---------------------------------------------------- |
 | `npm run lint:forbid`      | `eslint.forbid.config.js`      | `render-with-dom.js`    | Nothing. Use createElement, textContent, and append. |
-| `npm run lint:escape-html` | `eslint.escape-html.config.js` | `render-with-policy.js` | ``innerHTML = policyHtml`…` ``                       |
+| `npm run lint:escape-html` | `eslint.escape-html.config.js` | `render-with-policy.js` | ``innerHTML = policyHtml(`…`)``, values in `escapeHtml()` |
 
 `lint:forbid` is the strictest. The app then needs no policy, and the page can
 send `trusted-types 'none'`.
 
-`lint:escape-html` matches an app that keeps its templates. The policy name
+`lint:escape-html` matches an app that keeps its templates. It flags a value
+in the template that is not wrapped in `escapeHtml()`. The policy name
 in `policyHtml()` and the name in the `trusted-types` header must agree, so
 the name belongs in the contract you give your customers.
 

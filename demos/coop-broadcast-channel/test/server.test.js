@@ -33,7 +33,7 @@ test('the modes differ in one COOP header', async (t) => {
     '/callback.js': {},
   });
   await assertHeaders(provider, {
-    '/login/no-coop': {},
-    '/login/coop': { [coop]: 'same-origin' },
+    '/provider/login/v1': {},
+    '/provider/login/v2': { [coop]: 'same-origin' },
   });
 });

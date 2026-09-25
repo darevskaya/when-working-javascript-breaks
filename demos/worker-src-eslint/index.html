@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Restrict the worker with ESLint</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="lab demo-index">
+      <h1>Restrict the worker with ESLint</h1>
+      <p>
+        Three lint rules keep every worker inside one contract:
+        <code>createWorker()</code> in <code>worker-client.js</code> is the only
+        place that calls <code>new Worker</code>, and <code>config.js</code> is
+        the only file that names a worker script. No file builds a worker from a
+        Blob URL. The server builds <code>worker-src</code> from the same
+        <code>config.js</code>.
+      </p>
+      <ul>
+        <li>
+          <a href="/demo/worker-src-eslint/from-config" target="_blank"
+            >The policy comes from config.js: the worker replies</a
+          >
+          <code>worker-src &lt;origin&gt;/tasks.worker.js</code>
+        </li>
+        <li>
+          <a href="/demo/worker-src-eslint/narrow-policy" target="_blank"
+            >A customer who allows no worker at all: the worker is refused</a
+          >
+          <code>worker-src 'none'</code>
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>

@@ -37,12 +37,13 @@ export function createProviderServer({ appOrigin, tls } = {}) {
     tls,
     serve(
       {
-        '/login/no-coop': 'orbit-login.html',
-        '/login/coop': {
+        // Same login page in both versions; v2 adds the COOP header.
+        '/provider/login/v1': 'orbit-login.html',
+        '/provider/login/v2': {
           file: 'orbit-login.html',
           'Cross-Origin-Opener-Policy': 'same-origin',
         },
-        '/login/approve': auth.approve,
+        '/provider/login/approve': auth.approve,
         '/token': auth.token,
         '/styles.css': 'styles.css',
         '/orbit-login.css': 'orbit-login.css',

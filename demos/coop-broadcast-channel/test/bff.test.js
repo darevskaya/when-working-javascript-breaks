@@ -16,7 +16,7 @@ test('Orbit ID exchanges a code once, and only with the right PKCE verifier', as
   const redirectUri = `${appOrigin}/bff/callback`;
 
   async function approve(returnTo = redirectUri) {
-    const url = new URL('/login/approve', provider);
+    const url = new URL('/provider/login/approve', provider);
     url.searchParams.set('return_to', returnTo);
     url.searchParams.set('state', 'state-1');
     url.searchParams.set('code_challenge', challengeFor(verifier));
@@ -64,7 +64,7 @@ test('the BFF starts a login and rejects a callback it did not start', async (t)
   assert.equal(login.status, 302);
   const authorize = new URL(login.headers.get('location'));
   assert.equal(authorize.origin, 'http://127.0.0.1:4999');
-  assert.equal(authorize.pathname, '/login/coop');
+  assert.equal(authorize.pathname, '/provider/login/v2');
   assert.equal(authorize.searchParams.get('code_challenge_method'), 'S256');
   assert.equal(authorize.searchParams.get('return_to'), `${app}/bff/callback`);
   assert.ok(!login.headers.get('location').includes('verifier'));

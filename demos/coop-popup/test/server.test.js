@@ -17,8 +17,8 @@ test('COOP changes one header, with identical documents and scripts', async (t) 
   assert.equal(page, await html(`${app}/demo/coop-popup/coop-on-app`));
   assert.equal(page, await html(`${app}/demo/coop-popup/coop-on-login`));
   assert.equal(
-    await html(`${provider}/login/no-coop`),
-    await html(`${provider}/login/coop`),
+    await html(`${provider}/provider/login/v1`),
+    await html(`${provider}/provider/login/v2`),
   );
   const coop = 'cross-origin-opener-policy';
   await assertHeaders(app, {
@@ -29,8 +29,8 @@ test('COOP changes one header, with identical documents and scripts', async (t) 
     '/popup-login.js': {},
   });
   await assertHeaders(provider, {
-    '/login/no-coop': {},
-    '/login/coop': { [coop]: 'same-origin' },
+    '/provider/login/v1': {},
+    '/provider/login/v2': { [coop]: 'same-origin' },
     '/orbit-login.js': {},
   });
   assert.equal(
@@ -41,7 +41,7 @@ test('COOP changes one header, with identical documents and scripts', async (t) 
     await html(`${provider}/orbit-login-config.js`),
     "export const appOrigin = 'http://127.0.0.1:4998';\n",
   );
-  for (const path of ['/login/unknown', '/popup-login.js']) {
+  for (const path of ['/provider/login/unknown', '/popup-login.js']) {
     assert.equal((await fetch(`${provider}${path}`)).status, 404);
   }
 });

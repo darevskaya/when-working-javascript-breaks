@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-async function openLogin(page, context, policy) {
+async function openLogin(page, context, version) {
   // COOP can sever Playwright's opener association.
   const opened = context.waitForEvent('page');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   const popup = await opened;
-  await popup.waitForURL(`**/login/${policy}`);
+  await popup.waitForURL(`**/provider/login/${version}`);
   await expect(
     popup.getByRole('button', { name: 'Continue as Elena' }),
   ).toBeEnabled();
@@ -18,7 +18,7 @@ test('provider COOP severs references; a fresh permissive login recovers', async
 }) => {
   await page.goto('/demo/coop-popup/no-coop');
   await expect(page.locator('#status')).toHaveText('Ready');
-  let popup = await openLogin(page, context, 'no-coop');
+  let popup = await openLogin(page, context, 'v1');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
   await expect.poll(() => popup.isClosed()).toBe(true);
@@ -27,7 +27,7 @@ test('provider COOP severs references; a fresh permissive login recovers', async
   ).toBeHidden();
 
   await page.goto('/demo/coop-popup/coop-on-login');
-  popup = await openLogin(page, context, 'coop');
+  popup = await openLogin(page, context, 'v2');
   expect(popup.isClosed()).toBe(false);
   expect(await popup.evaluate(() => window.opener)).toBe(null);
   await popup.screenshot({
@@ -42,7 +42,7 @@ test('provider COOP severs references; a fresh permissive login recovers', async
   await popup.close();
 
   await page.goto('/demo/coop-popup/no-coop');
-  popup = await openLogin(page, context, 'no-coop');
+  popup = await openLogin(page, context, 'v1');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
 });
@@ -56,7 +56,7 @@ test('host COOP cuts the popup, and the app blames the user', async ({
   expect((await document).headers()['cross-origin-opener-policy']).toBe(
     'same-origin',
   );
-  const popup = await openLogin(page, context, 'no-coop');
+  const popup = await openLogin(page, context, 'v1');
   await expect(page.locator('#status')).toHaveText(
     'Login canceled by the user.',
   );
@@ -75,7 +75,7 @@ test('closing the popup without a login reports a cancel', async ({
   context,
 }) => {
   await page.goto('/demo/coop-popup/no-coop');
-  const popup = await openLogin(page, context, 'no-coop');
+  const popup = await openLogin(page, context, 'v1');
   await popup.close();
   await expect(page.locator('#status')).toHaveText(
     'Login canceled by the user.',
@@ -87,7 +87,7 @@ test('narrow layouts and messages from unrelated windows', async ({
   context,
 }) => {
   await page.goto('/demo/coop-popup/no-coop');
-  const popup = await openLogin(page, context, 'no-coop');
+  const popup = await openLogin(page, context, 'v1');
   await page.evaluate(() =>
     window.postMessage(
       { type: 'login-complete', user: 'Mallory' },
@@ -122,7 +122,7 @@ test('a blocked popup can be retried', async ({ page, context }) => {
   });
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.locator('#status')).toContainText('Popup blocked');
-  const popup = await openLogin(page, context, 'no-coop');
+  const popup = await openLogin(page, context, 'v1');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
 });

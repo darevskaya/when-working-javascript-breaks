@@ -1,5 +1,5 @@
 const button = document.querySelector('#complete-login');
 
 button.addEventListener('click', () => {
-  location.assign(`/login/approve${location.search}`);
+  location.assign(`/provider/login/approve${location.search}`);
 });

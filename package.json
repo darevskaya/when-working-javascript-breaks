@@ -29,6 +29,7 @@
     "demos/coop-popup",
     "demos/coop-broadcast-channel",
     "demos/restrict-architecture-eslint",
+    "demos/worker-src-eslint",
     "demos/reporting-api"
   ]
 }

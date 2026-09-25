@@ -41,6 +41,8 @@ The demos:
 - `restrict-architecture-eslint/` on 4208: two lint rules keep every API call
   inside the `connect-src` contract
 - `reporting-api/` on 4209: report-only policies and browser reports
+- `worker-src-eslint/` on 4210: three lint rules keep every worker inside the
+  `worker-src` contract
 
 The reporting demo needs HTTPS, because Chromium sends no reports over plain
 HTTP. `npm start` in `demos/reporting-api` runs that launcher. The hub page

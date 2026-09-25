@@ -28,8 +28,11 @@ export function createBff({ providerOrigin, tls }) {
     const verifier = random();
     logins.set(state, { verifier, expires: Date.now() + 300_000 });
     const origin = `${tls ? 'https' : 'http'}://${request.headers.host}`;
+    // Version 2 of the Orbit ID login sends Cross-Origin-Opener-Policy.
     const loginPath =
-      params.get('login') === 'coop' ? '/login/coop' : '/login/no-coop';
+      params.get('login') === 'coop'
+        ? '/provider/login/v2'
+        : '/provider/login/v1';
     const authorize = new URL(loginPath, providerOrigin);
     authorize.searchParams.set('return_to', `${origin}/bff/callback`);
     authorize.searchParams.set('state', state);

@@ -14,9 +14,9 @@ async function openLogin(page, context, loginPath) {
 }
 
 const modes = [
-  { mode: 'no-coop', loginPath: '/login/no-coop' },
-  { mode: 'coop-on-app', loginPath: '/login/no-coop' },
-  { mode: 'coop-on-login', loginPath: '/login/coop' },
+  { mode: 'no-coop', loginPath: '/provider/login/v1' },
+  { mode: 'coop-on-app', loginPath: '/provider/login/v1' },
+  { mode: 'coop-on-login', loginPath: '/provider/login/v2' },
 ];
 
 for (const { mode, loginPath } of modes) {
@@ -57,7 +57,7 @@ test('a "done" message without a session does not sign in', async ({
   context,
 }) => {
   await page.goto('/demo/coop-broadcast-channel/no-coop');
-  const popup = await openLogin(page, context, '/login/no-coop');
+  const popup = await openLogin(page, context, '/provider/login/v1');
   const other = await context.newPage();
   await other.goto('/demo/coop-broadcast-channel/no-coop');
   await other.evaluate(() =>

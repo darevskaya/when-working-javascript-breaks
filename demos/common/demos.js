@@ -46,6 +46,12 @@ export const demos = [
     summary: 'Report-only policies and browser reports.',
     note: 'Chromium sends reports over HTTPS only. Run "npm start" in demos/reporting-api for the HTTPS launcher.',
   },
+  {
+    id: 'worker-src-eslint',
+    port: 4210,
+    summary:
+      'Three lint rules keep every worker inside the worker-src contract.',
+  },
 ];
 
 export function demo(id) {

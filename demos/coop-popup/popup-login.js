@@ -6,9 +6,10 @@ let popup;
 let poll;
 let loggedIn = false;
 
+// Version 2 of the Orbit ID login sends Cross-Origin-Opener-Policy.
 const loginPath = location.pathname.endsWith('/coop-on-login')
-  ? '/login/coop'
-  : '/login/no-coop';
+  ? '/provider/login/v2'
+  : '/provider/login/v1';
 
 window.addEventListener('message', (event) => {
   if (
