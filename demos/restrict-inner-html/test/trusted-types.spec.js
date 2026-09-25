@@ -30,13 +30,22 @@ test('string, header on: the browser refuses the write', async ({ page }) => {
   await page.screenshot({ path: 'test-results/widget-string.png' });
 });
 
-test('policyHtml, header on: the widget renders, and the name is text', async ({
+test('sanitizeHtml, header on: the widget renders, and scripts are removed', async ({
   page,
 }) => {
   await page.goto('/demo/restrict-inner-html/policy');
   await expect(status(page)).toHaveText('The widget rendered.');
-  await expect(heading(page)).toHaveText('Sign in to Fern & Co. <em>SALE</em>');
-  await expect(shopTag(page)).toHaveCount(0);
+  await expect(shopTag(page)).toHaveText('SALE');
+  expect(
+    await page.evaluate(async () => {
+      const { sanitizeHtml } = await import('/render-with-policy.js');
+      const element = document.createElement('div');
+      element.innerHTML = sanitizeHtml(
+        '<img src="x" onerror="alert(1)"><script>alert(2)</script><em>ok</em>',
+      );
+      return element.innerHTML;
+    }),
+  ).toBe('<img src="x"><em>ok</em>');
   expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
   await page.screenshot({ path: 'test-results/widget-policy.png' });
 

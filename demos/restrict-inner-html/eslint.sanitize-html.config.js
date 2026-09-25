@@ -1,12 +1,9 @@
 import globals from 'globals';
 
 const sinkMessage =
-  'Write markup with policyHtml: element.innerHTML = policyHtml(`…`).';
-const templateMessage = 'Pass a template literal to policyHtml.';
-const escapeMessage = 'Wrap each value in escapeHtml: ${escapeHtml(value)}.';
+  'Write markup with sanitizeHtml: element.innerHTML = sanitizeHtml(markup).';
 
-// Every markup sink accepts only a policyHtml() call on a template literal,
-// and every value in that template goes through escapeHtml().
+// Every markup sink accepts only a sanitizeHtml() call.
 export default [
   { ignores: ['test-results/**', 'playwright-report/**'] },
   {
@@ -17,18 +14,8 @@ export default [
         'error',
         {
           selector:
-            "AssignmentExpression[left.property.name=/^(innerHTML|outerHTML|srcdoc)$/]:not([right.callee.name='policyHtml'])",
+            "AssignmentExpression[left.property.name=/^(innerHTML|outerHTML|srcdoc)$/]:not([right.callee.name='sanitizeHtml'])",
           message: sinkMessage,
-        },
-        {
-          selector:
-            "CallExpression[callee.name='policyHtml'] > .arguments:not(TemplateLiteral)",
-          message: templateMessage,
-        },
-        {
-          selector:
-            "CallExpression[callee.name='policyHtml'] > TemplateLiteral > .expressions:not(CallExpression[callee.name='escapeHtml'])",
-          message: escapeMessage,
         },
       ],
     },

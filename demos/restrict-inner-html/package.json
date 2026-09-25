@@ -5,8 +5,11 @@
   "scripts": {
     "start": "node server.js",
     "lint:forbid": "eslint --config eslint.forbid.config.js .",
-    "lint:escape-html": "eslint --config eslint.escape-html.config.js .",
-    "lint": "npm run lint:forbid && npm run lint:escape-html",
+    "lint:sanitize-html": "eslint --config eslint.sanitize-html.config.js .",
+    "lint": "npm run lint:forbid && npm run lint:sanitize-html",
     "test": "node --test \"test/*.test.js\" && playwright test"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.16"
   }
 }

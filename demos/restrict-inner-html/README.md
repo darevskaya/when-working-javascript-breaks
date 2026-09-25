@@ -14,12 +14,13 @@ so you can see what each style does with a value.
 | ----------- | ----------------------- | ----------------------------------- | ------------------------- | ----------------------------------- |
 | `no-header` | `render-with-string.js` | `innerHTML = ` plain string         | none                      | Renders, and the name becomes a tag |
 | `string`    | `render-with-string.js` | `innerHTML = ` plain string         | `trusted-types 'none'`    | `TypeError`, the widget stays empty |
-| `policy`    | `render-with-policy.js` | `innerHTML = policyHtml(…)`         | `trusted-types my-widget` | Renders, and the name stays text    |
+| `policy`    | `render-with-policy.js` | `innerHTML = sanitizeHtml(…)`       | `trusted-types dompurify` | Renders, and scripts are removed    |
 | `dom`       | `render-with-dom.js`    | `createElement()` and `textContent` | `trusted-types 'none'`    | Renders, and the name stays text    |
 
 The first two rows are the cold open: the same code, one header apart.
-`escapeHtml()` escapes the shop name. `policyHtml()` passes the markup through
-the `my-widget` policy, so the sink accepts it.
+`sanitizeHtml()` passes the markup through DOMPurify. DOMPurify keeps safe tags,
+such as the `<em>` in the shop name. It removes scripts and event handlers.
+It returns the result from its `dompurify` policy, so the sink accepts it.
 
 ## The two lints
 
@@ -27,17 +28,17 @@ Each lint checks only the three `render-with-*.js` files. It allows one way to
 write markup and flags the other files on purpose. Pick one lint for a real
 codebase, not two.
 
-| Command                    | Configuration                  | Passes                  | What it allows                                       |
-| -------------------------- | ------------------------------ | ----------------------- | ---------------------------------------------------- |
-| `npm run lint:forbid`      | `eslint.forbid.config.js`      | `render-with-dom.js`    | Nothing. Use createElement, textContent, and append. |
-| `npm run lint:escape-html` | `eslint.escape-html.config.js` | `render-with-policy.js` | ``innerHTML = policyHtml(`…`)``, values in `escapeHtml()` |
+| Command                      | Configuration                    | Passes                  | What it allows                                       |
+| ---------------------------- | -------------------------------- | ----------------------- | ---------------------------------------------------- |
+| `npm run lint:forbid`        | `eslint.forbid.config.js`        | `render-with-dom.js`    | Nothing. Use createElement, textContent, and append. |
+| `npm run lint:sanitize-html` | `eslint.sanitize-html.config.js` | `render-with-policy.js` | `innerHTML = sanitizeHtml(…)`                        |
 
 `lint:forbid` is the strictest. The app then needs no policy, and the page can
 send `trusted-types 'none'`.
 
-`lint:escape-html` matches an app that keeps its templates. It flags a value
-in the template that is not wrapped in `escapeHtml()`. The policy name
-in `policyHtml()` and the name in the `trusted-types` header must agree, so
+`lint:sanitize-html` matches an app that keeps its templates. It flags every sink
+that does not get a `sanitizeHtml()` call. The `dompurify` policy name and the
+name in the `trusted-types` header must agree, so
 the name belongs in the contract you give your customers.
 
 Run the two commands one at a time, because the first failure stops

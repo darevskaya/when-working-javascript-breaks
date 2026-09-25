@@ -14,7 +14,6 @@ test('COOP changes one header, with identical documents and scripts', async (t) 
   );
   const html = async (url) => (await fetch(url)).text();
   const page = await html(`${app}/demo/coop-popup/no-coop`);
-  assert.equal(page, await html(`${app}/demo/coop-popup/coop-on-app`));
   assert.equal(page, await html(`${app}/demo/coop-popup/coop-on-login`));
   assert.equal(
     await html(`${provider}/provider/login/v1`),
@@ -24,7 +23,6 @@ test('COOP changes one header, with identical documents and scripts', async (t) 
   await assertHeaders(app, {
     '/': {},
     '/demo/coop-popup/no-coop': {},
-    '/demo/coop-popup/coop-on-app': { [coop]: 'same-origin' },
     '/demo/coop-popup/coop-on-login': {},
     '/popup-login.js': {},
   });

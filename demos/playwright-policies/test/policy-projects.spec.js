@@ -1,10 +1,20 @@
 import { test, expect } from '@playwright/test';
 
-// The strict project intentionally fails.
 const pagePath = '/demo/playwright-policies/allowed';
 
 test.beforeEach(async ({ page }, testInfo) => {
   const { csp } = testInfo.project.use;
+
+   await page.route(pagePath, async (route) => {
+    const response = await route.fetch();
+    await route.fulfill({
+      response,
+      headers: {
+        ...response.headers(),
+        'content-security-policy': csp,
+      },
+    });
+  });
 
   await page.addInitScript(() => {
     window.reports = [];
@@ -14,17 +24,6 @@ test.beforeEach(async ({ page }, testInfo) => {
       },
       { buffered: true },
     ).observe();
-  });
-
-  await page.route(pagePath, async (route) => {
-    const response = await route.fetch();
-    await route.fulfill({
-      response,
-      headers: {
-        ...response.headers(),
-        'content-security-policy': csp,
-      },
-    });
   });
 });
 
@@ -64,7 +63,7 @@ test('the worker runs under the policy of this project', async ({ page }) => {
   );
 });
 
-test('the page loads inside an iframe under the policy of this project', async ({
+test('the page loads inside the iframe under strict policy', async ({
   page,
 }, testInfo) => {
   test.fail(
@@ -72,21 +71,23 @@ test('the page loads inside an iframe under the policy of this project', async (
     "frame-ancestors 'none' refuses the page inside an iframe.",
   );
   await page.goto('/');
-  const title = await page.evaluate(
-    (src) =>
+  const pageLoadedInIframe = await page.evaluate(
+    ({ src, expectedTitle }) =>
       new Promise((resolve) => {
-        const frame = document.createElement('iframe');
-        frame.src = src;
-        frame.addEventListener('load', () => {
+        const iframe = document.createElement('iframe');
+        iframe.src = src;
+        iframe.addEventListener('load', () => {
+          // A blocked iframe still fires "load", but with an error page
+          // that the parent cannot read.
+          let loadedTitle = null;
           try {
-            resolve(frame.contentDocument?.title ?? null);
-          } catch {
-            resolve(null);
-          }
+            loadedTitle = iframe.contentDocument?.title ?? null;
+          } catch {}
+          resolve(loadedTitle === expectedTitle);
         });
-        document.body.append(frame);
+        document.body.append(iframe);
       }),
-    pagePath,
+    { src: pagePath, expectedTitle: 'A Blob worker under policy' },
   );
-  expect(title).toBe('A Blob worker under policy');
+  expect(pageLoadedInIframe, 'the page loads inside the iframe').toBe(true);
 });

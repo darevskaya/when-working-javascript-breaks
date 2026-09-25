@@ -18,7 +18,7 @@ test('every route serves the same page, and the header differs', async (t) => {
 
   const csp = 'content-security-policy';
   const none = "require-trusted-types-for 'script'; trusted-types 'none'";
-  const one = "require-trusted-types-for 'script'; trusted-types my-widget";
+  const one = "require-trusted-types-for 'script'; trusted-types dompurify";
   await assertHeaders(origin, {
     '/': {},
     '/demo/restrict-inner-html/no-header': {},

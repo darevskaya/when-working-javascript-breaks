@@ -13,7 +13,7 @@ export default [
           property: 'innerHTML',
           message:
             'Use createElement, textContent, and append, not HTML strings.',
-        }
+        },
       ],
     },
   },

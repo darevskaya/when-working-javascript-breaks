@@ -9,10 +9,6 @@ export function createServer({ providerOrigin, tls } = {}) {
       {
         '/': 'index.html',
         '/demo/coop-popup/no-coop': 'popup-login.html',
-        '/demo/coop-popup/coop-on-app': {
-          file: 'popup-login.html',
-          'Cross-Origin-Opener-Policy': 'same-origin',
-        },
         '/demo/coop-popup/coop-on-login': 'popup-login.html',
         '/styles.css': 'styles.css',
         '/popup-login.js': 'popup-login.js',

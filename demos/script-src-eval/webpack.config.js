@@ -6,7 +6,7 @@ export default {
 
   // Adds eval to each module; use source-map to avoid it.
   devtool: 'eval-source-map',
-  // devtool: 'source-map',
+ //  devtool: 'source-map',
 
   context: import.meta.dirname,
   entry: './app.js',

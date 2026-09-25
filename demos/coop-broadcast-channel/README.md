@@ -1,6 +1,6 @@
 # COOP: popup login with BroadcastChannel
 
-The same three COOP modes as the `coop-popup` demo. This login needs no window
+Three COOP modes, like the `coop-popup` demo. This login needs no window
 reference, and the browser holds no token.
 
 1. The app opens `/bff/login` with `noopener`. The BFF in `bff.js` sends the
