@@ -4,7 +4,6 @@ import { usePolicy } from './policy.js';
 const pagePath = '/demo/playwright-policies/iframe';
 const framedPath = '/demo/playwright-policies/framed';
 
-// The policy goes on the embedded page, which frame-ancestors protects.
 usePolicy(framedPath);
 
 test('the page loads inside the iframe under the policy of this project', async ({
