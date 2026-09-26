@@ -25,6 +25,8 @@ test('COOP changes one header, with identical documents and scripts', async (t) 
     '/demo/coop-popup/no-coop': {},
     '/demo/coop-popup/coop-on-login': {},
     '/popup-login.js': {},
+    '/login/callback': {},
+    '/login-callback.js': {},
   });
   await assertHeaders(provider, {
     '/provider/login/v1': {},

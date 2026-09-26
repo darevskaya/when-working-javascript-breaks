@@ -5,6 +5,12 @@ const openResult = document.querySelector('#open-result');
 const channel = new BroadcastChannel('orbit-login');
 let waiting = false;
 
+// Center the popup over the app window.
+const centered = (width, height) =>
+  `width=${width},height=${height},` +
+  `left=${Math.round(screenX + (outerWidth - width) / 2)},` +
+  `top=${Math.round(screenY + (outerHeight - height) / 2)}`;
+
 const login = location.pathname.endsWith('/coop-on-login') ? 'coop' : 'no-coop';
 
 channel.addEventListener('message', async ({ data }) => {
@@ -30,7 +36,7 @@ button.addEventListener('click', () => {
   const popup = window.open(
     `/bff/login?login=${login}`,
     '_blank',
-    'popup,width=500,height=600,noopener,noreferrer',
+    `popup,${centered(500, 600)},noopener,noreferrer`,
   );
   openResult.value = String(popup);
   waiting = true;

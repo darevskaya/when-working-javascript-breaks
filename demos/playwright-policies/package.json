@@ -8,10 +8,10 @@
     "test": "playwright test --project=permissive",
     "test:permissive": "playwright test --project=permissive",
     "test:strict": "playwright test --project=strict",
-    "test:worker:permissive": "playwright test --project=permissive --grep worker",
-    "test:worker:strict": "playwright test --project=strict --grep worker",
-    "test:iframe:permissive": "playwright test --project=permissive --grep iframe",
-    "test:iframe:strict": "playwright test --project=strict --grep iframe",
+    "test:worker:permissive": "playwright test --project=permissive worker",
+    "test:worker:strict": "playwright test --project=strict worker",
+    "test:iframe:permissive": "playwright test --project=permissive iframe",
+    "test:iframe:strict": "playwright test --project=strict iframe",
     "test:report": "playwright show-report"
   }
 }

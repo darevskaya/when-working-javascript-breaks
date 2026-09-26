@@ -1,6 +1,6 @@
 import globals from 'globals';
 
-// app.js intentionally fails lint: Blob workers need worker-src blob:.
+// worker.js intentionally fails lint: Blob workers need worker-src blob:.
 export default [
   { ignores: ['test-results/**', 'playwright-report/**'] },
   {

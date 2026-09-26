@@ -4,26 +4,27 @@ This demo is about the test run, not about the feature. It shows how to run
 one Playwright suite under two sets of security headers, watch the strict run
 fail, and read the violation reports that the failure carries.
 
-The page has one small feature: a Worker that carries its code in a Blob
-URL. The page needs `blob:` in `worker-src`. A policy with no worker directive
+The demo has two pages. The worker page starts a Worker that carries its code
+in a Blob URL. The page needs `blob:` in `worker-src`. A policy with no worker directive
 falls back to `child-src`, then to `script-src`, so a plain
 `script-src 'self'` blocks it.
 
-`app.js` shows one status line for the worker. It does not observe reports.
+The iframe page is a plain page that another page embeds.
+`frame-ancestors 'none'` names who can embed the page: nobody. The browser
+refuses it inside an iframe, on this origin too.
+
+`worker.js` shows one status line for the worker. It does not observe reports.
 The test adds the `ReportingObserver`, so the page code stays the same code
 that ships.
 
 ## The files
 
-One page, `app.html`, one script, `app.js`, and one stylesheet, `app.css`, on
-both routes. Only the headers differ.
+The server sends no policy. Each Playwright project puts its own policy on the
+response.
 
-- `/demo/playwright-policies/allowed`: `script-src 'self'; worker-src 'self'
-blob:`. The worker replies.
-- `/demo/playwright-policies/blocked`: `script-src 'self'; frame-ancestors
-'none'`. The browser refuses the worker. `frame-ancestors 'none'` names who
-  may embed the page: nobody. The page opens on its own, and the browser
-  refuses it inside an iframe, on this origin too.
+- `/demo/playwright-policies/worker`: `worker.html`, `worker.js`, and
+  `worker.css`.
+- `/demo/playwright-policies/iframe`: `iframe.html`.
 
 ## The two Playwright projects
 
@@ -35,15 +36,16 @@ project.
 | `npm run test:permissive` | `permissive` | `script-src 'self'; worker-src 'self' blob:` | Passes           |
 | `npm run test:strict`     | `strict`     | `script-src 'self'; frame-ancestors 'none'`  | Fails on purpose |
 
-`test/policy-projects.spec.js` is the only spec. It runs in both projects. One
-test starts the worker, and one test embeds the page in an iframe.
+Two specs run in both projects. `test/worker.spec.js` opens the worker page.
+`test/iframe.spec.js` embeds the iframe page in an iframe. Both specs use the
+hooks in `test/policy.js`.
 
 `page.route()` fetches the response, puts the `csp` of the project on it, and gives it to the
-browser. The page, the script, the server and the test stay the same, so the headers are the only
+browser. The pages, the script, the server and the tests stay the same, so the headers are the only
 difference between the two runs.
 
-`test/policy-projects.spec.js` adds a `ReportingObserver` to the page with
-`page.addInitScript()`, before `app.js` runs. The observer takes no `types`
+`test/policy.js` adds a `ReportingObserver` to the page with
+`page.addInitScript()`, before the page script runs. The observer takes no `types`
 option, so it collects every kind of report the browser makes. This is the
 report that the browser sends to a reporting endpoint, so the test reads what production monitoring reads.
 
@@ -67,6 +69,6 @@ Run `npm run test:report` to open the report of the last run.
 
 ## Lint
 
-`npm run lint` flags the `new Worker(url)` line in `app.js`, because the URL is
+`npm run lint` flags the `new Worker(url)` line in `worker.js`, because the URL is
 not a script path. The rule names the line before the browser does. It fails on
 purpose, because the demo needs the Blob worker.

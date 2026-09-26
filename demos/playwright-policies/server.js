@@ -8,20 +8,12 @@ export function createServer({ tls } = {}) {
     serve(
       {
         '/': 'index.html',
-        '/demo/playwright-policies/allowed': {
-          file: 'app.html',
-          'Content-Security-Policy':
-            "script-src 'self'; worker-src 'self' blob:",
-        },
-        '/demo/playwright-policies/blocked': {
-          file: 'app.html',
-          // worker-src falls back to child-src, then script-src.
-          'Content-Security-Policy':
-            "script-src 'self'; frame-ancestors 'none'",
-        },
+        // No policy here: each Playwright project adds its own.
+        '/demo/playwright-policies/worker': 'worker.html',
+        '/demo/playwright-policies/iframe': 'iframe.html',
         '/styles.css': 'styles.css',
-        '/app.css': 'app.css',
-        '/app.js': 'app.js',
+        '/worker.css': 'worker.css',
+        '/worker.js': 'worker.js',
       },
       { root: import.meta.dirname },
     ),

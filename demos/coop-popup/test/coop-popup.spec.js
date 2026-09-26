@@ -35,28 +35,17 @@ test('provider COOP severs references; a fresh permissive login recovers', async
     fullPage: true,
   });
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
+  // Back on the app origin, the popup still has no opener.
+  await popup.waitForURL('**/login/callback?user=Elena');
+  expect(await popup.evaluate(() => window.opener)).toBe(null);
   expect(popup.isClosed()).toBe(false);
-  await expect(page.locator('#status')).toHaveText(
-    'Login canceled by the user.',
-  );
+  await expect(page.locator('#status')).toHaveText('Waiting for login…');
   await popup.close();
 
   await page.goto('/demo/coop-popup/no-coop');
   popup = await openLogin(page, context, 'v1');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
-});
-
-test('closing the popup without a login reports a cancel', async ({
-  page,
-  context,
-}) => {
-  await page.goto('/demo/coop-popup/no-coop');
-  const popup = await openLogin(page, context, 'v1');
-  await popup.close();
-  await expect(page.locator('#status')).toHaveText(
-    'Login canceled by the user.',
-  );
 });
 
 test('narrow layouts and messages from unrelated windows', async ({

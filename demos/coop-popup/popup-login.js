@@ -1,10 +1,14 @@
 import { providerOrigin } from '/login-config.js';
 
+// Center the popup over the app window.
+const centered = (width, height) =>
+  `width=${width},height=${height},` +
+  `left=${Math.round(screenX + (outerWidth - width) / 2)},` +
+  `top=${Math.round(screenY + (outerHeight - height) / 2)}`;
+
 const button = document.querySelector('#sign-in');
 const status = document.querySelector('#status');
 let popup;
-let poll;
-let loggedIn = false;
 
 // Version 2 of the Orbit ID login sends Cross-Origin-Opener-Policy.
 const loginPath = location.pathname.endsWith('/coop-on-login')
@@ -13,24 +17,22 @@ const loginPath = location.pathname.endsWith('/coop-on-login')
 
 window.addEventListener('message', (event) => {
   if (
-    event.origin !== providerOrigin ||
+    event.origin !== location.origin ||
     event.source !== popup ||
     event.data?.type !== 'login-complete' ||
     typeof event.data.user !== 'string'
   )
     return;
-  loggedIn = true;
   status.textContent = `Logged in as ${event.data.user}`;
   button.hidden = true;
 });
 
 button.addEventListener('click', () => {
-  clearInterval(poll);
   if (popup && !popup.closed) popup.close();
   popup = window.open(
     `${providerOrigin}${loginPath}`,
     '_blank',
-    'popup,width=500,height=600',
+    `popup,${centered(500, 600)}`,
   );
   status.className = '';
   if (!popup) {
@@ -38,12 +40,5 @@ button.addEventListener('click', () => {
     status.className = 'blocked';
     return;
   }
-  loggedIn = false;
   status.textContent = 'Waiting for login…';
-  // COOP reports closed before closure, causing a false cancellation.
-  poll = setInterval(() => {
-    if (!popup.closed) return;
-    clearInterval(poll);
-    if (!loggedIn) status.textContent = 'Login canceled by the user.';
-  }, 100);
 });

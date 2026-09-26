@@ -10,22 +10,21 @@
     <main class="lab demo-index">
       <h1>Playwright under security policies</h1>
       <p>
-        The same page, the same script, two sets of headers. Open a link to see
-        the page, or run the Playwright projects to see the same difference in a
-        test report.
+        Two pages, and the server sends no policy on them. Each Playwright
+        project puts its own policy on the response.
       </p>
       <ul>
         <li>
-          <a href="/demo/playwright-policies/allowed" target="_blank"
-            >Worker allowed: the worker replies</a
+          <a href="/demo/playwright-policies/worker" target="_blank"
+            >Worker page: the page starts a Blob worker</a
           >
-          <code>worker-src 'self' blob:</code>
+          <code>test/worker.spec.js</code>
         </li>
         <li>
-          <a href="/demo/playwright-policies/blocked" target="_blank"
-            >Worker blocked: the browser refuses the worker</a
+          <a href="/demo/playwright-policies/iframe" target="_blank"
+            >Iframe page: another page embeds this page</a
           >
-          <code>script-src 'self'; frame-ancestors 'none'</code>
+          <code>test/iframe.spec.js</code>
         </li>
       </ul>
       <h2>The two Playwright projects</h2>

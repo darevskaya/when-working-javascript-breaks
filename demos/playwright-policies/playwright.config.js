@@ -13,7 +13,7 @@ export default demoConfig({
   projects: [
     {
       name: 'permissive',
-      testMatch: 'policy-projects.spec.js',
+      testMatch: '*.spec.js',
       use: {
         csp: "script-src 'self'; worker-src 'self' blob:",
         screenshot: 'only-on-failure',
@@ -22,7 +22,7 @@ export default demoConfig({
     },
     {
       name: 'strict',
-      testMatch: 'policy-projects.spec.js',
+      testMatch: '*.spec.js',
       use: {
         csp: "script-src 'self'; frame-ancestors 'none'",
         screenshot: 'only-on-failure',
