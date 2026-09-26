@@ -9,11 +9,11 @@ in a Blob URL. The page needs `blob:` in `worker-src`. A policy with no worker d
 falls back to `child-src`, then to `script-src`, so a plain
 `script-src 'self'` blocks it.
 
-The iframe page is a plain page that another page embeds.
-`frame-ancestors 'none'` names who can embed the page: nobody. The browser
-refuses it inside an iframe, on this origin too.
+The iframe page embeds a second page, `framed.html`, in an iframe.
+`frame-ancestors 'none'` on the embedded page names who can embed it: nobody.
+The browser refuses it inside an iframe, on this origin too.
 
-`worker.js` shows one status line for the worker. It does not observe reports.
+`worker.js` and `iframe.js` each show one status line. It does not observe reports.
 The test adds the `ReportingObserver`, so the page code stays the same code
 that ships.
 
@@ -22,9 +22,12 @@ that ships.
 The server sends no policy. Each Playwright project puts its own policy on the
 response.
 
-- `/demo/playwright-policies/worker`: `worker.html`, `worker.js`, and
-  `worker.css`.
-- `/demo/playwright-policies/iframe`: `iframe.html`.
+- `/demo/playwright-policies/worker`: `worker.html` and `worker.js`.
+- `/demo/playwright-policies/iframe`: `iframe.html` and `iframe.js`.
+- `/demo/playwright-policies/framed`: `framed.html`, the page inside the
+  iframe.
+
+Both status pages share `checks.css`.
 
 ## The two Playwright projects
 
@@ -37,7 +40,8 @@ project.
 | `npm run test:strict`     | `strict`     | `script-src 'self'; frame-ancestors 'none'`  | Fails on purpose |
 
 Two specs run in both projects. `test/worker.spec.js` opens the worker page.
-`test/iframe.spec.js` embeds the iframe page in an iframe. Both specs use the
+`test/iframe.spec.js` opens the iframe page and puts the policy on the embedded
+page. Both specs use the
 hooks in `test/policy.js`.
 
 `page.route()` fetches the response, puts the `csp` of the project on it, and gives it to the
@@ -65,7 +69,8 @@ report still carries its annotation:
 report  csp-violation: frame-ancestors blocked http://127.0.0.1:4175/
 ```
 
-Run `npm run test:report` to open the report of the last run.
+The report opens in the browser after each run, but not after `npm test` or
+in CI. Run `npm run test:report` to open the report of the last run.
 
 ## Lint
 

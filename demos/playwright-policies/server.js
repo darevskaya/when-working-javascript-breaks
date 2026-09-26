@@ -11,8 +11,10 @@ export function createServer({ tls } = {}) {
         // No policy here: each Playwright project adds its own.
         '/demo/playwright-policies/worker': 'worker.html',
         '/demo/playwright-policies/iframe': 'iframe.html',
+        '/demo/playwright-policies/framed': 'framed.html',
         '/styles.css': 'styles.css',
-        '/worker.css': 'worker.css',
+        '/checks.css': 'checks.css',
+        '/iframe.js': 'iframe.js',
         '/worker.js': 'worker.js',
       },
       { root: import.meta.dirname },

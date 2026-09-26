@@ -2,8 +2,10 @@ import { test, expect } from '@playwright/test';
 import { usePolicy } from './policy.js';
 
 const pagePath = '/demo/playwright-policies/iframe';
+const framedPath = '/demo/playwright-policies/framed';
 
-usePolicy(pagePath);
+// The policy goes on the embedded page, which frame-ancestors protects.
+usePolicy(framedPath);
 
 test('the page loads inside the iframe under the policy of this project', async ({
   page,
@@ -12,24 +14,8 @@ test('the page loads inside the iframe under the policy of this project', async 
     testInfo.project.name === 'strict',
     "frame-ancestors 'none' refuses the page inside an iframe.",
   );
-  await page.goto('/');
-  const pageLoadedInIframe = await page.evaluate(
-    ({ src, expectedTitle }) =>
-      new Promise((resolve) => {
-        const iframe = document.createElement('iframe');
-        iframe.src = src;
-        iframe.addEventListener('load', () => {
-          // A blocked iframe still fires "load", but with an error page
-          // that the parent cannot read.
-          let loadedTitle = null;
-          try {
-            loadedTitle = iframe.contentDocument?.title ?? null;
-          } catch {}
-          resolve(loadedTitle === expectedTitle);
-        });
-        document.body.append(iframe);
-      }),
-    { src: pagePath, expectedTitle: 'A page inside an iframe' },
+  await page.goto(pagePath);
+  await expect(page.locator('#iframe-status')).toContainText(
+    'The page loaded inside the iframe.',
   );
-  expect(pageLoadedInIframe, 'the page loads inside the iframe').toBe(true);
 });
