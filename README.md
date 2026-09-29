@@ -37,7 +37,6 @@ The demos:
   security headers, the reports the failure carries, and a page that
   `frame-ancestors` keeps out of an iframe
 - `coop-popup/` on 4205: COOP cuts the window relationship of a popup login
-- `coop-broadcast-channel/` on 4206: a popup login that COOP does not break
 - `restrict-architecture-eslint/` on 4208: two lint rules keep every API call
   inside the `connect-src` contract
 - `reporting-api/` on 4209: report-only policies and browser reports

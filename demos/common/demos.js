@@ -27,12 +27,6 @@ export const demos = [
     summary: 'COOP cuts the window relationship of a popup login.',
   },
   {
-    id: 'coop-broadcast-channel',
-    port: 4206,
-    providerPort: 4306,
-    summary: 'A popup login that COOP does not break.',
-  },
-  {
     id: 'restrict-architecture-eslint',
     port: 4208,
     providerPort: 4308,

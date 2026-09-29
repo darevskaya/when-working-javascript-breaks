@@ -12,22 +12,18 @@
     "start": "node demos/common/start-all.js",
     "test": "npm test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "stop": "node demos/common/stop.js",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "stop": "node demos/common/stop.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "eslint": "^9.39.5",
-    "globals": "^17.12.0",
-    "prettier": "^3.9.6"
+    "globals": "^17.12.0"
   },
   "workspaces": [
     "demos/script-src-eval",
     "demos/restrict-inner-html",
     "demos/playwright-policies",
     "demos/coop-popup",
-    "demos/coop-broadcast-channel",
     "demos/restrict-architecture-eslint",
     "demos/worker-src-eslint",
     "demos/reporting-api"
