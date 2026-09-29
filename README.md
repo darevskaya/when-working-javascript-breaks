@@ -30,18 +30,13 @@ page reads it.
 
 The demos:
 
-- `restrict-inner-html/` on 4201: Trusted Types blocks strings in `innerHTML`
-- `script-src-eval/` on 4203: `script-src` blocks `eval`, also in a webpack
-  build
-- `playwright-policies/` on 4204: one Playwright suite under two sets of
-  security headers, the reports the failure carries, and a page that
-  `frame-ancestors` keeps out of an iframe
-- `coop-popup/` on 4205: COOP cuts the window relationship of a popup login
-- `restrict-architecture-eslint/` on 4208: two lint rules keep every API call
-  inside the `connect-src` contract
-- `reporting-api/` on 4209: report-only policies and browser reports
-- `worker-src-eslint/` on 4210: three lint rules keep every worker inside the
-  `worker-src` contract
+- `restrict-inner-html/` on 4201: Trusted Types blocks innerHTML
+- `script-src-eval/` on 4203: CSP blocks eval
+- `playwright-policies/` on 4204: Playwright tests under security headers
+- `coop-popup/` on 4205: COOP breaks popup login
+- `restrict-architecture-eslint/` on 4208: ESLint enforces connect-src
+- `reporting-api/` on 4209: Report-only headers and browser reports
+- `worker-src-eslint/` on 4210: ESLint enforces worker-src
 
 The reporting demo needs HTTPS, because Chromium sends no reports over plain
 HTTP. `npm start` in `demos/reporting-api` runs that launcher. The hub page

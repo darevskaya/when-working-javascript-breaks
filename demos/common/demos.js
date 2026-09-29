@@ -5,46 +5,43 @@ export const demos = [
   {
     id: 'restrict-inner-html',
     port: 4201,
-    summary: 'Trusted Types blocks strings in innerHTML.',
+    summary: 'Trusted Types blocks innerHTML.',
   },
   {
     id: 'script-src-eval',
     port: 4203,
-    summary: 'script-src blocks eval, also in a webpack build.',
+    summary: 'CSP blocks eval.',
     note: 'The start script builds the webpack bundle first.',
   },
   {
     id: 'playwright-policies',
     port: 4204,
-    summary:
-      'Playwright runs the same page under two sets of security headers, and frame-ancestors keeps one route out of an iframe.',
+    summary: 'Playwright tests under security headers.',
     note: 'npm run test:strict fails on purpose. The HTML report holds the violation reports.',
   },
   {
     id: 'coop-popup',
     port: 4205,
     providerPort: 4305,
-    summary: 'COOP cuts the window relationship of a popup login.',
+    summary: 'COOP breaks popup login.',
   },
   {
     id: 'restrict-architecture-eslint',
     port: 4208,
     providerPort: 4308,
-    summary:
-      'Two lint rules keep every API call inside the connect-src contract.',
+    summary: 'ESLint enforces connect-src.',
   },
   {
     id: 'reporting-api',
     port: 4209,
     providerPort: 4309,
-    summary: 'Report-only policies and browser reports.',
+    summary: 'Report-only headers and browser reports.',
     note: 'Chromium sends reports over HTTPS only. Run "npm start" in demos/reporting-api for the HTTPS launcher.',
   },
   {
     id: 'worker-src-eslint',
     port: 4210,
-    summary:
-      'Three lint rules keep every worker inside the worker-src contract.',
+    summary: 'ESLint enforces worker-src.',
   },
 ];
 
