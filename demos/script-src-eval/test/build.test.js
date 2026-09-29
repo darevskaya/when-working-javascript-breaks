@@ -8,7 +8,6 @@ import config from '../webpack.config.js';
 
 const folder = path.join(import.meta.dirname, '..');
 
-// npm test builds the bundle first.
 test('the eval-source-map bundle contains eval, and its source does not', async () => {
   const bundle = await readFile(path.join(folder, 'dist/app.js'), 'utf8');
   assert.match(bundle, /\beval\(/);

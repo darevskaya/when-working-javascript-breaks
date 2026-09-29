@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 async function openLogin(page, context, version) {
-  // COOP can sever Playwright's opener association.
   const opened = context.waitForEvent('page');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   const popup = await opened;
@@ -35,7 +34,6 @@ test('provider COOP severs references; a fresh permissive login recovers', async
     fullPage: true,
   });
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
-  // Back on the app origin, the popup still has no opener.
   await popup.waitForURL('**/login/callback?user=Elena');
   expect(await popup.evaluate(() => window.opener)).toBe(null);
   expect(popup.isClosed()).toBe(false);

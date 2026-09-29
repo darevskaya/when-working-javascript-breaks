@@ -1,7 +1,5 @@
 import DOMPurify from '/purify.js';
 
-// Removes scripts, event handlers, and other active content from the markup,
-// then returns it as TrustedHTML from the dompurify policy.
 export function sanitizeHtml(markup) {
   return DOMPurify.sanitize(markup, { RETURN_TRUSTED_TYPE: true });
 }

@@ -78,7 +78,6 @@ export function createSecondServer({
   );
 }
 
-// HTTP tests cannot verify report delivery.
 if (isMain(import.meta)) {
   const collector = createReportCollector();
   createServer({ collector }).listen(ports.app, '127.0.0.1', () =>

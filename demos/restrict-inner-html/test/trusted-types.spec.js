@@ -6,7 +6,6 @@ test.beforeEach(({ page }) => recordViolations(page));
 const heading = (page) => page.locator('.orbit-widget h2');
 const status = (page) => page.locator('#status');
 
-// The shop name deliberately contains markup.
 const shopTag = (page) => page.locator('.orbit-widget h2 em');
 
 test('string, no header: the shop name becomes a tag', async ({ page }) => {

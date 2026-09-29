@@ -42,7 +42,6 @@ function commandLine(pid) {
     : run('ps', ['-o', 'command=', '-p', String(pid)]);
 }
 
-// Listeners may exit before we reach them.
 function alive(pid) {
   try {
     process.kill(pid, 0);

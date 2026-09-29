@@ -1,6 +1,5 @@
 import { config } from './config.js';
 
-// The one call to new Worker in the demo. The lint rules keep it here.
 export function createWorker() {
   return new Worker(config.workerScript, { type: 'module' });
 }

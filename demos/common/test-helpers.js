@@ -8,7 +8,6 @@ export async function listen(server, t) {
   return `http://127.0.0.1:${server.address().port}`;
 }
 
-// Non-policy headers allowed on every response.
 const ordinary = new Set([
   'content-type',
   'content-length',
@@ -35,7 +34,6 @@ export async function assertHeaders(origin, routes) {
   }
 }
 
-// Call before navigation to capture CSP violations.
 export function recordViolations(page) {
   return page.addInitScript(() => {
     window.cspViolations = [];

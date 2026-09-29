@@ -11,11 +11,9 @@ const contentTypes = {
   '.map': 'application/json',
 };
 
-// Routes own policy headers; relative files resolve from root.
 export function serve(routes, { root }) {
   return async (request, response) => {
     const url = new URL(request.url, 'http://localhost');
-    // Strip trailing slashes except at root.
     const pathname = url.pathname.replace(/(.)\/$/, '$1');
     const route = routes[pathname];
 

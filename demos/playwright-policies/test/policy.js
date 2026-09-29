@@ -1,6 +1,5 @@
 import { test } from '@playwright/test';
 
-// Puts the csp of the project on pagePath and collects every report.
 export function usePolicy(pagePath) {
   test.beforeEach(async ({ page }, testInfo) => {
     const { csp } = testInfo.project.use;

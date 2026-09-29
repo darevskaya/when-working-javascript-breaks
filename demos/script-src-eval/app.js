@@ -19,7 +19,6 @@ const data = {
   },
 };
 
-// Failed templates retain their raw {{ ... }} text.
 for (const element of document.querySelectorAll('[data-template]')) {
   element.textContent = render(element.textContent, data);
 }

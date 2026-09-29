@@ -1,6 +1,5 @@
 import { secondOrigin } from '/reporting-config.js';
 
-// Route: /demo/reporting-api/<policy>/<mode>.
 const [policy, mode] = location.pathname.split('/').slice(-2);
 const status = document.querySelector('#status');
 
@@ -36,7 +35,6 @@ const examples = {
         status.textContent = 'Allow popups, then try again.';
         return;
       }
-      // COOP severs the handle after the popup loads.
       setTimeout(() => {
         show(
           popup.closed,
