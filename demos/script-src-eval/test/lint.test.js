@@ -11,7 +11,6 @@ test('lint:source flags the eval in the renderer', async () => {
   assert.deepEqual(findings, ['renderer.js no-eval']);
 });
 
-// npm test builds the bundle first.
 test('lint:build flags the eval that the devtool put in the bundle', async () => {
   assert.deepEqual(
     await lintFindings(folder, {

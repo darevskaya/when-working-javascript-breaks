@@ -27,7 +27,6 @@ test('login completes under COOP', async ({ page, context }) => {
     });
   });
 
-  const { opener } = await signIn(page, context);
-  console.log('window.opener:', opener);
+  await signIn(page, context);
   await expect(page.getByText('Logged in as Elena')).toBeVisible();
 });
