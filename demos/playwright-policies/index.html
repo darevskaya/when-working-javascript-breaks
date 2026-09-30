@@ -9,9 +9,9 @@
   <body>
     <main class="lab demo-index">
       <h1>Playwright under security policies</h1>
-      <p>
-        Two pages, and the server sends no policy on them. Each Playwright
-        project puts its own policy on the response.
+        <p>
+          The server sends no Content Security Policy. Each Playwright project
+          adds one to the response it is testing.
       </p>
       <ul>
         <li>
@@ -30,13 +30,13 @@
       <h2>The two Playwright projects</h2>
       <ul>
         <li>
-          <code>npm run test:permissive</code>: Playwright puts a permissive
-          policy on the response, and the test passes
+          <code>npm run test:permissive</code>: allows Blob workers and iframe
+          embedding, so both tests pass
         </li>
         <li>
-          <code>npm run test:strict</code>: Playwright puts a strict policy on
-          the same response: the worker fails on purpose, and the iframe fails
-          as the test expects
+          <code>npm run test:strict</code>: blocks the Blob worker, so that
+          test fails on purpose. It also blocks iframe embedding; that expected
+          failure is reported as passed by Playwright.
         </li>
       </ul>
     </main>
