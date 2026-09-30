@@ -29,10 +29,14 @@ The app opens the Orbit ID login in a popup. Orbit ID redirects the popup back
 to `/login/callback` on the app origin, which posts the result through
 `window.opener` and closes itself.
 
+To run only this demo, run `npm start` in `demos/coop-popup`, open
+http://127.0.0.1:4205, then try both links. In each tab, click **Sign in** and
+then **Continue as Elena** in the popup.
+
 | Route | What happens |
 |---|---|
 | `no-coop` | Login works. |
-| `coop-on-login` | The login page sends `Cross-Origin-Opener-Policy: same-origin`. This severs `window.opener`. The callback cannot reach the app, the popup stays open, and the app shows "Waiting for login..." forever. |
+| `with-coop` | The login page sends `Cross-Origin-Opener-Policy: same-origin`. This severs `window.opener`. The callback cannot reach the app, the popup stays open, and the app shows "Waiting for login..." forever. |
 
 `npm run stage` runs a Playwright test that fails on purpose.
 
@@ -140,15 +144,3 @@ annotation per report.
 `npm run test:report` opens the HTML report of the last run.
 
 ---
-
-### Report-only headers
-
-[`demos/reporting-api`](http://127.0.0.1:4209)
-
-CSP, COOP, and COEP examples in enforce and report-only modes. The browser
-sends each violation to `/reports` and the terminal prints it.
-
-The browser delivers reports only over HTTPS. `npm start` in this folder opens
-a Chromium window on a local HTTPS server with a throwaway certificate. Reports
-are also saved to `logs/browser-reports.jsonl`. The hub page links to the plain
-HTTP pages for browsing the routes.

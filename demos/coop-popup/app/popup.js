@@ -1,4 +1,4 @@
-import { providerOrigin } from '/login-config.js';
+import { providerOrigin } from '/app-config.js';
 
 const centered = (width, height) =>
   `width=${width},height=${height},` +
@@ -7,11 +7,15 @@ const centered = (width, height) =>
 
 const button = document.querySelector('#sign-in');
 const status = document.querySelector('#status');
+const mode = document.querySelector('#mode');
 let popup;
 
-const loginPath = location.pathname.endsWith('/coop-on-login')
-  ? '/provider/login/v2'
-  : '/provider/login/v1';
+const withCoop = location.pathname.endsWith('/with-coop');
+const loginPath = withCoop ? '/provider/login/with-coop' : '/provider/login/no-coop';
+
+mode.textContent = withCoop
+  ? 'Orbit ID sends Cross-Origin-Opener-Policy: same-origin. The callback cannot reach this page.'
+  : 'Neither page sends Cross-Origin-Opener-Policy. The callback can reach this page.';
 
 window.addEventListener('message', (event) => {
   if (

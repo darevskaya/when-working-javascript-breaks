@@ -6,7 +6,7 @@ const folder = `${import.meta.dirname}/..`;
 
 test('lint flags each read of popup.closed and window.opener', async () => {
   assert.deepEqual(await lintFindings(folder), [
-    'login-callback.js no-restricted-syntax',
-    'popup-login.js no-restricted-syntax',
+    'callback.js no-restricted-syntax',
+    'popup.js no-restricted-syntax',
   ]);
 });

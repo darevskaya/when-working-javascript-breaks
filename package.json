@@ -25,7 +25,6 @@
     "demos/playwright-policies",
     "demos/coop-popup",
     "demos/restrict-architecture-eslint",
-    "demos/worker-src-eslint",
-    "demos/reporting-api"
+    "demos/worker-src-eslint"
   ]
 }

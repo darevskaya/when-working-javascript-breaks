@@ -22,6 +22,5 @@ export default [
       ],
     },
   },
-  // Tests intentionally read popup state.
   { files: ['test/**', 'stage/**'], rules: { 'no-restricted-syntax': 'off' } },
 ];

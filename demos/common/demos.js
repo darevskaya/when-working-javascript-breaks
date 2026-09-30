@@ -34,13 +34,6 @@ export const demos = [
     summary: 'Testing under security headers.',
     note: 'npm run test:strict fails on purpose. The HTML report holds the violation reports.',
   },
-  {
-    id: 'reporting-api',
-    port: 4209,
-    providerPort: 4309,
-    summary: 'Report-only headers.',
-    note: 'Chromium sends reports over HTTPS only. Run "npm start" in demos/reporting-api for the HTTPS launcher.',
-  },
 ];
 
 export function demo(id) {

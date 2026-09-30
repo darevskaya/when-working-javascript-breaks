@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-async function openLogin(page, context, version) {
+async function openLogin(page, context, mode) {
   const opened = context.waitForEvent('page');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   const popup = await opened;
-  await popup.waitForURL(`**/provider/login/${version}`);
+  await popup.waitForURL(`**/provider/login/${mode}`);
   await expect(
     popup.getByRole('button', { name: 'Continue as Elena' }),
   ).toBeEnabled();
@@ -17,7 +17,7 @@ test('provider COOP severs references; a fresh permissive login recovers', async
 }) => {
   await page.goto('/demo/coop-popup/no-coop');
   await expect(page.locator('#status')).toHaveText('Ready');
-  let popup = await openLogin(page, context, 'v1');
+  let popup = await openLogin(page, context, 'no-coop');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
   await expect.poll(() => popup.isClosed()).toBe(true);
@@ -25,8 +25,8 @@ test('provider COOP severs references; a fresh permissive login recovers', async
     page.getByRole('button', { name: 'Sign in', exact: true }),
   ).toBeHidden();
 
-  await page.goto('/demo/coop-popup/coop-on-login');
-  popup = await openLogin(page, context, 'v2');
+  await page.goto('/demo/coop-popup/with-coop');
+  popup = await openLogin(page, context, 'with-coop');
   expect(popup.isClosed()).toBe(false);
   expect(await popup.evaluate(() => window.opener)).toBe(null);
   await popup.screenshot({
@@ -41,7 +41,7 @@ test('provider COOP severs references; a fresh permissive login recovers', async
   await popup.close();
 
   await page.goto('/demo/coop-popup/no-coop');
-  popup = await openLogin(page, context, 'v1');
+  popup = await openLogin(page, context, 'no-coop');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
 });
@@ -51,7 +51,7 @@ test('narrow layouts and messages from unrelated windows', async ({
   context,
 }) => {
   await page.goto('/demo/coop-popup/no-coop');
-  const popup = await openLogin(page, context, 'v1');
+  const popup = await openLogin(page, context, 'no-coop');
   await page.evaluate(() =>
     window.postMessage(
       { type: 'login-complete', user: 'Mallory' },
@@ -86,7 +86,7 @@ test('a blocked popup can be retried', async ({ page, context }) => {
   });
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.locator('#status')).toContainText('Popup blocked');
-  const popup = await openLogin(page, context, 'v1');
+  const popup = await openLogin(page, context, 'no-coop');
   await popup.getByRole('button', { name: 'Continue as Elena' }).click();
   await expect(page.locator('#status')).toHaveText('Logged in as Elena');
 });

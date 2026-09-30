@@ -8,13 +8,13 @@ export function createServer({ providerOrigin, tls } = {}) {
     serve(
       {
         '/': 'index.html',
-        '/demo/coop-popup/no-coop': 'popup-login.html',
-        '/demo/coop-popup/coop-on-login': 'popup-login.html',
+        '/demo/coop-popup/no-coop': 'app/popup.html',
+        '/demo/coop-popup/with-coop': 'app/popup.html',
         '/styles.css': 'styles.css',
-        '/popup-login.js': 'popup-login.js',
-        '/login/callback': 'login-callback.html',
-        '/login-callback.js': 'login-callback.js',
-        '/login-config.js': {
+        '/app/popup.js': 'app/popup.js',
+        '/login/callback': 'app/callback.html',
+        '/app/callback.js': 'app/callback.js',
+        '/app-config.js': {
           body: `export const providerOrigin = '${providerOrigin}';\n`,
         },
       },
@@ -28,16 +28,15 @@ export function createProviderServer({ appOrigin, tls } = {}) {
     tls,
     serve(
       {
-        // Same login page in both versions; v2 adds the COOP header.
-        '/provider/login/v1': 'orbit-login.html',
-        '/provider/login/v2': {
-          file: 'orbit-login.html',
+        '/provider/login/no-coop': 'provider/login.html',
+        '/provider/login/with-coop': {
+          file: 'provider/login.html',
           'Cross-Origin-Opener-Policy': 'same-origin',
         },
         '/styles.css': 'styles.css',
-        '/orbit-login.css': 'orbit-login.css',
-        '/orbit-login.js': 'orbit-login.js',
-        '/orbit-login-config.js': {
+        '/provider/login.css': 'provider/login.css',
+        '/provider/login.js': 'provider/login.js',
+        '/provider-config.js': {
           body: `export const appOrigin = '${appOrigin}';
 `,
         },

@@ -1,6 +1,5 @@
 import { demoConfig } from '../common/playwright.js';
 
-// Deliberate failure: excluded from npm test; separate ports for live demos.
 export default demoConfig({
   testDir: './stage',
   expect: { timeout: 2000 },
