@@ -11,7 +11,7 @@ Node.js 22 or later. Run once:
 npm ci
 ```
 
-Start all demos, then open http://127.0.0.1:4173:
+Start the interactive demos, then open http://127.0.0.1:4173:
 
 ```sh
 npm start
@@ -39,25 +39,6 @@ then **Continue as Elena** in the popup.
 | `with-coop` | The login page sends `Cross-Origin-Opener-Policy: same-origin`. This severs `window.opener`. The callback cannot reach the app, the popup stays open, and the app shows "Waiting for login..." forever. |
 
 `npm run stage` runs a Playwright test that fails on purpose.
-
----
-
-### ESLint enforces worker-src
-
-[`demos/worker-src-eslint`](http://127.0.0.1:4210)
-
-Three ESLint rules apply. `createWorker()` in `worker-client.js` is the only
-place that calls `new Worker`. `config.js` is the only file that names a worker
-script, and it names only the allowed script. No file builds a worker from a
-Blob URL. The server builds the `worker-src` header from the same `config.js`.
-
-| Route | Policy | What happens |
-|---|---|---|
-| `from-config` | `worker-src <origin>/tasks.worker.js` | Worker replies to both calls. |
-| `narrow-policy` | `worker-src 'none'` | Both calls blocked. Two `worker-src` violations. |
-
-`npm run lint` passes. To watch a rule fire, add `new Worker('/tasks.worker.js')`
-to `app.js`, or change `workerScript` in `config.js` to a different path.
 
 ---
 
@@ -97,8 +78,8 @@ calls. This makes worker construction an explicit architectural boundary.
 |---|---|
 | `restrict-architecture-eslint` | `app.js` calls `createWorker()` twice. The worker replies with a total and status. |
 
-`npm run lint` passes. To watch a rule fire, add
-`new Worker(new URL('./tasks.worker.js', import.meta.url))` to `app.js`.
+`npm run lint` rejects the intentional violation in
+`worker-outside-factory.js`.
 
 ---
 
@@ -107,8 +88,8 @@ calls. This makes worker construction an explicit architectural boundary.
 [`demos/restrict-inner-html`](http://127.0.0.1:4201)
 
 `require-trusted-types-for 'script'` refuses every plain string assigned to
-`innerHTML`. The Orbit ID widget has three render styles. The shop name holds a
-`<em>` tag so you can see what each style does with it.
+`innerHTML`. The product label holds an `<em>` tag so you can see what each
+rendering style does with it.
 
 To run only this demo, run `npm start` in `demos/restrict-inner-html`, open
 http://127.0.0.1:4201, then try the four routes in order.
@@ -116,7 +97,7 @@ http://127.0.0.1:4201, then try the four routes in order.
 | Route | What happens |
 |---|---|
 | `no-header` | Renders with `innerHTML`. The tag becomes an element. |
-| `string` | Same code, header on. `TypeError`, widget stays empty. |
+| `string` | Same code, header on. `TypeError`, preview stays in its loading state. |
 | `policy` | `innerHTML = sanitizeHtml(...)`. DOMPurify strips scripts and keeps `<em>`. |
 | `dom` | `createElement` and `textContent`. Renders, tag stays as text. |
 

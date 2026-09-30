@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sign-in widget</title>
+    <title>Markup preview</title>
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/app.css" />
     <script type="module" src="/app.js"></script>
@@ -11,18 +11,18 @@
   <body>
     <main class="lab">
       <section class="demo-panel" aria-labelledby="page-title">
-        <h1 id="page-title">Sign-in widget</h1>
+        <h1 id="page-title">Markup preview</h1>
         <p>
-          The page gives the widget this element and the shop name. The shop
-          name holds a tag, so you can see what each style does with it.
+          Each renderer receives one product label containing an HTML tag. The
+          result shows whether that tag becomes markup or stays text.
         </p>
         <section
-          class="orbit-slot"
-          aria-label="Sign in"
-          data-orbit-widget
-          data-shop="Fern &amp; Co. &lt;em&gt;SALE&lt;/em&gt;"
+          class="preview-slot"
+          aria-label="Product label preview"
+          data-preview
+          data-label="Fern &amp; Co. &lt;em&gt;SALE&lt;/em&gt;"
         >
-          <p class="orbit-loading">Loading sign-in…</p>
+          <p class="preview-loading">Rendering preview…</p>
         </section>
         <p>Style: <code id="style">…</code></p>
         <p id="status">Rendering…</p>

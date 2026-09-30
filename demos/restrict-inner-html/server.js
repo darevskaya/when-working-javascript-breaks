@@ -20,7 +20,7 @@ export function createServer({ tls } = {}) {
         '/demo/restrict-inner-html/string': page(noPolicy),
         '/demo/restrict-inner-html/policy': page(onePolicy),
         '/demo/restrict-inner-html/dom': page(noPolicy),
-        '/styles.css': 'styles.css',
+        '/styles.css': '../common/styles.css',
         '/app.css': 'app.css',
         '/app.js': 'app.js',
         '/renderers/string.js': 'renderers/string.js',

@@ -16,10 +16,10 @@ const result = document.querySelector('#status');
 document.querySelector('#style').textContent = route;
 
 try {
-  for (const container of document.querySelectorAll('[data-orbit-widget]')) {
+  for (const container of document.querySelectorAll('[data-preview]')) {
     render(container);
   }
-  result.textContent = 'The widget rendered.';
+  result.textContent = 'The preview rendered.';
 } catch (error) {
   result.className = 'blocked';
   result.textContent = `The browser refused the write. ${error.name}: ${error.message}`;

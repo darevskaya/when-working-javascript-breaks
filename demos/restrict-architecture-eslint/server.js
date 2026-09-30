@@ -9,7 +9,7 @@ export function createServer({ tls } = {}) {
       {
         '/': 'index.html',
         '/demo/restrict-architecture-eslint': 'app.html',
-        '/styles.css': 'styles.css',
+        '/styles.css': '../common/styles.css',
         '/app.css': 'app.css',
         '/app.js': 'app.js',
         '/worker-factory.js': 'worker-factory.js',

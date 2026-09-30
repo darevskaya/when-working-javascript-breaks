@@ -10,7 +10,7 @@ export function createServer({ providerOrigin, tls } = {}) {
         '/': 'index.html',
         '/demo/coop-popup/no-coop': 'app/popup.html',
         '/demo/coop-popup/with-coop': 'app/popup.html',
-        '/styles.css': 'styles.css',
+        '/styles.css': '../common/styles.css',
         '/app/popup.js': 'app/popup.js',
         '/login/callback': 'app/callback.html',
         '/app/callback.js': 'app/callback.js',
@@ -33,7 +33,7 @@ export function createProviderServer({ appOrigin, tls } = {}) {
           file: 'provider/login.html',
           'Cross-Origin-Opener-Policy': 'same-origin',
         },
-        '/styles.css': 'styles.css',
+        '/styles.css': '../common/styles.css',
         '/provider/login.css': 'provider/login.css',
         '/provider/login.js': 'provider/login.js',
         '/provider-config.js': {

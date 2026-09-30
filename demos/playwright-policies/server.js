@@ -12,7 +12,7 @@ export function createServer({ tls } = {}) {
         '/demo/playwright-policies/worker': 'worker.html',
         '/demo/playwright-policies/iframe': 'iframe.html',
         '/demo/playwright-policies/framed': 'framed.html',
-        '/styles.css': 'styles.css',
+        '/styles.css': '../common/styles.css',
         '/checks.css': 'checks.css',
         '/iframe.js': 'iframe.js',
         '/worker.js': 'worker.js',

@@ -1,9 +1,7 @@
 export function render(container) {
   container.innerHTML = `
-    <div class="orbit-widget">
-      <p class="orbit-brand">Orbit ID</p>
-      <h2>Sign in to ${container.dataset.shop}</h2>
-      <p>Use your Orbit ID account. You do not need a new password.</p>
-      <button type="button">Continue with Orbit ID</button>
+    <div class="product-preview">
+      <p class="preview-label">Product label</p>
+      <p class="product-name">${container.dataset.label}</p>
     </div>`;
 }

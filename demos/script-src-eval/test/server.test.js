@@ -20,14 +20,20 @@ test('one page on three routes, and the route picks the script', async (t) => {
   assert.match(bundle, /\beval\(/);
 
   const csp = 'content-security-policy';
+  const noStore = 'cache-control';
   await assertHeaders(origin, {
     '/': {},
     '/demo/script-src-eval/unsafe-eval-allowed': {
       [csp]: "script-src 'self' 'unsafe-eval'",
+      [noStore]: 'no-store',
     },
-    '/demo/script-src-eval/eval-blocked': { [csp]: "script-src 'self'" },
+    '/demo/script-src-eval/eval-blocked': {
+      [csp]: "script-src 'self'",
+      [noStore]: 'no-store',
+    },
     '/demo/script-src-eval/bundle/eval-source-map': {
       [csp]: "script-src 'self'",
+      [noStore]: 'no-store',
     },
     '/demo/script-src-eval/app.js': {},
     '/demo/script-src-eval/renderer.js': {},

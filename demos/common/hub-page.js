@@ -18,17 +18,17 @@ async function isUp(origin) {
   }
 }
 
-for (const entry of demos) {
+for (const entry of demos.filter(({ visible = true }) => visible)) {
   const origin = `http://127.0.0.1:${entry.port}`;
   const item = element('li', 'demo');
 
-  const link = element('a', null, entry.id);
+  const link = element('a', null, entry.summary);
   link.href = origin;
   const heading = element('h2');
   heading.append(link);
   item.append(heading);
 
-  item.append(element('p', 'summary', entry.summary));
+  item.append(element('p', 'demo-name', entry.id));
 
   const ports = entry.providerPort
     ? `port ${entry.port}, second origin on port ${entry.providerPort}`

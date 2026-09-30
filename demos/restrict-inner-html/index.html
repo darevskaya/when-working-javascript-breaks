@@ -10,13 +10,13 @@
     <main class="lab demo-index">
       <h1>Trusted Types: innerHTML</h1>
       <p>
-        Open these examples in order. Each route serves the same widget page;
+        Open these examples in order. Each route serves the same preview page;
         only its rendering style and Trusted Types header change.
       </p>
       <ul>
         <li>
           <a href="/demo/restrict-inner-html/no-header" target="_blank"
-            >1. String, no header: the shop name becomes a tag</a
+            >1. String, no header: the label becomes markup</a
           >
           <code>no Trusted Types header</code>
         </li>
@@ -28,7 +28,7 @@
         </li>
         <li>
           <a href="/demo/restrict-inner-html/policy" target="_blank"
-            >3. sanitizeHtml, header on: the widget renders</a
+            >3. sanitizeHtml, header on: the preview renders</a
           >
           <code
             >require-trusted-types-for 'script'; trusted-types dompurify</code
@@ -36,7 +36,7 @@
         </li>
         <li>
           <a href="/demo/restrict-inner-html/dom" target="_blank"
-            >4. DOM nodes, header on: the widget renders</a
+            >4. DOM nodes, header on: the preview renders</a
           >
           <code>require-trusted-types-for 'script'; trusted-types 'none'</code>
         </li>

@@ -24,7 +24,6 @@
     "demos/restrict-inner-html",
     "demos/playwright-policies",
     "demos/coop-popup",
-    "demos/restrict-architecture-eslint",
-    "demos/worker-src-eslint"
+    "demos/restrict-architecture-eslint"
   ]
 }

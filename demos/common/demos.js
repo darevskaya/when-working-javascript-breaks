@@ -5,34 +5,30 @@ export const demos = [
     id: 'coop-popup',
     port: 4205,
     providerPort: 4305,
-    summary: 'COOP breaks popup login.',
-  },
-  {
-    id: 'worker-src-eslint',
-    port: 4210,
-    summary: 'ESLint enforces worker-src.',
+    summary: 'Popup login breaks under COOP',
   },
   {
     id: 'script-src-eval',
     port: 4203,
-    summary: 'script-src blocks eval.',
+    summary: 'script-src blocks eval',
     note: 'The start script builds the webpack bundle first.',
   },
   {
     id: 'restrict-architecture-eslint',
     port: 4208,
-    summary: 'ESLint enforces worker factories.',
+    summary: 'ESLint enforces worker factories',
+    visible: false,
   },
   {
     id: 'restrict-inner-html',
     port: 4201,
-    summary: 'Trusted Types blocks innerHTML.',
+    summary: 'Trusted Types blocks innerHTML',
   },
   {
     id: 'playwright-policies',
     port: 4204,
-    summary: 'Testing under security headers.',
-    note: 'npm run test:strict fails on purpose. The HTML report holds the violation reports.',
+    summary: 'Testing under security headers',
+    visible: false,
   },
 ];
 

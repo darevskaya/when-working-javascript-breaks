@@ -6,14 +6,10 @@ function node(tag, text, className) {
 }
 
 export function render(container) {
-  const button = node('button', 'Continue with Orbit ID');
-  button.type = 'button';
-  const card = node('div', '', 'orbit-widget');
+  const card = node('div', '', 'product-preview');
   card.append(
-    node('p', 'Orbit ID', 'orbit-brand'),
-    node('h2', `Sign in to ${container.dataset.shop}`),
-    node('p', 'Use your Orbit ID account. You do not need a new password.'),
-    button,
+    node('p', 'Product label', 'preview-label'),
+    node('p', container.dataset.label, 'product-name'),
   );
   container.replaceChildren(card);
 }
