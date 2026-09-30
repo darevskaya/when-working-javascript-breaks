@@ -4,7 +4,6 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "lint": "eslint .",
     "test": "playwright test --project=permissive",
     "test:permissive": "playwright test --project=permissive",
     "test:strict": "playwright test --project=strict",
