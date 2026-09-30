@@ -1,6 +1,6 @@
-import { render as renderString } from './render-with-string.js';
-import { render as renderPolicy } from './render-with-policy.js';
-import { render as renderDom } from './render-with-dom.js';
+import { render as renderString } from './renderers/string.js';
+import { render as renderPolicy } from './renderers/sanitize.js';
+import { render as renderDom } from './renderers/dom.js';
 
 const renderers = {
   'no-header': renderString,

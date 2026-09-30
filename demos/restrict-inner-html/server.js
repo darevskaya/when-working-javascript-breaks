@@ -23,9 +23,9 @@ export function createServer({ tls } = {}) {
         '/styles.css': 'styles.css',
         '/app.css': 'app.css',
         '/app.js': 'app.js',
-        '/render-with-string.js': 'render-with-string.js',
-        '/render-with-policy.js': 'render-with-policy.js',
-        '/render-with-dom.js': 'render-with-dom.js',
+        '/renderers/string.js': 'renderers/string.js',
+        '/renderers/sanitize.js': 'renderers/sanitize.js',
+        '/renderers/dom.js': 'renderers/dom.js',
         '/purify.js': {
           file: fileURLToPath(import.meta.resolve('dompurify')),
           'Content-Type': 'text/javascript; charset=utf-8',

@@ -3,11 +3,10 @@ import globals from 'globals';
 const sinkMessage =
   'Write markup with sanitizeHtml: element.innerHTML = sanitizeHtml(markup).';
 
-// Every markup sink accepts only a sanitizeHtml() call.
 export default [
   { ignores: ['test-results/**', 'playwright-report/**'] },
   {
-    files: ['render-with-*.js'],
+    files: ['renderers/*.js'],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
     rules: {
       'no-restricted-syntax': [

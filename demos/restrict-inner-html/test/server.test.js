@@ -26,9 +26,9 @@ test('every route serves the same page, and the header differs', async (t) => {
     '/demo/restrict-inner-html/policy': { [csp]: one },
     '/demo/restrict-inner-html/dom': { [csp]: none },
     '/app.js': {},
-    '/render-with-string.js': {},
-    '/render-with-policy.js': {},
-    '/render-with-dom.js': {},
+    '/renderers/string.js': {},
+    '/renderers/sanitize.js': {},
+    '/renderers/dom.js': {},
     '/app.css': {},
     '/styles.css': {},
   });

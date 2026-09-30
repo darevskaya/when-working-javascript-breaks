@@ -110,6 +110,9 @@ calls. This makes worker construction an explicit architectural boundary.
 `innerHTML`. The Orbit ID widget has three render styles. The shop name holds a
 `<em>` tag so you can see what each style does with it.
 
+To run only this demo, run `npm start` in `demos/restrict-inner-html`, open
+http://127.0.0.1:4201, then try the four routes in order.
+
 | Route | What happens |
 |---|---|
 | `no-header` | Renders with `innerHTML`. The tag becomes an element. |
@@ -117,10 +120,10 @@ calls. This makes worker construction an explicit architectural boundary.
 | `policy` | `innerHTML = sanitizeHtml(...)`. DOMPurify strips scripts and keeps `<em>`. |
 | `dom` | `createElement` and `textContent`. Renders, tag stays as text. |
 
-Two lint commands, each allowing exactly one style:
+Two lint commands, each allowing only one style:
 
-- `npm run lint:forbid` passes only `render-with-dom.js`
-- `npm run lint:sanitize-html` passes only `render-with-policy.js`
+- `npm run lint:forbid` allows only `renderers/dom.js`
+- `npm run lint:sanitize-html` allows only `renderers/sanitize.js`
 
 ---
 
@@ -136,10 +139,9 @@ Read the violation reports the failure carries.
 | `npm run test:permissive` | `script-src 'self'; worker-src 'self' blob:` | Passes |
 | `npm run test:strict` | `script-src 'self'; frame-ancestors 'none'` | Fails on purpose |
 
-`test/policy.js` intercepts each response with `page.route()` and puts the
-project's CSP on it. It also adds a `ReportingObserver` before the page
-script runs, so each test result carries a `reports.json` attachment and one
-annotation per report.
+Each spec explicitly calls helpers from `test/policy.js` to intercept its
+response with `page.route()`, apply the project's CSP, collect reports before
+the page script runs, and attach `reports.json` to the result.
 
 `npm run test:report` opens the HTML report of the last run.
 

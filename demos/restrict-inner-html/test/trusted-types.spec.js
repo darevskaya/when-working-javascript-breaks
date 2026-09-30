@@ -37,7 +37,7 @@ test('sanitizeHtml, header on: the widget renders, and scripts are removed', asy
   await expect(shopTag(page)).toHaveText('SALE');
   expect(
     await page.evaluate(async () => {
-      const { sanitizeHtml } = await import('/render-with-policy.js');
+      const { sanitizeHtml } = await import('/renderers/sanitize.js');
       const element = document.createElement('div');
       element.innerHTML = sanitizeHtml(
         '<img src="x" onerror="alert(1)"><script>alert(2)</script><em>ok</em>',
