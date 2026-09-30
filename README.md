@@ -81,22 +81,20 @@ Three lint commands, each reading different files:
 
 ---
 
-### ESLint enforces connect-src
+### ESLint enforces worker factories
 
 [`demos/restrict-architecture-eslint`](http://127.0.0.1:4208)
 
-Two ESLint rules apply. `api-client.js` is the only file that calls `fetch`.
-`config.js` is the only file that names an origin. The server builds the
-`connect-src` header from the same `config.js`, so the header and the code
-cannot drift apart.
+`worker-factory.js` is the only file that calls `new Worker()` or creates a
+worker URL. It exposes `createWorker()`, which every other file imports and
+calls. This makes worker construction an explicit architectural boundary.
 
-| Route | Policy | What happens |
-|---|---|---|
-| `from-config` | `connect-src 'self'` plus origins from `config.js` | Both API calls load. |
-| `narrow-policy` | `connect-src 'self'` | Both calls blocked. Two `connect-src` violations. |
+| Route | What happens |
+|---|---|
+| `restrict-architecture-eslint` | `app.js` calls `createWorker()` twice. The worker replies with a total and status. |
 
-`npm run lint` passes. To watch a rule fire, add `fetch('/profile')` or
-`const host = 'https://api.example.com'` to `app.js`.
+`npm run lint` passes. To watch a rule fire, add
+`new Worker(new URL('./tasks.worker.js', import.meta.url))` to `app.js`.
 
 ---
 

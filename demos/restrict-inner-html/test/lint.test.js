@@ -9,8 +9,8 @@ test('lint:forbid flags every markup sink', async () => {
   assert.deepEqual(
     await lintFindings(folder, { config: 'eslint.forbid.config.js' }),
     [
-      'render-with-policy.js:10 no-restricted-properties',
-      'render-with-string.js:2 no-restricted-properties',
+      'render-with-policy.js no-restricted-properties',
+      'render-with-string.js no-restricted-properties',
     ],
   );
 });
@@ -18,7 +18,7 @@ test('lint:forbid flags every markup sink', async () => {
 test('lint:sanitize-html allows sanitizeHtml and flags the rest', async () => {
   assert.deepEqual(
     await lintFindings(folder, { config: 'eslint.sanitize-html.config.js' }),
-    ['render-with-string.js:2 no-restricted-syntax'],
+    ['render-with-string.js no-restricted-syntax'],
   );
 });
 

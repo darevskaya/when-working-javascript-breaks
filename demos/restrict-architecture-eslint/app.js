@@ -1,18 +1,26 @@
-import { config } from './config.js';
-import { getProfile, getStatus } from './api-client.js';
+import { createWorker } from './worker-factory.js';
 
-document.querySelector('#origins').textContent =
-  Object.values(config).join(' ');
-
-async function show(id, call) {
+async function show(id, message, format) {
   const output = document.querySelector(id);
   try {
-    output.textContent = await call();
+    const worker = createWorker();
+    worker.onmessage = ({ data }) => {
+      worker.terminate();
+      output.textContent = format(data);
+    };
+    worker.onerror = () => {
+      worker.terminate();
+      output.textContent = 'Worker failed';
+      output.className = 'blocked';
+    };
+    worker.postMessage(message);
   } catch (error) {
-    output.textContent = `Blocked (${error.name})`;
+    output.textContent = `Worker failed (${error.name})`;
     output.className = 'blocked';
   }
 }
 
-show('#profile', async () => `Loaded: ${(await getProfile()).name}`);
-show('#status', async () => (await getStatus()).status);
+show('#total', { kind: 'total', amounts: [19.99, 4.5, 18.01] }, (total) =>
+  `Total: ${total}`,
+);
+show('#status', { kind: 'status' }, (status) => status);

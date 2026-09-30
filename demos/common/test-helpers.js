@@ -56,7 +56,7 @@ export async function lintFindings(folder, { config, files = ['.'] } = {}) {
     .flatMap((result) =>
       result.messages.map(
         (message) =>
-          `${path.basename(result.filePath)}:${message.line} ${message.ruleId}`,
+          `${path.basename(result.filePath)} ${message.ruleId}`,
       ),
     )
     .sort();

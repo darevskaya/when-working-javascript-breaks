@@ -1,22 +1,19 @@
-const say = (id, text, blocked) => {
-  const element = document.querySelector(id);
-  element.textContent = text;
-  element.className = blocked ? 'blocked' : 'allowed';
-};
-
 const source = 'onmessage = (event) => postMessage(`Hello, ${event.data}.`);';
 
 function startWorker() {
+  const status = document.querySelector('#worker-status');
   const blob = new Blob([source], { type: 'text/javascript' });
   const url = URL.createObjectURL(blob);
   const worker = new Worker(url);
   URL.revokeObjectURL(url);
   worker.onmessage = ({ data }) => {
-    say('#worker-status', `The worker replied: ${data}`, false);
+    status.textContent = `The worker replied: ${data}`;
+    status.className = 'allowed';
     worker.terminate();
   };
   worker.onerror = () => {
-    say('#worker-status', 'The browser refused the worker.', true);
+    status.textContent = 'The browser refused the worker.';
+    status.className = 'blocked';
   };
   worker.postMessage('Playwright');
 }

@@ -1,6 +1,5 @@
 import { defineConfig } from '@playwright/test';
 
-// Separate test ports let manually started demos keep running.
 export function demoConfig(overrides = {}) {
   return defineConfig({
     testDir: './test',

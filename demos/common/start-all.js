@@ -4,15 +4,11 @@ import { demos, hub } from './demos.js';
 import { createHub } from './hub.js';
 
 const folder = path.resolve(import.meta.dirname, '..');
-const windows = process.platform === 'win32';
 
 function startDemo(entry) {
-  const [command, ...args] = entry.command ?? ['node', 'server.js'];
-  const child = spawn(command, args, {
+  const child = spawn('node', ['server.js'], {
     cwd: path.join(folder, entry.id),
     stdio: 'inherit',
-    // Windows npm.cmd needs a shell.
-    shell: windows && command === 'npm',
   });
   child.on('error', (error) =>
     console.error(`${entry.id} did not start: ${error.message}`),

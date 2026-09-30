@@ -1,11 +1,6 @@
 const status = document.querySelector('#iframe-status');
 const frame = document.querySelector('#frame');
 
-const say = (text, blocked) => {
-  status.textContent = text;
-  status.className = blocked ? 'blocked' : 'allowed';
-};
-
 // A refused frame still fires "load", but with an error page that this
 // page cannot read.
 function frameTitle() {
@@ -18,8 +13,10 @@ function frameTitle() {
 
 frame.addEventListener('load', () => {
   if (frameTitle() === 'A page inside an iframe') {
-    say('The page loaded inside the iframe.', false);
+    status.textContent = 'The page loaded inside the iframe.';
+    status.className = 'allowed';
   } else {
-    say('The browser refused the page inside the iframe.', true);
+    status.textContent = 'The browser refused the page inside the iframe.';
+    status.className = 'blocked';
   }
 });

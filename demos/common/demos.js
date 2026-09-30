@@ -1,4 +1,3 @@
-// Shared port registry; second origins use app port + 100.
 export const hub = { port: 4173 };
 
 export const demos = [
@@ -22,8 +21,7 @@ export const demos = [
   {
     id: 'restrict-architecture-eslint',
     port: 4208,
-    providerPort: 4308,
-    summary: 'ESLint enforces connect-src.',
+    summary: 'ESLint enforces worker factories.',
   },
   {
     id: 'restrict-inner-html',

@@ -1,18 +1,6 @@
 import { serve, listener, isMain, demoPorts } from '../common/serve.js';
-import { config } from './config.js';
 
 const ports = demoPorts(import.meta);
-
-// Share origins with the client to prevent policy drift.
-const origins = Object.values(config);
-const fromConfig = `connect-src 'self' ${origins.join(' ')}`;
-
-const narrow = "connect-src 'self'";
-
-const page = (csp) => ({
-  file: 'app.html',
-  'Content-Security-Policy': csp,
-});
 
 export function createServer({ tls } = {}) {
   return listener(
@@ -20,45 +8,21 @@ export function createServer({ tls } = {}) {
     serve(
       {
         '/': 'index.html',
-        '/demo/restrict-architecture-eslint/from-config': page(fromConfig),
-        '/demo/restrict-architecture-eslint/narrow-policy': page(narrow),
+        '/demo/restrict-architecture-eslint': 'app.html',
         '/styles.css': 'styles.css',
         '/app.css': 'app.css',
         '/app.js': 'app.js',
-        '/api-client.js': 'api-client.js',
-        '/config.js': 'config.js',
+        '/worker-factory.js': 'worker-factory.js',
+        '/tasks.worker.js': 'tasks.worker.js',
       },
       { root: import.meta.dirname },
     ),
   );
 }
-
-export function createApiServer({ appOrigin, tls } = {}) {
-  const json = (value) => ({
-    body: JSON.stringify(value),
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': appOrigin,
-  });
-  return listener(
-    tls,
-    serve(
-      {
-        '/profile': json({ name: 'Elena' }),
-        '/status': json({ status: 'ok' }),
-      },
-      { root: import.meta.dirname },
-    ),
-  );
-}
-
-export const apiPort = Number(new URL(config.apiOrigin).port);
 
 if (isMain(import.meta)) {
   const app = `http://127.0.0.1:${ports.app}`;
   createServer().listen(ports.app, '127.0.0.1', () =>
     console.log(`restrict-architecture-eslint: ${app}`),
-  );
-  createApiServer({ appOrigin: app }).listen(apiPort, '127.0.0.1', () =>
-    console.log(`API: ${config.apiOrigin}`),
   );
 }

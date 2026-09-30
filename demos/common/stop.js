@@ -1,7 +1,5 @@
 import { execFileSync } from 'node:child_process';
 import { allPorts } from './demos.js';
-
-const ports = allPorts;
 const servers = ['server.js', 'hub.js', 'start-all.js', 'launch.js'];
 
 const windows = process.platform === 'win32';
@@ -16,7 +14,6 @@ const run = (command, args) => {
 
 function listeners(port) {
   if (windows) {
-    // Columns: protocol, local, remote, state, PID.
     return run('netstat', ['-ano', '-p', 'tcp'])
       .split('\n')
       .map((line) => line.trim().split(/\s+/))
@@ -52,7 +49,7 @@ function alive(pid) {
 }
 
 let stopped = 0;
-for (const pid of new Set(ports.flatMap(listeners))) {
+for (const pid of new Set(allPorts.flatMap(listeners))) {
   if (!alive(pid)) continue;
   const command = commandLine(pid).trim();
   if (!servers.some((name) => command.includes(name))) {
